@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#161F48</color>
+    <color name="colorPrimaryDark">#0d132e</color>
+    <color name="colorSecondary">#D2A047</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="fondo_app">#161F48</color>
+    <color name="fondo_splash">#161F48</color>
+    <color name="fondo_login">#161F48</color>
+    <color name="fondo_card">#1C2E5D</color>
+    <color name="fondo_tabla">#1a2d55</color>
+    <color name="borde">#284574</color>
+    <color name="dorado">#D2A047</color>
+    <color name="dorado_claro">#E1C582</color>
+    <color name="texto_principal">#b8c4d8</color>
+    <color name="texto_hint">#7a8fad</color>
+    <color name="texto_titulo">#E1C582</color>
+    <color name="boton_login">#D2A047</color>
+    <color name="boton_texto">#161F48</color>
+    <color name="borde_input">#284574</color>
+    <color name="input_fondo">#161F48</color>
+</resources>
