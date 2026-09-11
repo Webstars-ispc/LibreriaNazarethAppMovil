@@ -112,7 +112,6 @@ Aplicación móvil Android para la gestión de inventario y ventas de la Librer�
 | Sofia Gimena Ledesma             | Desarrollador | [@SOFILEDESMA](https://github.com/SOFILEDESMA)             |
 | Franco Agustin Trivini De Ejalde | Desarrollador | [@FrancoTrivini](https://github.com/FrancoTrivini)         |
 | Jesica Analia Aramayo            | Desarrollador | [@Jesica-A](https://github.com/Jesica-A)                   |
-| Matias Gonzales                  | Desarrollador | [@matiasgonzalez1](https://github.com/matiasgonazalez1)    |
 
 ---
 
