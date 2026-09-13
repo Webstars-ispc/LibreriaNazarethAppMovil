@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Librería Nazareth</string>
+
+    <!-- Catálogo -->
+    <string name="catalogo_titulo">Catálogo de Productos</string>
+    <string name="catalogo_buscar_hint">Buscar producto...</string>
+    <string name="catalogo_escanear">Escanear código de barras</string>
+    <string name="catalogo_editar">✏️ Editar</string>
+    <string name="catalogo_agregar">Agregar producto</string>
+
+    <!-- Productos de ejemplo (temporal) -->
+    <string name="producto1_nombre">MARCADORES PARA PIZZARA</string>
+    <string name="producto1_precio">$5000.00</string>
+    <string name="producto1_stock">Stock: 15</string>
+
+    <string name="producto2_nombre">CARTUCHERA ARGENTINA 2026</string>
+    <string name="producto2_precio">$6000.00</string>
+    <string name="producto2_stock">Stock: 5</string>
+
+    <string name="producto3_nombre">CUERDA 5MM</string>
+    <string name="producto3_precio">$350.00</string>
+    <string name="producto3_stock">Stock: 100</string>
 </resources>
