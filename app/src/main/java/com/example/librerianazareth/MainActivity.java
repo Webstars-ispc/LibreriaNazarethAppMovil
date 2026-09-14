@@ -41,11 +41,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnConfiguracion.setOnClickListener(v -> {
-            Toast.makeText(this, "Ajustes - Próximamente", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, ConfiguracionActivity.class);
+            startActivity(intent);
         });
 
         btnContacto.setOnClickListener(v -> {
-            Toast.makeText(this, "Soporte - Próximamente", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, ContactoActivity.class);
+            startActivity(intent);
         });
 
         btnCerrarSesion.setOnClickListener(v -> {
