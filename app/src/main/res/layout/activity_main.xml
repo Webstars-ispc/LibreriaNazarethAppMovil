@@ -73,7 +73,7 @@
 
         <!-- Productos -->
         <LinearLayout
-            android:id="@+id/btnProductos"
+            android:id="@+id/btnAgregar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_columnWeight="1"
@@ -89,13 +89,13 @@
                 android:background="@drawable/circle_icon_bg"
                 android:padding="8dp"
                 android:src="@drawable/ic_productos"
-                android:contentDescription="@string/productos" />
+                android:contentDescription="@string/agregar" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/productos"
+                android:text="@string/agregar"
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -104,7 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="@string/proximamente"
+                android:text="@string/agregar_producto"
                 android:textColor="@color/texto_menu_subtitulo"
                 android:textSize="12sp" />
         </LinearLayout>

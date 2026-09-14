@@ -26,18 +26,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         LinearLayout btnCatalogo = findViewById(R.id.btnCatalogo);
-        LinearLayout btnProductos = findViewById(R.id.btnProductos);
+        LinearLayout btnAgregar = findViewById(R.id.btnAgregar);
         LinearLayout btnConfiguracion = findViewById(R.id.btnConfiguracion);
         LinearLayout btnContacto = findViewById(R.id.btnContacto);
         TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
         btnCatalogo.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, FormularioCatalogoActivity.class);
+            Intent intent = new Intent(MainActivity.this, CatalogoActivity.class);
             startActivity(intent);
         });
 
-        btnProductos.setOnClickListener(v -> {
-            Toast.makeText(this, "Próximamente", Toast.LENGTH_SHORT).show();
+        btnAgregar.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, FormularioCatalogoActivity.class);
+            startActivity(intent);
         });
 
         btnConfiguracion.setOnClickListener(v -> {
