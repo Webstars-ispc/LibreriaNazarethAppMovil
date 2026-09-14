@@ -7,8 +7,8 @@
     <string name="menu_principal">Menú Principal</string>
     <string name="catalogo">Catálogo</string>
     <string name="ver_productos">Ver productos</string>
-    <string name="productos">Productos</string>
-    <string name="proximamente">Próximamente</string>
+    <string name="agregar">Agregar</string>
+    <string name="agregar_producto">Producto</string>
     <string name="configuracion">Configuración</string>
     <string name="ajustes">Ajustes</string>
     <string name="contacto">Contacto</string>

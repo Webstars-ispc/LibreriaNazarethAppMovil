@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Formulario Catálogo"
+            android:text="Formulario Producto"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="@color/texto_titulo"
@@ -92,7 +92,7 @@
         <Spinner
             android:id="@+id/spinnerRubro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginBottom="12dp" />
 
         <TextView
@@ -106,7 +106,7 @@
         <Spinner
             android:id="@+id/spinnerMarca"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginBottom="12dp" />
 
         <LinearLayout
