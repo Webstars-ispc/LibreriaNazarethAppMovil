@@ -3,7 +3,7 @@
     <string name="app_name">Librería Nazareth</string>
 
     <!-- Menú Principal -->
-    <string name="bienvenido">Bienvenido/a</string>
+    <string name="bienvenida">Bienvenido/a</string>
     <string name="menu_principal">Menú Principal</string>
     <string name="catalogo">Catálogo</string>
     <string name="ver_productos">Ver productos</string>

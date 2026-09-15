@@ -18,15 +18,14 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24sp">
 
             <!-- Título de Bienvenida -->
             <TextView
-                android:id="@+id/tvBienvenida"
+                android:text="@string/bienvenida"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Bienvenido/a"
                 android:textColor="@color/texto_menu_titulo"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -35,7 +34,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4px"
+                android:layout_marginTop="4dp"
                 android:text="@string/menu_principal"
                 android:textColor="@color/texto_menu_subtitulo"
                 android:textSize="18sp" />
