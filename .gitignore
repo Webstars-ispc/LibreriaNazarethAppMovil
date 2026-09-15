@@ -1,0 +1,24 @@
+# Android Studio / Gradle
+*.iml
+.gradle/
+/local.properties
+/.idea/
+/build/
+/app/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Archivos locales
+local.properties
+*.hprof
+
+# Firmas
+*.jks
+*.keystore
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+.DS_Store
