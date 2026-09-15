@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class FormularioCatalogoActivity extends AppCompatActivity {
+public class FormularioCatalogoActivity extends BaseActivity {
 
     private EditText etNombre, etDescripcion, etCodigoBarras, etPrecioCosto, etPrecioVenta, etStock;
     private Spinner spinnerRubro, spinnerMarca;
