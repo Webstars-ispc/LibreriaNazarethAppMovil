@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,7 +27,7 @@ public class UsuariosActivity extends AppCompatActivity {
         });
 
         // Buscador de usuarios
-        android.widget.EditText buscador = findViewById(R.id.etBuscarUsuario);
+        EditText buscador = findViewById(R.id.etBuscarUsuario);
 
         View usuario1 = findViewById(R.id.cardUsuario1);
         View usuario2 = findViewById(R.id.cardUsuario2);
@@ -67,6 +69,41 @@ public class UsuariosActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
             }
+        });
+
+        // Botón EDITAR de Baltazar
+        Button btnEditarUsuario1 = findViewById(R.id.btnEditarUsuario1);
+
+        btnEditarUsuario1.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    UsuariosActivity.this,
+                    FormularioUsuarioActivity.class
+            );
+
+            intent.putExtra("modo_edicion", true);
+            intent.putExtra("nombre_usuario", "Baltazar Ledesma");
+            intent.putExtra("correo_usuario", "baltazar@email.com");
+
+            startActivity(intent);
+        });
+
+        // Botón EDITAR de Salvador
+        Button btnEditarUsuario2 = findViewById(R.id.btnEditarUsuario2);
+
+        btnEditarUsuario2.setOnClickListener(v -> {
+            android.widget.Toast.makeText(this, "EDITAR SALVADOR FUNCIONA", android.widget.Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(
+                    UsuariosActivity.this,
+                    FormularioUsuarioActivity.class
+            );
+
+            intent.putExtra("modo_edicion", true);
+            intent.putExtra("nombre_usuario", "Salvador Ledesma");
+            intent.putExtra("correo_usuario", "salvador@email.com");
+
+            startActivity(intent);
         });
     }
 }
