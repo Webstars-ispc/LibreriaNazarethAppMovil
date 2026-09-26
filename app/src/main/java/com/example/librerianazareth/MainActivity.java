@@ -29,6 +29,7 @@ public class MainActivity extends BaseActivity {
         LinearLayout btnAgregar = findViewById(R.id.btnAgregar);
         LinearLayout btnConfiguracion = findViewById(R.id.btnConfiguracion);
         LinearLayout btnContacto = findViewById(R.id.btnContacto);
+        LinearLayout btnUsuarios = findViewById(R.id.btnUsuarios);
         TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
         btnCatalogo.setOnClickListener(v -> {
@@ -48,6 +49,10 @@ public class MainActivity extends BaseActivity {
 
         btnContacto.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ContactoActivity.class);
+            startActivity(intent);
+        });
+        btnUsuarios.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, UsuariosActivity.class);
             startActivity(intent);
         });
 
