@@ -148,6 +148,7 @@
                 app:cardBackgroundColor="@color/fondo_card">
 
                 <LinearLayout
+                    android:id="@+id/llListaUsuarios"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
