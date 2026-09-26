@@ -1,0 +1,461 @@
+# GUIA DE LA CAPA RED - Librería Nazareth App Móvil
+
+Esta guía explica cómo está armada la infraestructura de red de la app
+y cómo usarla para agregar nuevos endpoints sin romper nada.
+SI LES DA CONFLICTO ALGO NO MERGEAR, AVISAR Y SOLUCIONAMOS JUNTOS
+
+================================================================================
+1. ¿QUÉ ES ESTO?
+================================================================================
+
+Cuando la app necesita hablar con el backend (Django + MySQL), no puede
+hacerlo directamente. Necesita:
+
+  1. Saber a qué URL conectarse.
+  2. Enviar y recibir datos en formato JSON.
+  3. Incluir el token JWT en cada petición autenticada.
+  4. Manejar errores de red de forma consistente.
+
+Todo eso ya está resuelto en la carpeta `data/` del proyecto.
+Solo tienen que USAR esas clases creadas, no reinventarlas.
+
+================================================================================
+2. ESTRUCTURA DE ARCHIVOS
+================================================================================
+
+app/src/main/java/com/example/librerianazareth/data/
+│
+├── NetworkConstants.java     → Constantes compartidas (URL base, claves, etc.)
+├── RetrofitClient.java       → Punto de entrada. Devuelve el ApiService.
+├── ApiService.java           → Interfaz con TODOS los endpoints de la API.
+├── AuthInterceptor.java      → Agrega el token JWT a cada petición (automático).
+│
+├── local/
+│   └── TokenManager.java     → Guarda/lee/borra los tokens JWT del dispositivo.
+│
+└── model/
+    ├── LoginRequest.java     → Modelo para enviar email + password al login.
+    └── LoginResponse.java    → Modelo con access + refresh que devuelve el login.
+
+================================================================================
+3. ¿PARA QUÉ SIRVE CADA ARCHIVO?
+================================================================================
+
+### NetworkConstants.java
+Contiene constantes compartidas:
+  - BASE_URL: la URL del backend (se lee desde local.properties).
+  - HEADER_AUTHORIZATION: "Authorization"
+  - TOKEN_PREFIX: "Bearer "
+  - PREFS_AUTH, KEY_ACCESS, KEY_REFRESH: claves de SharedPreferences.
+
+NO lo modifiques salvo que sepas lo que hacés.
+
+### RetrofitClient.java
+Es el punto de entrada. Se usa así:
+
+    RetrofitClient.getApi(this)
+
+Devuelve un objeto `ApiService` con todos los endpoints listos para llamar.
+Es un singleton: una sola instancia para toda la app.
+
+NO lo modifiques.
+
+### ApiService.java
+Es una INTERFAZ donde se declaran TODOS los endpoints de la API.
+Actualmente incluye:
+  - POST /api/auth/login/  → login(@Body LoginRequest)
+
+Cada desarrollador AGREGA sus endpoints acá, sin borrar los de otros.
+Ver sección 6 de este mismo archivo para saber cómo agregar uno.
+
+### AuthInterceptor.java
+Interceptor de OkHttp que agrega automáticamente la cabecera:
+    Authorization: Bearer <token>
+a cada petición, si hay un token guardado.
+
+Esto significa que VOS NO TENÉS QUE PREOCUPARTE por el token.
+Se agrega solo. Si no hay token (ej. antes del login), la petición
+sale como anónima.
+
+NO lo modifiques.
+
+### TokenManager.java
+Guarda y lee los tokens JWT desde SharedPreferences del dispositivo.
+
+Uso:
+    TokenManager tm = new TokenManager(context);
+    tm.saveTokens(access, refresh);    // después del login
+    String token = tm.getAccessToken(); // cuando lo necesites
+    tm.clear();                         // en el logout
+    boolean logueado = tm.isLoggedIn(); // chequeo rápido
+
+NO lo modifiques.
+
+### Carpeta model/
+Contiene clases Java simples que representan las respuestas
+y peticiones de la API.
+
+Ya están:
+  - LoginRequest   → { email, password }
+  - LoginResponse  → { access, refresh }
+
+Cada desarrollador AGREGA los modelos que necesite para sus endpoints.
+Ver sección 7 de este mismo archivo para saber cómo.
+
+================================================================================
+4. CONFIGURACIÓN INICIAL (HACER UNA SOLA VEZ)
+================================================================================
+
+Antes de ejecutar la app, cada uno debe configurar la URL base del backend
+en su propia máquina, porque cada PC tiene una IP distinta en la red local.
+
+### Paso 1: Averiguar tu IP local
+
+  - Windows:  ejecutá "ipconfig" en cmd y buscá "Dirección IPv4" del adaptador
+              Ethernet o Wi-Fi. Ejemplo: 192.168.100.8
+
+### Paso 2: Agregar la IP a local.properties
+
+Abrí el archivo `local.properties` que está en la raíz del proyecto
+(al lado de settings.gradle, NO dentro de app/).
+
+Agregá esta línea al final:
+
+    API_BASE_URL=http://TU_IP:8000/
+
+Reemplazá TU_IP por tu IP real. Ejemplo:
+
+    API_BASE_URL=http://192.168.100.8:8000/
+
+IMPORTANTE:
+  - Termina en "/" (barra al final).
+  - Usa "http://", no "https://" (es desarrollo local).
+  - NO subas este archivo a Git (ya está en .gitignore).
+
+### Paso 3: Levantar el backend
+
+En la carpeta del proyecto Django (backend)--> ((Recuerden que esta en OTRO REPO 
+DENTRO DE LA ORGANIZACION: clonen o actualicen que tiene modificaciones)):
+--> https://github.com/Webstars-ispc/LibreriaNazareth-Backend --> LEVANTAR CON VISUAL STUDIO CODE
+
+    python manage.py runserver 0.0.0.0:8000
+
+El "0.0.0.0:8000" es IMPORTANTE. Si solo pones "runserver", Django
+escucha solo en localhost y tu celular no lo va a alcanzar.
+
+### Paso 4: Verificar que la red esté en modo "Privada" (Windows)
+
+  - Configuración → Red e Internet → Ethernet (o Wi-Fi)
+  - Si dice "Red pública", cambiala a "Red privada".
+  - Sin esto, el firewall de Windows bloquea el puerto 8000.
+
+### Paso 5: Verificar conexión
+
+Desde el navegador del celular, abrí:
+
+    http://TU_IP:8000/admin/
+
+Si carga la pantalla de admin de Django → todo OK.
+Si no carga → revisar firewall, IP, o que el celular esté en la misma red.
+
+================================================================================
+5. CÓMO USAR LA INFRAESTRUCTURA (EJEMPLO DE LOGIN)
+================================================================================
+
+Supongamos que querés implementar el login. En tu LoginActivity:
+
+    // 1. Obtener el ApiService
+    ApiService api = RetrofitClient.getApi(this);
+
+    // 2. Crear el request
+    LoginRequest request = new LoginRequest(email, password);
+
+    // 3. Llamar al endpoint
+    api.login(request).enqueue(new Callback<LoginResponse>() {
+        @Override
+        public void onResponse(Call<LoginResponse> call,
+                               Response<LoginResponse> response) {
+            if (response.isSuccessful() && response.body() != null) {
+                // 4. Guardar los tokens
+                new TokenManager(LoginActivity.this).saveTokens(
+                    response.body().getAccess(),
+                    response.body().getRefresh()
+                );
+
+                // 5. Navegar a la siguiente pantalla
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+            } else {
+                // Error HTTP (401, 400, 500...)
+                Toast.makeText(LoginActivity.this,
+                    "Credenciales incorrectas (código " + response.code() + ")",
+                    Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<LoginResponse> call, Throwable t) {
+            // Error de red (sin conexión, timeout, etc.)
+            Toast.makeText(LoginActivity.this,
+                "Error de conexión: " + t.getMessage(),
+                Toast.LENGTH_LONG).show();
+        }
+    });
+
+Eso es TODO. No hay que armar URL, ni agregar token, ni parsear JSON.
+La infraestructura se encarga.
+
+================================================================================
+6. CÓMO AGREGAR UN NUEVO ENDPOINT
+================================================================================
+
+Seguí estos 3 pasos:
+
+### Paso 1: Crear el modelo (si no existe)
+
+En `data/model/`, creá una clase Java para el request y/o response.
+
+Ejemplo para productos:
+
+    package com.example.librerianazareth.data.model;
+
+    public class Producto {
+        private int id;
+        private String nombre;
+        private double precio;
+
+        public int getId() { return id; }
+        public String getNombre() { return nombre; }
+        public double getPrecio() { return precio; }
+    }
+
+Reglas:
+  - Los nombres de los campos DEBEN coincidir con los del JSON del backend.
+  - Solo getters (para response) o solo constructor (para request).
+
+### Paso 2: Declarar el método en ApiService.java
+
+Abrí `data/ApiService.java` y agregá dentro de la interfaz:
+
+    // Ejemplo: listar todos los productos
+    @GET("api/productos/")
+    Call<List<Producto>> getProductos();
+
+    // Ejemplo: crear un producto
+    @POST("api/productos/")
+    Call<Producto> crearProducto(@Body Producto producto);
+
+    // Ejemplo: obtener uno por ID
+    @GET("api/productos/{id}/")
+    Call<Producto> getProducto(@Path("id") int id);
+
+    // Ejemplo: modificar
+    @PUT("api/productos/{id}/")
+    Call<Producto> actualizarProducto(@Path("id") int id,
+                                      @Body Producto producto);
+
+    // Ejemplo: eliminar
+    @DELETE("api/productos/{id}/")
+    Call<Void> eliminarProducto(@Path("id") int id);
+
+Anotaciones disponibles:
+  - @GET("ruta/")              → obtener datos
+  - @POST("ruta/")             → crear
+  - @PUT("ruta/{id}/")         → modificar
+  - @DELETE("ruta/{id}/")      → eliminar
+  - @Body MiClase obj          → el objeto va en el cuerpo (JSON)
+  - @Path("id") int id         → reemplaza {id} en la URL
+  - @Query("nombre") String n  → agrega ?nombre=valor en la URL
+
+IMPORTANTE:
+  - La ruta NO empieza con "/". Es "api/productos/", no "/api/productos/".
+  - NO borrar métodos de otros. Si hay conflicto de merge, AVISAR.
+
+### Paso 3: Llamarlo desde la Activity
+
+    RetrofitClient.getApi(this)
+        .getProductos()
+        .enqueue(new Callback<List<Producto>>() {
+            @Override
+            public void onResponse(Call<List<Producto>> call,
+                                   Response<List<Producto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Producto> productos = response.body();
+                    // Mostrar en el RecyclerView...
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Producto>> call, Throwable t) {
+                Toast.makeText(MiActivity.this,
+                    "Error: " + t.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
+
+================================================================================
+7. MAPEO DE ENDPOINTS DE LA API (tambien estan en el repo backend--> database)
+================================================================================
+
+Autenticación:
+  POST    /api/auth/login/                     → login(email, password)
+  POST    /api/auth/refresh/                   → refreshToken(refresh)
+  GET     /api/auth/me/                        → getPerfil()
+
+Usuarios:
+  GET     /api/auth/usuarios/                  → getUsuarios()       [admin]
+  POST    /api/auth/usuarios/create/           → crearUsuario(u)     [admin]
+  GET     /api/auth/usuarios/{id}/             → getUsuario(id)      [admin]
+  PUT     /api/auth/usuarios/{id}/             → actualizarUsuario(id, u)
+  DELETE  /api/auth/usuarios/{id}/             → eliminarUsuario(id)
+
+Productos:
+  GET     /api/productos/                      → getProductos()
+  POST    /api/productos/                      → crearProducto(p)
+  GET     /api/productos/{id}/                 → getProducto(id)
+  PUT     /api/productos/{id}/                 → actualizarProducto(id, p)
+  DELETE  /api/productos/{id}/                 → eliminarProducto(id)  [admin]
+
+Rubros:
+  GET     /api/rubros/                         → getRubros()
+  POST    /api/rubros/                         → crearRubro(r)
+  GET     /api/rubros/{id}/                    → getRubro(id)
+  PUT     /api/rubros/{id}/                    → actualizarRubro(id, r)
+  DELETE  /api/rubros/{id}/                    → eliminarRubro(id)
+
+Marcas:
+  GET     /api/marcas/                         → getMarcas()
+  POST    /api/marcas/                         → crearMarca(m)
+  GET     /api/marcas/{id}/                    → getMarca(id)
+  PUT     /api/marcas/{id}/                    → actualizarMarca(id, m)
+  DELETE  /api/marcas/{id}/                    → eliminarMarca(id)
+
+Ventas:
+  GET     /api/ventas/                         → getVentas()
+  POST    /api/ventas/                         → crearVenta(v)
+  GET     /api/ventas/{id}/                    → getVenta(id)
+  DELETE  /api/ventas/{id}/                    → eliminarVenta(id)     [admin]
+
+Carga masiva y aumentos:
+  POST    /api/cargar-excel/                   → cargarExcel(archivo)
+  POST    /api/aumentos/general/               → aumentoGeneral(datos)
+  POST    /api/aumentos/rubro/                 → aumentoPorRubro(datos)
+  POST    /api/aumentos/marca/                 → aumentoPorMarca(datos)
+  POST    /api/aumentos/individual/            → aumentoIndividual(datos)
+
+================================================================================
+8. MANEJO DE ERRORES
+================================================================================
+
+Los errores se manejan en dos lugares:
+
+### onFailure
+Errores de RED (no llegó al servidor):
+  - ConnectException        → "No se pudo conectar al servidor"
+  - SocketTimeoutException  → "Tiempo de espera agotado"
+  - UnknownHostException    → "Servidor no encontrado"
+
+### onResponse con !isSuccessful()
+Errores HTTP (el servidor respondió con error):
+  - 400 → datos inválidos
+  - 401 → no autenticado / token expirado
+  - 403 → sin permisos
+  - 404 → recurso no encontrado
+  - 500 → error del servidor
+
+Para manejar el código HTTP:
+
+    if (!response.isSuccessful()) {
+        int code = response.code();
+        String msg = "Error " + code;
+        if (code == 401) msg = "Sesión expirada";
+        if (code == 403) msg = "No tenés permisos";
+        // ...
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+================================================================================
+9. TOKENS JWT - ¿CÓMO FUNCIONAN?
+================================================================================
+
+Cuando el usuario hace login, el backend devuelve dos tokens:
+
+  - access:  dura 1 hora. Se usa en cada petición.
+  - refresh: dura 1 día. Sirve para pedir un access nuevo.
+
+### Flujo automático
+
+El AuthInterceptor lee el access token de TokenManager y lo agrega
+a cada petición automáticamente. Vos no tenés que hacer nada.
+
+### Después de 1 hora
+
+El access vence y el backend devuelve 401. Acá hay dos opciones:
+
+  Opción A (simple): redirigir al login.
+  Opción B (completa): usar el refresh para obtener un access nuevo.
+
+Actualmente implementamos la Opción A (o el backend puede extender
+la duración: en web lo hicimos mediante un modal con opcion "si" o "no").
+
+### Logout
+
+El logout es simplemente borrar los tokens:
+
+    new TokenManager(this).clear();
+    startActivity(new Intent(this, LoginActivity.class));
+    finish();
+
+El backend no tiene sesión que cerrar (es stateless con JWT).
+
+================================================================================
+10. PREGUNTAS FRECUENTES
+================================================================================
+
+### ¿Por qué no funciona desde mi celular?
+Revisá en este orden:
+  1. ¿El backend está corriendo con "0.0.0.0:8000"?
+  2. ¿Tu IP en local.properties es la correcta? (ejecutá "ipconfig")
+  3. ¿La red de Windows está en modo "Privada"?
+  4. ¿El celular está en la misma red Wi-Fi que la PC?
+  5. ¿El firewall permite el puerto 8000?
+  6. Probalo desde el navegador del celular:
+     http://TU_IP:8000/admin/
+
+### ¿Por qué me da error 401?
+  - No te logueaste todavía, o el token expiró.
+  - Solución: volvé a loguearte, o implementá refresh token.
+
+### ¿Por qué me da error de red "CLEARTEXT not permitted"?
+Falta el android:usesCleartextTraffic="true" en AndroidManifest.xml.
+Ya está agregado, pero si lo ves, avisá al equipo.
+
+### ¿Puedo modificar RetrofitClient?
+NO. Es infraestructura compartida. Si necesitás cambiar algo,
+avisá al equipo para que todos sepan.
+
+### ¿Puedo modificar AuthInterceptor?
+NO. Es infraestructura compartida. Si necesitás cambiar algo,
+avisá al equipo para que todos sepan.
+
+### ¿Puedo modificar ApiService?
+SÍ, pero solo AGREGANDO métodos. Nunca borres los de otros.
+Si hay conflicto de merge, AVISAR.
+
+### ¿Puedo agregar modelos?
+SÍ. Creá nuevas clases en data/model/.
+
+================================================================================
+11. RESUMEN DE LO QUE NO SE TOCA
+================================================================================
+
+NO tocar sin coordinar con el equipo:
+  - data/NetworkConstants.java
+  - data/RetrofitClient.java
+  - data/AuthInterceptor.java
+  - data/local/TokenManager.java
+
+SÍ se puede modificar (con cuidado):
+  - data/ApiService.java  (agregar métodos, no borrar)
+  - data/model/           (agregar modelos nuevos)
+  - Activities propias    (cada uno la suya)
