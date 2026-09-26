@@ -12,6 +12,9 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+
+        // URL base de la API (se lee desde local.properties)
+        buildConfigField "String", "API_BASE_URL", "\"${getApiBaseUrl()}\""
     }
 
     buildTypes {
@@ -25,10 +28,29 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    // Retrofit + Gson + Logging
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+}
+
+// Lee API_BASE_URL desde local.properties.
+// Si no está definida, usa la IP del host vista desde el emulador.
+def getApiBaseUrl() {
+    def props = new Properties()
+    def file = rootProject.file("local.properties")
+    if (file.exists()) {
+        props.load(new FileInputStream(file))
+    }
+    return props.getProperty("API_BASE_URL", "http://10.0.2.2:8000/")
 }
