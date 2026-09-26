@@ -104,6 +104,13 @@ public class UsuariosActivity extends AppCompatActivity {
             intent.putExtra("correo_usuario", "salvador@email.com");
 
             startActivity(intent);
+
+        });
+        // Botón ELIMINAR de Salvador
+        Button btnEliminarUsuario2 = findViewById(R.id.btnEliminarUsuario2);
+
+        btnEliminarUsuario2.setOnClickListener(v -> {
+            usuario2.setVisibility(View.GONE);
         });
     }
 }
