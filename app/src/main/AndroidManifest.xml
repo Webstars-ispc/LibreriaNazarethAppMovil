@@ -45,6 +45,12 @@
         <activity
             android:name=".ContactoActivity"
             android:exported="false" />
+        <activity
+            android:name=".UsuariosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FormularioUsuarioActivity"
+            android:exported="false" />
 
     </application>
 

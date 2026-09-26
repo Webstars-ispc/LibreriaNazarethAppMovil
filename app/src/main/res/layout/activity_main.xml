@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:columnCount="2"
-                android:rowCount="2">
+                android:rowCount="3">
 
                 <!-- Catálogo -->
                 <LinearLayout
@@ -152,7 +152,7 @@
                         android:layout_marginTop="10dp"
                         android:text="@string/configuracion"
                         android:textColor="@color/white"
-                        android:textSize="15sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -199,6 +199,44 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="@string/soporte"
+                        android:textColor="@color/texto_menu_subtitulo"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+                <!-- Usuarios -->
+                <LinearLayout
+                    android:id="@+id/btnUsuarios"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/card_menu"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/circle_icon_bg"
+                        android:contentDescription="Usuarios"
+                        android:padding="8dp"
+                        android:src="@android:drawable/ic_menu_myplaces" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Usuarios"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Gestionar usuarios"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
 
