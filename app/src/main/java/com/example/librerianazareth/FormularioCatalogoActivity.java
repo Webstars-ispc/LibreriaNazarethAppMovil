@@ -19,6 +19,8 @@ public class FormularioCatalogoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_catalogo);
 
+        setupBottomNavigation(0);
+
         etNombre = findViewById(R.id.etNombre);
         etDescripcion = findViewById(R.id.etDescripcion);
         etCodigoBarras = findViewById(R.id.etCodigoBarras);

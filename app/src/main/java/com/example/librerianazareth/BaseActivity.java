@@ -11,9 +11,7 @@ public class BaseActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         if (bottomNav == null) return;
 
-        // Marcar el ítem actual como seleccionado
-        bottomNav.setSelectedItemId(itemSeleccionado);
-
+        // Asignar listener PRIMERO
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -40,5 +38,10 @@ public class BaseActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        // Marcar el ítem actual SOLO si es válido
+        if (itemSeleccionado > 0) {
+            bottomNav.setSelectedItemId(itemSeleccionado);
+        }
     }
 }
