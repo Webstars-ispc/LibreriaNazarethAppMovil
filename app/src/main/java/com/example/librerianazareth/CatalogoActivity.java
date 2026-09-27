@@ -13,5 +13,14 @@ public class CatalogoActivity extends BaseActivity {
         setContentView(R.layout.activity_catalogo);
 
         setupBottomNavigation(R.id.nav_catalogo);
+
+        // Botón agregar producto
+        findViewById(R.id.fabAgregarProducto).setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    CatalogoActivity.this,
+                    FormularioCatalogoActivity.class
+            );
+            startActivity(intent);
+        });
     }
 }
