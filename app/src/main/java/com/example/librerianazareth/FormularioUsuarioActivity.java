@@ -1,12 +1,19 @@
 package com.example.librerianazareth;
 
 import android.os.Bundle;
-import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.librerianazareth.data.ApiService;
+import com.example.librerianazareth.data.RetrofitClient;
+import com.example.librerianazareth.data.model.Usuario;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FormularioUsuarioActivity extends AppCompatActivity {
 
@@ -21,7 +28,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_usuario);
 
-        // Campos del formulario
         etNombreUsuario = findViewById(R.id.etNombreUsuario);
         etCorreoUsuario = findViewById(R.id.etCorreoUsuario);
         etContrasenaUsuario = findViewById(R.id.etContrasenaUsuario);
@@ -29,13 +35,16 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         btnGuardarUsuario = findViewById(R.id.btnGuardarUsuario);
         btnCancelarUsuario = findViewById(R.id.btnCancelarUsuario);
 
-        // Comprobar si estamos editando un usuario
-        boolean modoEdicion = getIntent().getBooleanExtra("modo_edicion", false);
+        boolean modoEdicion =
+                getIntent().getBooleanExtra("modo_edicion", false);
 
         if (modoEdicion) {
 
-            String nombre = getIntent().getStringExtra("nombre_usuario");
-            String correo = getIntent().getStringExtra("correo_usuario");
+            String nombre =
+                    getIntent().getStringExtra("nombre_usuario");
+
+            String correo =
+                    getIntent().getStringExtra("correo_usuario");
 
             if (nombre != null) {
                 etNombreUsuario.setText(nombre);
@@ -46,14 +55,20 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             }
         }
 
-        // Botón guardar
         btnGuardarUsuario.setOnClickListener(v -> {
 
-            String nombre = etNombreUsuario.getText().toString().trim();
-            String correo = etCorreoUsuario.getText().toString().trim();
-            String contrasena = etContrasenaUsuario.getText().toString().trim();
+            String nombre =
+                    etNombreUsuario.getText().toString().trim();
 
-            if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+            String correo =
+                    etCorreoUsuario.getText().toString().trim();
+
+            String contrasena =
+                    etContrasenaUsuario.getText().toString().trim();
+
+            if (nombre.isEmpty()
+                    || correo.isEmpty()
+                    || contrasena.isEmpty()) {
 
                 Toast.makeText(
                         this,
@@ -64,18 +79,63 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
                 return;
             }
 
-            Toast.makeText(
-                    this,
-                    modoEdicion
-                            ? "Usuario actualizado correctamente"
-                            : "Usuario guardado correctamente",
-                    Toast.LENGTH_SHORT
-            ).show();
+            // Crear usuario para enviar al backend
+            Usuario usuario = new Usuario(
+                    nombre,
+                    correo,
+                    contrasena,
+                    "Cliente"
+            );
 
-            finish();
+            ApiService apiService =
+                    RetrofitClient.getApi(this);
+
+            Call<Usuario> llamada =
+                    apiService.crearUsuario(usuario);
+
+            llamada.enqueue(new Callback<Usuario>() {
+
+                @Override
+                public void onResponse(
+                        Call<Usuario> call,
+                        Response<Usuario> response) {
+
+                    if (response.isSuccessful()) {
+
+                        Toast.makeText(
+                                FormularioUsuarioActivity.this,
+                                "Usuario guardado correctamente",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        finish();
+
+                    } else {
+
+                        Toast.makeText(
+                                FormularioUsuarioActivity.this,
+                                "Error al guardar usuario: "
+                                        + response.code(),
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(
+                        Call<Usuario> call,
+                        Throwable t) {
+
+                    Toast.makeText(
+                            FormularioUsuarioActivity.this,
+                            "Error de conexión: "
+                                    + t.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
         });
 
-        // Botón cancelar
         btnCancelarUsuario.setOnClickListener(v -> finish());
     }
 }
