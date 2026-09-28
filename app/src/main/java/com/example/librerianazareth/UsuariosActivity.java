@@ -10,12 +10,14 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class UsuariosActivity extends AppCompatActivity {
+public class UsuariosActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_usuarios);
+
+        setupBottomNavigation(0);
 
         // Botón agregar usuario
         findViewById(R.id.fabAgregarUsuario).setOnClickListener(v -> {

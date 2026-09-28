@@ -79,17 +79,36 @@
                 android:textColor="@color/texto_hint"
                 android:layout_marginBottom="4dp" />
 
-            <EditText
-                android:id="@+id/etCodigoBarras"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Código de barras"
-                android:inputType="number"
-                android:textColor="@color/texto_principal"
-                android:textColorHint="@color/texto_hint"
-                android:background="@drawable/input_fondo"
-                android:padding="12dp"
-                android:layout_marginBottom="12dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <EditText
+                    android:id="@+id/etCodigoBarras"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Código de barras"
+                    android:inputType="number"
+                    android:textColor="@color/texto_principal"
+                    android:textColorHint="@color/texto_hint"
+                    android:background="@drawable/input_fondo"
+                    android:padding="12dp" />
+
+                <ImageView
+                    android:id="@+id/ivEscanearCodigoProducto"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Escanear código de barras"
+                    android:padding="8dp"
+                    android:src="@android:drawable/ic_menu_camera"
+                    app:tint="@color/dorado_claro" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"

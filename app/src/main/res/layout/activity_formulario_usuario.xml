@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,18 +9,20 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="20dp"
+        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Título -->
             <TextView
+                android:id="@+id/tvTituloFormulario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Agregar usuario"
@@ -29,66 +30,79 @@
                 android:textSize="26sp"
                 android:textStyle="bold" />
 
+            <!-- Usuario -->
             <EditText
                 android:id="@+id/etNombreUsuario"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:hint="Nombre completo"
-                android:inputType="textPersonName"
-                android:padding="12dp"
+                android:hint="Usuario"
+                android:textColorHint="@color/texto_hint"
                 android:textColor="@color/texto_principal"
-                android:textColorHint="@color/texto_hint" />
+                android:inputType="text"
+                android:minHeight="48dp" />
 
+            <!-- Email -->
             <EditText
                 android:id="@+id/etCorreoUsuario"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginTop="12dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:hint="Correo electrónico"
-                android:inputType="textEmailAddress"
-                android:padding="12dp"
+                android:textColorHint="@color/texto_hint"
                 android:textColor="@color/texto_principal"
-                android:textColorHint="@color/texto_hint" />
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp" />
 
+            <!-- Contraseña -->
             <EditText
                 android:id="@+id/etContrasenaUsuario"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginTop="12dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:hint="Contraseña"
-                android:inputType="textPassword"
-                android:padding="12dp"
+                android:textColorHint="@color/texto_hint"
                 android:textColor="@color/texto_principal"
-                android:textColorHint="@color/texto_hint" />
+                android:inputType="textPassword"
+                android:minHeight="48dp" />
+
+            <!-- Rol -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Rol"
+                android:textColor="@color/texto_principal"
+                android:textSize="14sp" />
 
             <Spinner
-                android:id="@+id/spinnerRolUsuario"
+                android:id="@+id/spinnerRol"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginTop="12dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:minHeight="48dp" />
 
+            <!-- Botón Guardar -->
             <Button
                 android:id="@+id/btnGuardarUsuario"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="GUARDAR USUARIO"
-                android:textSize="15sp"
-                android:textStyle="bold"
                 android:textColor="@color/boton_texto"
-                android:backgroundTint="@color/dorado" />
+                android:backgroundTint="@color/dorado"
+                android:minHeight="48dp" />
 
+            <!-- Botón Cancelar -->
             <Button
                 android:id="@+id/btnCancelarUsuario"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="CANCELAR"
-                android:textSize="15sp"
-                android:textStyle="bold"
                 android:textColor="@color/dorado_claro"
-                android:backgroundTint="@color/borde" />
+                android:backgroundTint="@color/borde"
+                android:minHeight="48dp" />
 
         </LinearLayout>
 
