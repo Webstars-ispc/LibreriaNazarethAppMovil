@@ -2,9 +2,17 @@ package com.example.librerianazareth.data;
 
 import com.example.librerianazareth.data.model.LoginRequest;
 import com.example.librerianazareth.data.model.LoginResponse;
+import com.example.librerianazareth.data.model.ProductoResponse;
+import com.example.librerianazareth.data.model.VentaRequest;
+import com.example.librerianazareth.data.model.VentaResponse;
+
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * Definición de todos los endpoints de la API REST.
@@ -34,24 +42,19 @@ public interface ApiService {
     // ============================================================
     // PRODUCTOS
     // ============================================================
-    //
-    // @GET("api/productos/")
-    // Call<List<Producto>> getProductos();
-    //
-    // @POST("api/productos/")
-    // Call<Producto> crearProducto(@Body Producto producto);
-    //
-    // @GET("api/productos/{id}/")
-    // Call<Producto> getProducto(@Path("id") int id);
-    //
-    // @PUT("api/productos/{id}/")
-    // Call<Producto> actualizarProducto(@Path("id") int id, @Body Producto producto);
-    //
-    // @DELETE("api/productos/{id}/")
-    // Call<Void> eliminarProducto(@Path("id") int id);
+
+    @GET("api/productos/")
+    Call<List<ProductoResponse>> buscarProductoPorCodigo(
+            @Query("codigo_barras") String codigoBarras
+    );
 
     // ============================================================
     // RUBROS, MARCAS, USUARIOS, VENTAS...
     // Cada uno agrega lo suyo aca
     // ============================================================
+
+    @POST("api/ventas/")
+    Call<VentaResponse> registrarVenta(
+            @Body VentaRequest venta
+    );
 }

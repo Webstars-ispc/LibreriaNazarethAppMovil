@@ -12,13 +12,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.ItemVenta;
+import com.example.librerianazareth.data.model.ProductoResponse;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VentaActivity extends BaseActivity {
 
@@ -76,7 +82,9 @@ public class VentaActivity extends BaseActivity {
         renderizarCarrito();
     }
 
+    // ---------------------------------------------------------------
     // ESCÁNER
+    // ---------------------------------------------------------------
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
@@ -101,60 +109,77 @@ public class VentaActivity extends BaseActivity {
         }
     }
 
-    // AGREGAR PRODUCTO POR CÓDIGO (por ahora hardcodeado)
+    // ---------------------------------------------------------------
+    // AGREGAR PRODUCTO POR CÓDIGO (backend filtra)
+    // ---------------------------------------------------------------
     private void agregarPorCodigo() {
-        String codigo = etCodigoVenta.getText().toString().trim();
+        final String codigo = etCodigoVenta.getText().toString().trim();
 
         if (codigo.isEmpty()) {
             Toast.makeText(this, "Ingresá o escaneá un código", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // ---- Simulación de búsqueda hasta conectar el backend ----
-        ItemVenta encontrado = buscarProductoHardcodeado(codigo);
+        RetrofitClient.getApi(this)
+                .buscarProductoPorCodigo(codigo)
+                .enqueue(new Callback<List<ProductoResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<ProductoResponse>> call,
+                                           Response<List<ProductoResponse>> response) {
+                        if (!response.isSuccessful() || response.body() == null) {
+                            Toast.makeText(VentaActivity.this,
+                                    "Error al buscar producto",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-        if (encontrado == null) {
-            Toast.makeText(this, "Producto no encontrado (código: " + codigo + ")", Toast.LENGTH_SHORT).show();
-            return;
-        }
+                        List<ProductoResponse> lista = response.body();
+
+                        if (lista.isEmpty()) {
+                            Toast.makeText(VentaActivity.this,
+                                    "Producto no encontrado (código: " + codigo + ")",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        agregarItemAlCarrito(lista.get(0));
+                        etCodigoVenta.setText("");
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<ProductoResponse>> call, Throwable t) {
+                        Toast.makeText(VentaActivity.this,
+                                "Error de red: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void agregarItemAlCarrito(ProductoResponse producto) {
+        int id = producto.getId();
 
         // Si ya está en el carrito, incrementar cantidad
         for (ItemVenta item : carrito) {
-            if (item.getProductoId() == encontrado.getProductoId()) {
+            if (item.getProductoId() == id) {
                 item.setCantidad(item.getCantidad() + 1);
                 renderizarCarrito();
-                etCodigoVenta.setText("");
                 return;
             }
         }
 
         // Si no está, agregarlo
-        carrito.add(encontrado);
+        carrito.add(new ItemVenta(
+                id,
+                producto.getNombre(),
+                producto.getPrecioVentaDouble(),
+                1
+        ));
         renderizarCarrito();
-        etCodigoVenta.setText("");
     }
 
-    /**
-     * Datos temporales hasta conectar base de datos
-     * Códigos de prueba:
-     *   111 → Cartuchera       $3.400
-     *   222 → Lapicera Bic     $300
-     *   333 → Cuaderno A4      $1.200
-     *   444 → Goma de borrar   $150
-     *   555 → Regla 30cm       $450
-     */
-    private ItemVenta buscarProductoHardcodeado(String codigo) {
-        switch (codigo) {
-            case "111": return new ItemVenta(1, "Cartuchera",     3400.0, 1);
-            case "222": return new ItemVenta(2, "Lapicera Bic",    300.0, 1);
-            case "333": return new ItemVenta(3, "Cuaderno A4",    1200.0, 1);
-            case "444": return new ItemVenta(4, "Goma de borrar",  150.0, 1);
-            case "555": return new ItemVenta(5, "Regla 30cm",      450.0, 1);
-            default:    return null;
-        }
-    }
-
+    // ---------------------------------------------------------------
     // RENDER
+    // ---------------------------------------------------------------
     private void renderizarCarrito() {
         llListaCarrito.removeAllViews();
 
