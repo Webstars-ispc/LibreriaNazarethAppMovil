@@ -242,6 +242,44 @@
 
                 </LinearLayout>
 
+                <!-- Venta -->
+                <LinearLayout
+                    android:id="@+id/btnVenta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/card_menu"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/circle_icon_bg"
+                        android:contentDescription="Venta"
+                        android:padding="8dp"
+                        android:src="@android:drawable/ic_menu_add" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Venta"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Nueva venta"
+                        android:textColor="@color/texto_menu_subtitulo"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
             </GridLayout>
 
             <!-- Cerrar sesión -->
