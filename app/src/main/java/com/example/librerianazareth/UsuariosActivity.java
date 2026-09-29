@@ -1,16 +1,31 @@
 package com.example.librerianazareth;
 
-import android.os.Bundle;
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.example.librerianazareth.data.ApiService;
+import com.example.librerianazareth.data.RetrofitClient;
+import com.example.librerianazareth.data.model.Usuario;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UsuariosActivity extends BaseActivity {
+
+    private LinearLayout contenedorUsuarios;
+    private EditText buscador;
+    private List<Usuario> listaUsuarios;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +33,9 @@ public class UsuariosActivity extends BaseActivity {
         setContentView(R.layout.activity_usuarios);
 
         setupBottomNavigation(0);
+
+        contenedorUsuarios = findViewById(R.id.contenedorUsuarios);
+        buscador = findViewById(R.id.etBuscarUsuario);
 
         // Botón agregar usuario
         findViewById(R.id.fabAgregarUsuario).setOnClickListener(v -> {
@@ -28,12 +46,7 @@ public class UsuariosActivity extends BaseActivity {
             startActivity(intent);
         });
 
-        // Buscador de usuarios
-        EditText buscador = findViewById(R.id.etBuscarUsuario);
-
-        View usuario1 = findViewById(R.id.cardUsuario1);
-        View usuario2 = findViewById(R.id.cardUsuario2);
-
+        // Buscador
         buscador.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -51,20 +64,8 @@ public class UsuariosActivity extends BaseActivity {
                     int before,
                     int count) {
 
-                String texto = s.toString().toLowerCase().trim();
-
-                boolean mostrarBaltazar =
-                        "Baltazar Ledesma".toLowerCase().contains(texto);
-
-                boolean mostrarSalvador =
-                        "Salvador Ledesma".toLowerCase().contains(texto);
-
-                usuario1.setVisibility(
-                        mostrarBaltazar ? View.VISIBLE : View.GONE
-                );
-
-                usuario2.setVisibility(
-                        mostrarSalvador ? View.VISIBLE : View.GONE
+                mostrarUsuariosFiltrados(
+                        s.toString().trim()
                 );
             }
 
@@ -73,46 +74,130 @@ public class UsuariosActivity extends BaseActivity {
             }
         });
 
-        // Botón EDITAR de Baltazar
-        Button btnEditarUsuario1 = findViewById(R.id.btnEditarUsuario1);
+        cargarUsuarios();
+    }
 
-        btnEditarUsuario1.setOnClickListener(v -> {
+    private void cargarUsuarios() {
 
-            Intent intent = new Intent(
-                    UsuariosActivity.this,
-                    FormularioUsuarioActivity.class
-            );
+        ApiService apiService = RetrofitClient.getApi(this);
 
-            intent.putExtra("modo_edicion", true);
-            intent.putExtra("nombre_usuario", "Baltazar Ledesma");
-            intent.putExtra("correo_usuario", "baltazar@email.com");
+        apiService.getUsuarios().enqueue(
+                new Callback<List<Usuario>>() {
 
-            startActivity(intent);
-        });
+                    @Override
+                    public void onResponse(
+                            Call<List<Usuario>> call,
+                            Response<List<Usuario>> response) {
 
-        // Botón EDITAR de Salvador
-        Button btnEditarUsuario2 = findViewById(R.id.btnEditarUsuario2);
+                        if (response.isSuccessful() &&
+                                response.body() != null) {
 
-        btnEditarUsuario2.setOnClickListener(v -> {
-            android.widget.Toast.makeText(this, "EDITAR SALVADOR FUNCIONA", android.widget.Toast.LENGTH_SHORT).show();
+                            listaUsuarios = response.body();
 
-            Intent intent = new Intent(
-                    UsuariosActivity.this,
-                    FormularioUsuarioActivity.class
-            );
+                            mostrarUsuariosFiltrados(
+                                    buscador.getText().toString().trim()
+                            );
 
-            intent.putExtra("modo_edicion", true);
-            intent.putExtra("nombre_usuario", "Salvador Ledesma");
-            intent.putExtra("correo_usuario", "salvador@email.com");
+                        } else {
 
-            startActivity(intent);
+                            Toast.makeText(
+                                    UsuariosActivity.this,
+                                    "Error al obtener usuarios: "
+                                            + response.code(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
 
-        });
-        // Botón ELIMINAR de Salvador
-        Button btnEliminarUsuario2 = findViewById(R.id.btnEliminarUsuario2);
+                    @Override
+                    public void onFailure(
+                            Call<List<Usuario>> call,
+                            Throwable t) {
 
-        btnEliminarUsuario2.setOnClickListener(v -> {
-            usuario2.setVisibility(View.GONE);
-        });
+                        Toast.makeText(
+                                UsuariosActivity.this,
+                                "Error de conexión: "
+                                        + t.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+        );
+    }
+
+    private void mostrarUsuariosFiltrados(String texto) {
+
+        if (listaUsuarios == null) {
+            return;
+        }
+
+        contenedorUsuarios.removeAllViews();
+
+        LayoutInflater inflater =
+                LayoutInflater.from(this);
+
+        texto = texto.toLowerCase();
+
+        for (Usuario usuario : listaUsuarios) {
+
+            String nombre = usuario.getUsername();
+
+            if (nombre == null) {
+                nombre = "";
+            }
+
+            if (nombre.toLowerCase().contains(texto)) {
+
+                View vistaUsuario = inflater.inflate(
+                        R.layout.item_usuario,
+                        contenedorUsuarios,
+                        false
+                );
+
+                TextView tvNombreUsuario =
+                        vistaUsuario.findViewById(
+                                R.id.tvNombreUsuario
+                        );
+
+                TextView tvCorreoUsuario =
+                        vistaUsuario.findViewById(
+                                R.id.tvCorreoUsuario
+                        );
+
+                TextView tvRolUsuario =
+                        vistaUsuario.findViewById(
+                                R.id.tvRolUsuario
+                        );
+
+                tvNombreUsuario.setText(
+                        usuario.getUsername()
+                );
+
+                tvCorreoUsuario.setText(
+                        usuario.getEmail()
+                );
+
+                String rol = usuario.getRole();
+
+                if (rol == null || rol.isEmpty()) {
+                    rol = "Sin rol";
+                }
+
+                tvRolUsuario.setText(
+                        "Rol: " + rol
+                );
+
+                contenedorUsuarios.addView(
+                        vistaUsuario
+                );
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        cargarUsuarios();
     }
 }

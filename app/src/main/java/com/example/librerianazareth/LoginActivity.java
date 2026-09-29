@@ -29,12 +29,19 @@ public class LoginActivity extends AppCompatActivity {
                 String password = etPassword.getText().toString().trim();
 
                 if (!usuario.isEmpty() && !password.isEmpty()) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(
+                            LoginActivity.this,
+                            MainActivity.class
+                    );
                     intent.putExtra("EXTRA_USUARIO", usuario);
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Por favor complete todos los campos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            LoginActivity.this,
+                            "Por favor complete todos los campos",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
             }
         });
