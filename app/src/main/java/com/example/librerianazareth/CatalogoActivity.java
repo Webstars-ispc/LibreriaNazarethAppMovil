@@ -2,6 +2,10 @@ package com.example.librerianazareth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +43,10 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
 
     private int paginaActual = 1;
     private int totalPaginas = 1;
+    private String textoBusqueda = "";
+
+    private final Handler searchHandler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +94,26 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         ImageView ivEscanearCodigo = findViewById(R.id.ivEscanearCodigo);
         ivEscanearCodigo.setOnClickListener(v -> iniciarEscaner());
 
+        // Búsqueda con debounce (500 ms): filtra en el backend por nombre o código de barras
+        etBuscarProducto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+                searchRunnable = () -> {
+                    textoBusqueda = s.toString().trim();
+                    paginaActual = 1;
+                    cargarPagina(paginaActual);
+                };
+                searchHandler.postDelayed(searchRunnable, 500);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         // Primera carga
         cargarPagina(paginaActual);
     }
@@ -95,9 +123,11 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         tvEstado.setVisibility(View.GONE);
         rvProductos.setVisibility(View.GONE);
 
-        RetrofitClient.getApi(this)
-                .getProductos(page)
-                .enqueue(new Callback<ProductoResponse>() {
+        Call<ProductoResponse> call = textoBusqueda.isEmpty()
+                ? RetrofitClient.getApi(this).getProductos(page)
+                : RetrofitClient.getApi(this).getProductos(page, textoBusqueda);
+
+        call.enqueue(new Callback<ProductoResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ProductoResponse> call,
                                            @NonNull Response<ProductoResponse> response) {
@@ -112,7 +142,9 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                         List<Producto> productos = page.getResults();
 
                         if (productos == null || productos.isEmpty()) {
-                            mostrarEstado("No hay productos");
+                            mostrarEstado(textoBusqueda.isEmpty()
+                                    ? "No hay productos cargados"
+                                    : "No se encontraron productos");
                             tvPagina.setText("Pág. " + paginaActual);
                             return;
                         }
