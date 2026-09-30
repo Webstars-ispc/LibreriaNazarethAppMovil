@@ -6,6 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.librerianazareth.data.local.TokenManager;
 
 public class MainActivity extends BaseActivity {
 
@@ -18,7 +19,9 @@ public class MainActivity extends BaseActivity {
 
         tvBienvenida = findViewById(R.id.tvBienvenida);
 
-        String usuario = getIntent().getStringExtra("EXTRA_USUARIO");
+        TokenManager tokenManager = new TokenManager(this);
+        String usuario = tokenManager.getUsername();
+
         if (usuario != null && !usuario.isEmpty()) {
             tvBienvenida.setText("Bienvenido/a, " + usuario);
         } else {
@@ -62,6 +65,8 @@ public class MainActivity extends BaseActivity {
         });
 
         btnCerrarSesion.setOnClickListener(v -> {
+            new TokenManager(MainActivity.this).clear();
+
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

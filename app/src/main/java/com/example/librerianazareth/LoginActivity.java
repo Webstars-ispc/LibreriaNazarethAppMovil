@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             username = response.body().getUsername();
                         }
+                        tokenManager.saveUsername(username);
                         navegarAMain(username);
                     }
 
