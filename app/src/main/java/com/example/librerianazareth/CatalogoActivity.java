@@ -118,6 +118,13 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         cargarPagina(paginaActual);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresca la lista al volver del formulario (crear / editar) o de otra pantalla
+        cargarPagina(paginaActual);
+    }
+
     private void cargarPagina(int page) {
         progressBar.setVisibility(View.VISIBLE);
         tvEstado.setVisibility(View.GONE);
