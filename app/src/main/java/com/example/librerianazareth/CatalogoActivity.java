@@ -142,7 +142,13 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                         progressBar.setVisibility(View.GONE);
 
                         if (!response.isSuccessful() || response.body() == null) {
-                            mostrarEstado("Error al cargar productos");
+                            if (response.code() == 401) {
+                                Toast.makeText(CatalogoActivity.this, "Sesión expirada", Toast.LENGTH_SHORT).show();
+                            } else if (response.code() == 403) {
+                                mostrarEstado("No tenés permisos para ver el catálogo");
+                            } else {
+                                mostrarEstado("Error al cargar productos");
+                            }
                             return;
                         }
 
