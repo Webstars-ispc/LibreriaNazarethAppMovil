@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.ItemVenta;
+import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -55,13 +56,9 @@ public class VentaActivity extends BaseActivity {
         btnCancelarVenta        = findViewById(R.id.btnCancelarVenta);
         btnConfirmarVenta       = findViewById(R.id.btnConfirmarVenta);
 
-        // Escáner
         ivEscanearVenta.setOnClickListener(v -> iniciarEscaner());
-
-        // Botón Agregar
         btnAgregarProductoVenta.setOnClickListener(v -> agregarPorCodigo());
 
-        // Enter en el EditText también agrega
         etCodigoVenta.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE
                     || actionId == EditorInfo.IME_ACTION_GO
@@ -75,16 +72,12 @@ public class VentaActivity extends BaseActivity {
         btnCancelarVenta.setOnClickListener(v -> finish());
 
         btnConfirmarVenta.setOnClickListener(v -> {
-            // TODO: en el próximo commit, acá va el POST a /api/ventas/
             Toast.makeText(this, "En el próximo commit 😉", Toast.LENGTH_SHORT).show();
         });
 
         renderizarCarrito();
     }
 
-    // ---------------------------------------------------------------
-    // ESCÁNER
-    // ---------------------------------------------------------------
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
@@ -110,7 +103,7 @@ public class VentaActivity extends BaseActivity {
     }
 
     // ---------------------------------------------------------------
-    // AGREGAR PRODUCTO POR CÓDIGO (backend filtra)
+    // AGREGAR PRODUCTO POR CÓDIGO (modelo paginado)
     // ---------------------------------------------------------------
     private void agregarPorCodigo() {
         final String codigo = etCodigoVenta.getText().toString().trim();
@@ -122,10 +115,10 @@ public class VentaActivity extends BaseActivity {
 
         RetrofitClient.getApi(this)
                 .buscarProductoPorCodigo(codigo)
-                .enqueue(new Callback<List<ProductoResponse>>() {
+                .enqueue(new Callback<ProductoResponse>() {
                     @Override
-                    public void onResponse(Call<List<ProductoResponse>> call,
-                                           Response<List<ProductoResponse>> response) {
+                    public void onResponse(Call<ProductoResponse> call,
+                                           Response<ProductoResponse> response) {
                         if (!response.isSuccessful() || response.body() == null) {
                             Toast.makeText(VentaActivity.this,
                                     "Error al buscar producto",
@@ -133,9 +126,9 @@ public class VentaActivity extends BaseActivity {
                             return;
                         }
 
-                        List<ProductoResponse> lista = response.body();
+                        List<Producto> lista = response.body().getResults();
 
-                        if (lista.isEmpty()) {
+                        if (lista == null || lista.isEmpty()) {
                             Toast.makeText(VentaActivity.this,
                                     "Producto no encontrado (código: " + codigo + ")",
                                     Toast.LENGTH_SHORT).show();
@@ -147,7 +140,7 @@ public class VentaActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<List<ProductoResponse>> call, Throwable t) {
+                    public void onFailure(Call<ProductoResponse> call, Throwable t) {
                         Toast.makeText(VentaActivity.this,
                                 "Error de red: " + t.getMessage(),
                                 Toast.LENGTH_LONG).show();
@@ -155,10 +148,9 @@ public class VentaActivity extends BaseActivity {
                 });
     }
 
-    private void agregarItemAlCarrito(ProductoResponse producto) {
+    private void agregarItemAlCarrito(Producto producto) {
         int id = producto.getId();
 
-        // Si ya está en el carrito, incrementar cantidad
         for (ItemVenta item : carrito) {
             if (item.getProductoId() == id) {
                 item.setCantidad(item.getCantidad() + 1);
@@ -167,11 +159,10 @@ public class VentaActivity extends BaseActivity {
             }
         }
 
-        // Si no está, agregarlo
         carrito.add(new ItemVenta(
                 id,
                 producto.getNombre(),
-                producto.getPrecioVentaDouble(),
+                producto.getPrecioVenta(),   // ← double directo, sin getPrecioVentaDouble()
                 1
         ));
         renderizarCarrito();

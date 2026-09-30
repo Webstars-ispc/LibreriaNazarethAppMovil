@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:layout_alignParentBottom="true"
-    android:background="?android:attr/windowBackground"
-    app:itemIconTint="@color/black"
-    app:itemTextColor="@color/black"
+    android:background="@color/fondo_card"
+    app:itemIconTint="@color/bottom_nav_selector"
+    app:itemTextColor="@color/bottom_nav_selector"
+    app:labelVisibilityMode="labeled"
     app:menu="@menu/bottom_nav_menu" />

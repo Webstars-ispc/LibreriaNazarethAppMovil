@@ -3,7 +3,7 @@ package com.example.librerianazareth.data.model;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-public class ProductoResponse {
+public class UsuarioResponse {
 
     @SerializedName("count")
     private int count;
@@ -15,11 +15,10 @@ public class ProductoResponse {
     private String previous;
 
     @SerializedName("results")
-    private List<Producto> results;
+    private List<Usuario> results;
 
     public int getCount() { return count; }
     public String getNext() { return next; }
     public String getPrevious() { return previous; }
-    public List<Producto> getResults() { return results; }
+    public List<Usuario> getResults() { return results; }
 }
-

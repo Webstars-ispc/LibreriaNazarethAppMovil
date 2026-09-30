@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.librerianazareth.data.local.TokenManager;
 
 public class MainActivity extends BaseActivity {
 
     private TextView tvBienvenida;
+    private boolean esInvitado = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +18,8 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         tvBienvenida = findViewById(R.id.tvBienvenida);
+
+        esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
 
         TokenManager tokenManager = new TokenManager(this);
         String usuario = tokenManager.getUsername();
@@ -36,6 +38,13 @@ public class MainActivity extends BaseActivity {
         LinearLayout btnVenta = findViewById(R.id.btnVenta);
         TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
+
+        // Ocultar "Usuarios" y "Agregar" para invitados
+        if (esInvitado) {
+            btnUsuarios.setVisibility(LinearLayout.GONE);
+            btnAgregar.setVisibility(LinearLayout.GONE);
+        }
+
         btnCatalogo.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CatalogoActivity.class);
             startActivity(intent);
@@ -48,6 +57,7 @@ public class MainActivity extends BaseActivity {
 
         btnConfiguracion.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ConfiguracionActivity.class);
+            intent.putExtra("ES_INVITADO", esInvitado);
             startActivity(intent);
         });
 
@@ -55,6 +65,7 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(MainActivity.this, ContactoActivity.class);
             startActivity(intent);
         });
+
         btnUsuarios.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UsuariosActivity.class);
             startActivity(intent);
