@@ -41,8 +41,8 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:hint="Escaneá o escribí el código"
-            android:inputType="number"
+            android:hint="Escaneá o escribí el código/nombre"
+            android:inputType="text"
             android:textColor="@color/texto_principal"
             android:textColorHint="@color/texto_hint"
             android:background="@null" />

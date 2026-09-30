@@ -12,10 +12,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.ItemVenta;
+import com.example.librerianazareth.data.model.ItemVentaRequest;
 import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
+import com.example.librerianazareth.data.model.VentaRequest;
+import com.example.librerianazareth.data.model.VentaResponse;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -57,13 +63,13 @@ public class VentaActivity extends BaseActivity {
         btnConfirmarVenta       = findViewById(R.id.btnConfirmarVenta);
 
         ivEscanearVenta.setOnClickListener(v -> iniciarEscaner());
-        btnAgregarProductoVenta.setOnClickListener(v -> agregarPorCodigo());
+        btnAgregarProductoVenta.setOnClickListener(v -> agregarProducto());
 
         etCodigoVenta.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE
                     || actionId == EditorInfo.IME_ACTION_GO
                     || actionId == EditorInfo.IME_ACTION_SEND) {
-                agregarPorCodigo();
+                agregarProducto();
                 return true;
             }
             return false;
@@ -71,13 +77,15 @@ public class VentaActivity extends BaseActivity {
 
         btnCancelarVenta.setOnClickListener(v -> finish());
 
-        btnConfirmarVenta.setOnClickListener(v -> {
-            Toast.makeText(this, "En el próximo commit 😉", Toast.LENGTH_SHORT).show();
-        });
+        // ⬇️ CONFIRMAR VENTA
+        btnConfirmarVenta.setOnClickListener(v -> confirmarVenta());
 
         renderizarCarrito();
     }
 
+    // ---------------------------------------------------------------
+    // ESCÁNER
+    // ---------------------------------------------------------------
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
@@ -103,49 +111,94 @@ public class VentaActivity extends BaseActivity {
     }
 
     // ---------------------------------------------------------------
-    // AGREGAR PRODUCTO POR CÓDIGO (modelo paginado)
+    // AGREGAR PRODUCTO (código → nombre)
     // ---------------------------------------------------------------
-    private void agregarPorCodigo() {
-        final String codigo = etCodigoVenta.getText().toString().trim();
+    private void agregarProducto() {
+        final String texto = etCodigoVenta.getText().toString().trim();
 
-        if (codigo.isEmpty()) {
-            Toast.makeText(this, "Ingresá o escaneá un código", Toast.LENGTH_SHORT).show();
+        if (texto.isEmpty()) {
+            Toast.makeText(this, "Ingresá o escaneá un código o nombre", Toast.LENGTH_SHORT).show();
             return;
         }
 
         RetrofitClient.getApi(this)
-                .buscarProductoPorCodigo(codigo)
+                .buscarProductoPorCodigo(texto)
                 .enqueue(new Callback<ProductoResponse>() {
                     @Override
-                    public void onResponse(Call<ProductoResponse> call,
-                                           Response<ProductoResponse> response) {
-                        if (!response.isSuccessful() || response.body() == null) {
-                            Toast.makeText(VentaActivity.this,
-                                    "Error al buscar producto",
-                                    Toast.LENGTH_SHORT).show();
-                            return;
+                    public void onResponse(@NonNull Call<ProductoResponse> call,
+                                           @NonNull Response<ProductoResponse> response) {
+                        if (response.isSuccessful() && response.body() != null
+                                && response.body().getResults() != null
+                                && !response.body().getResults().isEmpty()) {
+                            agregarItemAlCarrito(response.body().getResults().get(0));
+                            etCodigoVenta.setText("");
+                        } else {
+                            buscarPorNombre(texto);
                         }
-
-                        List<Producto> lista = response.body().getResults();
-
-                        if (lista == null || lista.isEmpty()) {
-                            Toast.makeText(VentaActivity.this,
-                                    "Producto no encontrado (código: " + codigo + ")",
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        agregarItemAlCarrito(lista.get(0));
-                        etCodigoVenta.setText("");
                     }
 
                     @Override
-                    public void onFailure(Call<ProductoResponse> call, Throwable t) {
+                    public void onFailure(@NonNull Call<ProductoResponse> call,
+                                          @NonNull Throwable t) {
                         Toast.makeText(VentaActivity.this,
                                 "Error de red: " + t.getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void buscarPorNombre(String texto) {
+        RetrofitClient.getApi(this)
+                .buscarProductoPorNombre(texto)
+                .enqueue(new Callback<ProductoResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ProductoResponse> call,
+                                           @NonNull Response<ProductoResponse> response) {
+                        if (!response.isSuccessful() || response.body() == null
+                                || response.body().getResults() == null
+                                || response.body().getResults().isEmpty()) {
+                            Toast.makeText(VentaActivity.this,
+                                    "Producto no encontrado",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        List<Producto> resultados = response.body().getResults();
+
+                        if (resultados.size() == 1) {
+                            agregarItemAlCarrito(resultados.get(0));
+                            etCodigoVenta.setText("");
+                        } else {
+                            mostrarDialogoSeleccion(resultados);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ProductoResponse> call,
+                                          @NonNull Throwable t) {
+                        Toast.makeText(VentaActivity.this,
+                                "Error de red: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void mostrarDialogoSeleccion(List<Producto> productos) {
+        String[] items = new String[productos.size()];
+        for (int i = 0; i < productos.size(); i++) {
+            Producto p = productos.get(i);
+            items[i] = String.format(Locale.getDefault(),
+                    "%s - $%.0f", p.getNombre(), p.getPrecioVenta());
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Seleccioná un producto")
+                .setItems(items, (dialog, which) -> {
+                    agregarItemAlCarrito(productos.get(which));
+                    etCodigoVenta.setText("");
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     private void agregarItemAlCarrito(Producto producto) {
@@ -162,14 +215,87 @@ public class VentaActivity extends BaseActivity {
         carrito.add(new ItemVenta(
                 id,
                 producto.getNombre(),
-                producto.getPrecioVenta(),   // ← double directo, sin getPrecioVentaDouble()
+                producto.getPrecioVenta(),
                 1
         ));
         renderizarCarrito();
     }
 
     // ---------------------------------------------------------------
-    // RENDER
+    // CONFIRMAR VENTA (POST /api/ventas/)
+    // ---------------------------------------------------------------
+    private void confirmarVenta() {
+        if (carrito.isEmpty()) {
+            Toast.makeText(this, "El carrito está vacío", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Armar la lista de items para el request
+        List<ItemVentaRequest> items = new ArrayList<>();
+        for (ItemVenta item : carrito) {
+            items.add(new ItemVentaRequest(item.getProductoId(), item.getCantidad()));
+        }
+
+        VentaRequest request = new VentaRequest(items);
+
+        // Deshabilitar el botón mientras se procesa
+        btnConfirmarVenta.setEnabled(false);
+        btnConfirmarVenta.setText("Procesando...");
+
+        RetrofitClient.getApi(this)
+                .registrarVenta(request)
+                .enqueue(new Callback<VentaResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<VentaResponse> call,
+                                           @NonNull Response<VentaResponse> response) {
+                        restaurarBotonConfirmar();
+
+                        if (response.isSuccessful() && response.body() != null) {
+                            VentaResponse venta = response.body();
+
+                            Toast.makeText(VentaActivity.this,
+                                    "Venta #" + venta.getId() + " registrada",
+                                    Toast.LENGTH_LONG).show();
+
+                            // Limpiar carrito
+                            carrito.clear();
+                            renderizarCarrito();
+
+                            // TODO (próximo commit): abrir TicketActivity con "venta"
+
+                        } else {
+                            // Error del backend (400, 401, 500, etc.)
+                            String mensaje = "Error al registrar la venta";
+                            try {
+                                if (response.errorBody() != null) {
+                                    mensaje = response.errorBody().string();
+                                }
+                            } catch (Exception ignored) { }
+
+                            Toast.makeText(VentaActivity.this,
+                                    mensaje,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<VentaResponse> call,
+                                          @NonNull Throwable t) {
+                        restaurarBotonConfirmar();
+                        Toast.makeText(VentaActivity.this,
+                                "Error de red: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void restaurarBotonConfirmar() {
+        btnConfirmarVenta.setEnabled(true);
+        btnConfirmarVenta.setText("Confirmar venta");
+    }
+
+    // ---------------------------------------------------------------
+    // RENDER DEL CARRITO
     // ---------------------------------------------------------------
     private void renderizarCarrito() {
         llListaCarrito.removeAllViews();

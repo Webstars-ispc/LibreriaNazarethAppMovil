@@ -62,6 +62,11 @@ public interface ApiService {
     );
 
     @GET("api/productos/")
+    Call<ProductoResponse> buscarProductoPorNombre(
+            @Query("search") String search
+    );
+
+    @GET("api/productos/")
     Call<ProductoResponse> getProductos(
             @Query("page") int page,
             @Query("search") String search
