@@ -1,19 +1,44 @@
 package com.example.librerianazareth;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.librerianazareth.adapter.ProductoAdapter;
+import com.example.librerianazareth.data.RetrofitClient;
+import com.example.librerianazareth.data.model.Producto;
+import com.example.librerianazareth.data.model.ProductoResponse;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class CatalogoActivity extends BaseActivity {
+import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class CatalogoActivity extends BaseActivity implements ProductoAdapter.OnProductoClickListener {
+
+    private RecyclerView rvProductos;
+    private ProductoAdapter productoAdapter;
+    private ProgressBar progressBar;
+    private TextView tvEstado;
+    private TextView tvPagina;
+    private Button btnAnterior, btnSiguiente;
     private EditText etBuscarProducto;
+
+    private int paginaActual = 1;
+    private int totalPaginas = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,25 +47,106 @@ public class CatalogoActivity extends BaseActivity {
 
         setupBottomNavigation(R.id.nav_catalogo);
 
-        etBuscarProducto = findViewById(R.id.etBuscarProducto);
+        // Referencias
+        rvProductos       = findViewById(R.id.rvProductos);
+        progressBar       = findViewById(R.id.progressBar);
+        tvEstado          = findViewById(R.id.tvEstado);
+        tvPagina          = findViewById(R.id.tvPagina);
+        btnAnterior       = findViewById(R.id.btnAnterior);
+        btnSiguiente      = findViewById(R.id.btnSiguiente);
+        etBuscarProducto  = findViewById(R.id.etBuscarProducto);
+
+        // RecyclerView + Adapter
+        productoAdapter = new ProductoAdapter(this);
+        rvProductos.setLayoutManager(new LinearLayoutManager(this));
+        rvProductos.setAdapter(productoAdapter);
+
+        // Botones de paginación
+        btnAnterior.setOnClickListener(v -> {
+            if (paginaActual > 1) {
+                paginaActual--;
+                cargarPagina(paginaActual);
+            }
+        });
+
+        btnSiguiente.setOnClickListener(v -> {
+            if (paginaActual < totalPaginas) {
+                paginaActual++;
+                cargarPagina(paginaActual);
+            }
+        });
 
         // Botón agregar producto
         findViewById(R.id.fabAgregarProducto).setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    CatalogoActivity.this,
-                    FormularioCatalogoActivity.class
-            );
+            Intent intent = new Intent(CatalogoActivity.this, FormularioCatalogoActivity.class);
             startActivity(intent);
         });
 
-        // Ícono del escáner de código de barras
+        // Escáner
         ImageView ivEscanearCodigo = findViewById(R.id.ivEscanearCodigo);
         ivEscanearCodigo.setOnClickListener(v -> iniciarEscaner());
+
+        // Primera carga
+        cargarPagina(paginaActual);
     }
 
+    private void cargarPagina(int page) {
+        progressBar.setVisibility(View.VISIBLE);
+        tvEstado.setVisibility(View.GONE);
+        rvProductos.setVisibility(View.GONE);
+
+        RetrofitClient.getApi(this)
+                .getProductos(page)
+                .enqueue(new Callback<ProductoResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ProductoResponse> call,
+                                           @NonNull Response<ProductoResponse> response) {
+                        progressBar.setVisibility(View.GONE);
+
+                        if (!response.isSuccessful() || response.body() == null) {
+                            mostrarEstado("Error al cargar productos");
+                            return;
+                        }
+
+                        ProductoResponse page = response.body();
+                        List<Producto> productos = page.getResults();
+
+                        if (productos == null || productos.isEmpty()) {
+                            mostrarEstado("No hay productos");
+                            tvPagina.setText("Pág. " + paginaActual);
+                            return;
+                        }
+
+                        rvProductos.setVisibility(View.VISIBLE);
+                        productoAdapter.setProductos(productos);
+
+                        // Calcular total de páginas (10 por página)
+                        totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
+                        tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
+
+                        // Habilitar/deshabilitar botones
+                        btnAnterior.setEnabled(paginaActual > 1);
+                        btnSiguiente.setEnabled(paginaActual < totalPaginas);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ProductoResponse> call,
+                                          @NonNull Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                        mostrarEstado("Error de red: " + t.getMessage());
+                    }
+                });
+    }
+
+    private void mostrarEstado(String mensaje) {
+        tvEstado.setText(mensaje);
+        tvEstado.setVisibility(View.VISIBLE);
+        rvProductos.setVisibility(View.GONE);
+    }
+
+    // ESCÁNER
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
-        // Solo códigos de barras 1D (EAN, UPC, Code128, etc.)
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
         integrator.setPrompt("Apuntá al código de barras");
         integrator.setBeepEnabled(true);
@@ -63,5 +169,20 @@ public class CatalogoActivity extends BaseActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    // (editar / eliminar)
+    @Override
+    public void onEditar(Producto producto) {
+        Intent intent = new Intent(CatalogoActivity.this, FormularioCatalogoActivity.class);
+        intent.putExtra("modo_edicion", true);
+        intent.putExtra("producto_id", producto.getId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onEliminar(Producto producto) {
+        // TODO: por ahora mostramos un Toast. Después se implementa el DELETE.
+        Toast.makeText(this, "Eliminar: " + producto.getNombre(), Toast.LENGTH_SHORT).show();
     }
 }
