@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +13,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsuario, etPassword;
     private Button btnLogin;
+    private TextView tvModoInvitado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
         etUsuario = findViewById(R.id.etUsuario);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        tvModoInvitado = findViewById(R.id.tvModoInvitado);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
                             MainActivity.class
                     );
                     intent.putExtra("EXTRA_USUARIO", usuario);
+                    intent.putExtra("ES_INVITADO", false);
                     startActivity(intent);
                     finish();
                 } else {
@@ -44,6 +48,15 @@ public class LoginActivity extends AppCompatActivity {
                     ).show();
                 }
             }
+        });
+
+        // Modo Invitado
+        tvModoInvitado.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("EXTRA_USUARIO", "Invitado");
+            intent.putExtra("ES_INVITADO", true);
+            startActivity(intent);
+            finish();
         });
     }
 }

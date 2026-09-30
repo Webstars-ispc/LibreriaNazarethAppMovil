@@ -62,5 +62,15 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/tvModoInvitado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Entrar como invitado"
+            android:textColor="@color/dorado_claro"
+            android:textSize="14sp"
+            android:autoLink="web" />
+
     </LinearLayout>
 </ScrollView>
