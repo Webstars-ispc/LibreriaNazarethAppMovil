@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -229,7 +230,33 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
 
     @Override
     public void onEliminar(Producto producto) {
-        // TODO: por ahora mostramos un Toast. Después se implementa el DELETE.
-        Toast.makeText(this, "Eliminar: " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar producto")
+                .setMessage("¿Estás seguro de eliminar \"" + producto.getNombre() + "\"?")
+                .setPositiveButton("Eliminar", (dialog, which) ->
+                        RetrofitClient.getApi(this).eliminarProducto(producto.getId())
+                                .enqueue(new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(@NonNull Call<Void> call,
+                                                          @NonNull Response<Void> response) {
+                                        if (response.isSuccessful()) {
+                                            Toast.makeText(CatalogoActivity.this,
+                                                    "Producto eliminado", Toast.LENGTH_SHORT).show();
+                                            cargarPagina(paginaActual);
+                                        } else {
+                                            Toast.makeText(CatalogoActivity.this,
+                                                    "Error al eliminar", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull Call<Void> call,
+                                                          @NonNull Throwable t) {
+                                        Toast.makeText(CatalogoActivity.this,
+                                                "Error de conexión", Toast.LENGTH_SHORT).show();
+                                    }
+                                }))
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }
