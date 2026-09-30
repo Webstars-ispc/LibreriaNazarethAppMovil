@@ -45,29 +45,46 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         btnGuardarUsuario   = findViewById(R.id.btnGuardarUsuario);
         btnCancelarUsuario  = findViewById(R.id.btnCancelarUsuario);
 
+        // Roles aceptados por el backend
         String[] roles = {"Empleado", "Administrador"};
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
                 roles
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        adapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
         spinnerRol.setAdapter(adapter);
 
-        modoEdicion = getIntent().getBooleanExtra("modo_edicion", false);
+        // Comprobar si estamos editando
+        modoEdicion = getIntent().getBooleanExtra(
+                "modo_edicion",
+                false
+        );
 
         if (modoEdicion) {
             tvTituloFormulario.setText("Editar usuario");
             usuarioId = getIntent().getIntExtra("usuario_id", -1);
 
-            String nombre = getIntent().getStringExtra("nombre_usuario");
-            String correo = getIntent().getStringExtra("correo_usuario");
+            String nombre = getIntent().getStringExtra(
+                    "nombre_usuario"
+            );
+
+            String correo = getIntent().getStringExtra(
+                    "correo_usuario"
+            );
             String rol = getIntent().getStringExtra("rol_usuario");
 
             if (nombre != null) etNombreUsuario.setText(nombre);
             if (correo != null) etCorreoUsuario.setText(correo);
 
-            etContrasenaUsuario.setHint("Contraseña (dejar vacío para no cambiar)");
+            etContrasenaUsuario.setHint(
+                    "Contraseña (dejar vacío para no cambiar)"
+            );
 
             // Seleccionar rol actual
             if (rol != null) {
@@ -80,20 +97,43 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             }
         }
 
-        btnGuardarUsuario.setOnClickListener(v -> guardarUsuario());
-        btnCancelarUsuario.setOnClickListener(v -> finish());
+        // Guardar
+        btnGuardarUsuario.setOnClickListener(
+                v -> guardarUsuario()
+        );
+
+        // Cancelar
+        btnCancelarUsuario.setOnClickListener(
+                v -> finish()
+        );
     }
 
     private void guardarUsuario() {
 
-        String username = etNombreUsuario.getText().toString().trim();
-        String email    = etCorreoUsuario.getText().toString().trim();
-        String password = etContrasenaUsuario.getText().toString().trim();
-        String role     = spinnerRol.getSelectedItem().toString();
+        String username = etNombreUsuario
+                .getText()
+                .toString()
+                .trim();
+
+        String email = etCorreoUsuario
+                .getText()
+                .toString()
+                .trim();
+
+        String password = etContrasenaUsuario
+                .getText()
+                .toString()
+                .trim();
+
+        String role = spinnerRol
+                .getSelectedItem()
+                .toString();
 
         // Validaciones
         if (TextUtils.isEmpty(username)) {
-            etNombreUsuario.setError("Ingresá un usuario");
+            etNombreUsuario.setError(
+                    "Ingresá un usuario"
+            );
             etNombreUsuario.requestFocus();
             return;
         }
@@ -104,26 +144,44 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             return;
         }
 
+        // Validar correo
         if (TextUtils.isEmpty(email)) {
-            etCorreoUsuario.setError("Ingresá un correo");
+            etCorreoUsuario.setError(
+                    "Ingresá un correo"
+            );
             etCorreoUsuario.requestFocus();
             return;
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etCorreoUsuario.setError("Correo inválido");
+        if (!android.util.Patterns.EMAIL_ADDRESS
+                .matcher(email)
+                .matches()) {
+
+            etCorreoUsuario.setError(
+                    "Correo inválido"
+            );
             etCorreoUsuario.requestFocus();
             return;
         }
 
-        if (!modoEdicion && TextUtils.isEmpty(password)) {
-            etContrasenaUsuario.setError("Ingresá una contraseña");
+        // Contraseña obligatoria al crear
+        if (!modoEdicion &&
+                TextUtils.isEmpty(password)) {
+
+            etContrasenaUsuario.setError(
+                    "Ingresá una contraseña"
+            );
             etContrasenaUsuario.requestFocus();
             return;
         }
 
-        if (!TextUtils.isEmpty(password) && password.length() < 8) {
-            etContrasenaUsuario.setError("Mínimo 8 caracteres");
+        // Mínimo 8 caracteres
+        if (!TextUtils.isEmpty(password) &&
+                password.length() < 8) {
+
+            etContrasenaUsuario.setError(
+                    "Mínimo 8 caracteres"
+            );
             etContrasenaUsuario.requestFocus();
             return;
         }
