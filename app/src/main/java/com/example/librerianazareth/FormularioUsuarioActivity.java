@@ -11,6 +11,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.librerianazareth.data.RetrofitClient;
+import com.example.librerianazareth.data.model.RegisterRequest;
+import com.example.librerianazareth.data.model.Usuario;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class FormularioUsuarioActivity extends AppCompatActivity {
 
     private TextView tvTituloFormulario;
@@ -22,13 +30,13 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
     private Button btnCancelarUsuario;
 
     private boolean modoEdicion = false;
+    private int usuarioId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_usuario);
 
-        // Referencias a las vistas
         tvTituloFormulario  = findViewById(R.id.tvTituloFormulario);
         etNombreUsuario     = findViewById(R.id.etNombreUsuario);
         etCorreoUsuario     = findViewById(R.id.etCorreoUsuario);
@@ -37,7 +45,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         btnGuardarUsuario   = findViewById(R.id.btnGuardarUsuario);
         btnCancelarUsuario  = findViewById(R.id.btnCancelarUsuario);
 
-        // Spinner con los roles que acepta el backend
         String[] roles = {"Empleado", "Administrador"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -47,32 +54,33 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRol.setAdapter(adapter);
 
-        // ¿Venimos en modo edición?
         modoEdicion = getIntent().getBooleanExtra("modo_edicion", false);
 
         if (modoEdicion) {
-
             tvTituloFormulario.setText("Editar usuario");
+            usuarioId = getIntent().getIntExtra("usuario_id", -1);
 
             String nombre = getIntent().getStringExtra("nombre_usuario");
             String correo = getIntent().getStringExtra("correo_usuario");
+            String rol = getIntent().getStringExtra("rol_usuario");
 
-            if (nombre != null) {
-                etNombreUsuario.setText(nombre);
-            }
+            if (nombre != null) etNombreUsuario.setText(nombre);
+            if (correo != null) etCorreoUsuario.setText(correo);
 
-            if (correo != null) {
-                etCorreoUsuario.setText(correo);
-            }
-
-            // En edición la contraseña es opcional
             etContrasenaUsuario.setHint("Contraseña (dejar vacío para no cambiar)");
+
+            // Seleccionar rol actual
+            if (rol != null) {
+                for (int i = 0; i < roles.length; i++) {
+                    if (roles[i].equalsIgnoreCase(rol)) {
+                        spinnerRol.setSelection(i);
+                        break;
+                    }
+                }
+            }
         }
 
-        // Botón guardar
         btnGuardarUsuario.setOnClickListener(v -> guardarUsuario());
-
-        // Botón cancelar
         btnCancelarUsuario.setOnClickListener(v -> finish());
     }
 
@@ -83,9 +91,15 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         String password = etContrasenaUsuario.getText().toString().trim();
         String role     = spinnerRol.getSelectedItem().toString();
 
-        // Validaciones (mismas reglas que el backend)
+        // Validaciones
         if (TextUtils.isEmpty(username)) {
             etNombreUsuario.setError("Ingresá un usuario");
+            etNombreUsuario.requestFocus();
+            return;
+        }
+
+        if (username.length() < 3) {
+            etNombreUsuario.setError("Mínimo 3 caracteres");
             etNombreUsuario.requestFocus();
             return;
         }
@@ -102,7 +116,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             return;
         }
 
-        // En alta la contraseña es obligatoria; en edición es opcional
         if (!modoEdicion && TextUtils.isEmpty(password)) {
             etContrasenaUsuario.setError("Ingresá una contraseña");
             etContrasenaUsuario.requestFocus();
@@ -115,29 +128,50 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             return;
         }
 
-        // -------------------------------------------------------------
-        // ACÁ VA LA LLAMADA AL BACKEND (Retrofit)
-        //
-        // JSON esperado por el RegisterSerializer:
-        // {
-        //   "username": "...",
-        //   "email":    "...",
-        //   "password": "...",
-        //   "role":     "Empleado" | "Administrador"
-        // }
-        //IMPORTANTE SI HACE EL JSON DE OTRA FORMA VA A SALIR ERROR.
-        // RegisterRequest req = new RegisterRequest(username, email, password, role);
-        // apiService.register(req).enqueue(...);
-        // -------------------------------------------------------------
+        btnGuardarUsuario.setEnabled(false);
 
-        Toast.makeText(
-                this,
-                modoEdicion
-                        ? "Usuario actualizado correctamente"
-                        : "Usuario guardado correctamente",
-                Toast.LENGTH_SHORT
-        ).show();
+        RegisterRequest req = new RegisterRequest(username, email, password, role);
 
-        finish();
+        if (modoEdicion && usuarioId != -1) {
+            RetrofitClient.getApi(this).actualizarUsuario(usuarioId, req)
+                    .enqueue(new Callback<Usuario>() {
+                        @Override
+                        public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                            btnGuardarUsuario.setEnabled(true);
+                            if (response.isSuccessful()) {
+                                Toast.makeText(FormularioUsuarioActivity.this, "Usuario actualizado correctamente", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(FormularioUsuarioActivity.this, "Error al actualizar usuario", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Usuario> call, Throwable t) {
+                            btnGuardarUsuario.setEnabled(true);
+                            Toast.makeText(FormularioUsuarioActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            RetrofitClient.getApi(this).crearUsuario(req)
+                    .enqueue(new Callback<Usuario>() {
+                        @Override
+                        public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                            btnGuardarUsuario.setEnabled(true);
+                            if (response.isSuccessful()) {
+                                Toast.makeText(FormularioUsuarioActivity.this, "Usuario guardado correctamente", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(FormularioUsuarioActivity.this, "Error al crear usuario", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Usuario> call, Throwable t) {
+                            btnGuardarUsuario.setEnabled(true);
+                            Toast.makeText(FormularioUsuarioActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 }
