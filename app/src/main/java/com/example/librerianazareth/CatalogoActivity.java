@@ -216,6 +216,14 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         Intent intent = new Intent(CatalogoActivity.this, FormularioCatalogoActivity.class);
         intent.putExtra("modo_edicion", true);
         intent.putExtra("producto_id", producto.getId());
+        intent.putExtra("nombre", producto.getNombre());
+        intent.putExtra("descripcion", producto.getDescripcion());
+        intent.putExtra("codigo_barras", producto.getCodigoBarras());
+        intent.putExtra("rubro", producto.getRubro());
+        intent.putExtra("marca", producto.getMarca());
+        intent.putExtra("precio_costo", producto.getPrecioCosto());
+        intent.putExtra("precio_venta", producto.getPrecioVenta());
+        intent.putExtra("stock", producto.getStock());
         startActivity(intent);
     }
 
