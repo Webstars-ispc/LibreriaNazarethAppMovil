@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends BaseActivity {
 
     private TextView tvBienvenida;
+    private boolean esInvitado = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +20,8 @@ public class MainActivity extends BaseActivity {
         tvBienvenida = findViewById(R.id.tvBienvenida);
 
         String usuario = getIntent().getStringExtra("EXTRA_USUARIO");
+        esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
+
         if (usuario != null && !usuario.isEmpty()) {
             tvBienvenida.setText("Bienvenido/a, " + usuario);
         } else {
@@ -30,7 +33,12 @@ public class MainActivity extends BaseActivity {
         LinearLayout btnConfiguracion = findViewById(R.id.btnConfiguracion);
         LinearLayout btnContacto = findViewById(R.id.btnContacto);
         LinearLayout btnUsuarios = findViewById(R.id.btnUsuarios);
-        TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+
+        // Ocultar "Usuarios" y "Agregar" para invitados
+        if (esInvitado) {
+            btnUsuarios.setVisibility(LinearLayout.GONE);
+            btnAgregar.setVisibility(LinearLayout.GONE);
+        }
 
         btnCatalogo.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CatalogoActivity.class);
@@ -44,6 +52,7 @@ public class MainActivity extends BaseActivity {
 
         btnConfiguracion.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ConfiguracionActivity.class);
+            intent.putExtra("ES_INVITADO", esInvitado);
             startActivity(intent);
         });
 
@@ -51,16 +60,10 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(MainActivity.this, ContactoActivity.class);
             startActivity(intent);
         });
+
         btnUsuarios.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UsuariosActivity.class);
             startActivity(intent);
-        });
-
-        btnCerrarSesion.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
         });
 
         setupBottomNavigation(R.id.nav_inicio);
