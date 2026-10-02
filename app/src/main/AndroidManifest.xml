@@ -11,6 +11,9 @@
         android:theme="@style/Theme.LibreriaNazareth"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".VentasActivity"
+            android:exported="false" />
+        <activity
             android:name=".VentaActivity"
             android:exported="false" />
         <activity

@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity {
             startActivity(intent);
         });
         btnVenta.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, VentaActivity.class);
+            Intent intent = new Intent(MainActivity.this, VentasActivity.class);
             startActivity(intent);
         });
 
