@@ -12,6 +12,7 @@ import com.example.librerianazareth.data.model.Usuario;
 import com.example.librerianazareth.data.model.UsuarioResponse;
 import com.example.librerianazareth.data.model.VentaRequest;
 import com.example.librerianazareth.data.model.VentaResponse;
+import com.example.librerianazareth.data.model.VentaListPageResponse;
 
 import java.util.List;
 
@@ -134,4 +135,14 @@ public interface ApiService {
     Call<VentaResponse> registrarVenta(
             @Body VentaRequest venta
     );
+
+    @GET("api/ventas/")
+    Call<VentaListPageResponse> getVentas(
+            @Query("filtro") String filtro,
+            @Query("page") int page
+    );
+
+    @GET("api/ventas/{id}/")
+    Call<VentaResponse> getVenta(@Path("id") int id);
+
 }
