@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/fondo_card"
     android:padding="16dp">
 
     <LinearLayout
@@ -13,7 +14,7 @@
             android:id="@+id/tvDetalleNumero"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="@color/texto_titulo"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -22,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@color/texto_principal"
+            android:textColor="@color/texto_hint"
             android:textSize="14sp" />
 
         <TextView
@@ -30,15 +31,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@color/texto_principal"
+            android:textColor="@color/texto_hint"
             android:textSize="14sp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@color/borde" />
+            android:layout_marginBottom="12dp" />
 
         <LinearLayout
             android:id="@+id/llDetalleProductos"
@@ -50,15 +50,14 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/borde" />
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/tvDetalleTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:textColor="@color/dorado_claro"
+            android:textColor="@color/texto_menu_titulo"
             android:textSize="18sp"
             android:textStyle="bold" />
 

@@ -3,6 +3,8 @@ package com.example.librerianazareth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,8 +22,11 @@ import com.example.librerianazareth.adapter.VentaAdapter;
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.VentaListPageResponse;
 import com.example.librerianazareth.data.model.VentaListResponse;
+import com.example.librerianazareth.data.model.DetalleVentaResponse;
+import com.example.librerianazareth.data.model.VentaResponse;
 
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -160,11 +166,83 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
         rvVentas.setVisibility(View.GONE);
     }
 
-    // Por ahora "Ver más" solo muestra un Toast, se tiene que hacer un modal con detalles
+    // "Ver más" con detalles
     @Override
     public void onVerMas(VentaListResponse venta) {
-        Toast.makeText(this,
-                "Detalle de venta #" + venta.getId() + " (próximo commit)",
-                Toast.LENGTH_SHORT).show();
+        RetrofitClient.getApi(this)
+                .getVenta(venta.getId())
+                .enqueue(new Callback<VentaResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<VentaResponse> call,
+                                           @NonNull Response<VentaResponse> response) {
+                        if (!response.isSuccessful() || response.body() == null) {
+                            Toast.makeText(VentasActivity.this,
+                                    "No se pudo cargar el detalle",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        mostrarModalDetalle(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<VentaResponse> call,
+                                          @NonNull Throwable t) {
+                        Toast.makeText(VentasActivity.this,
+                                "Error de red: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void mostrarModalDetalle(VentaResponse venta) {
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_detalle_venta, null);
+
+        TextView tvNumero   = view.findViewById(R.id.tvDetalleNumero);
+        TextView tvFecha    = view.findViewById(R.id.tvDetalleFecha);
+        TextView tvUsuario  = view.findViewById(R.id.tvDetalleUsuario);
+        TextView tvTotal    = view.findViewById(R.id.tvDetalleTotal);
+        LinearLayout llProd = view.findViewById(R.id.llDetalleProductos);
+
+        tvNumero.setText("Venta #" + venta.getId());
+        tvFecha.setText("Fecha: " + formatearFecha(venta.getFecha()));
+        tvUsuario.setText("Usuario: " + venta.getUsuarioNombre());
+        tvTotal.setText("TOTAL: $" + venta.getTotal());
+
+        if (venta.getDetalles() != null) {
+            for (DetalleVentaResponse d : venta.getDetalles()) {
+                View itemView = LayoutInflater.from(this)
+                        .inflate(R.layout.item_detalle_venta, llProd, false);
+
+                TextView tvCant     = itemView.findViewById(R.id.tvDetalleCantidad);
+                TextView tvNombre   = itemView.findViewById(R.id.tvDetalleNombre);
+                TextView tvSubtotal = itemView.findViewById(R.id.tvDetalleSubtotal);
+
+                tvCant.setText(d.getCantidad() + "x");
+                tvNombre.setText(d.getProductoNombre() != null ? d.getProductoNombre() : "(sin nombre)");
+                tvSubtotal.setText("$" + d.getSubtotal());
+
+                llProd.addView(itemView);
+            }
+        }
+
+        new AlertDialog.Builder(this)
+                .setView(view)
+                .setPositiveButton("Cerrar", null)
+                .show();
+    }
+
+    private String formatearFecha(String isoFecha) {
+        if (isoFecha == null) return "";
+        try {
+            java.text.SimpleDateFormat input =
+                    new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            java.util.Date date = input.parse(isoFecha.substring(0, 19));
+
+            java.text.SimpleDateFormat output =
+                    new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            return output.format(date);
+        } catch (Exception e) {
+            return isoFecha;
+        }
     }
 }
