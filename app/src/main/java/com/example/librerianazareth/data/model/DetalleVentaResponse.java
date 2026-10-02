@@ -10,6 +10,9 @@ public class DetalleVentaResponse {
     @SerializedName("producto")
     private int productoId;
 
+    @SerializedName("producto_nombre")
+    private String productoNombre;
+
     @SerializedName("cantidad")
     private int cantidad;
 
@@ -21,6 +24,7 @@ public class DetalleVentaResponse {
 
     public int getId() { return id; }
     public int getProductoId() { return productoId; }
+    public String getProductoNombre() { return productoNombre; }
     public int getCantidad() { return cantidad; }
     public String getPrecioUnitario() { return precioUnitario; }
     public String getSubtotal() { return subtotal; }
