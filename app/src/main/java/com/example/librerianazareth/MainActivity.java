@@ -63,7 +63,14 @@ public class MainActivity extends BaseActivity {
         });
 
         btnVenta.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, VentasActivity.class);
+            Intent intent;
+            if (esAdmin) {
+                // Admin → lista completa de ventas
+                intent = new Intent(MainActivity.this, VentasActivity.class);
+            } else {
+                // Empleado → directo a nueva venta
+                intent = new Intent(MainActivity.this, VentaActivity.class);
+            }
             startActivity(intent);
         });
 
