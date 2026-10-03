@@ -106,57 +106,79 @@ Ver sección 7 de este mismo archivo para saber cómo.
 4. CONFIGURACIÓN INICIAL (HACER UNA SOLA VEZ)
 ================================================================================
 
-Antes de ejecutar la app, cada uno debe configurar la URL base del backend
-en su propia máquina, porque cada PC tiene una IP distinta en la red local.
+El backend y la base de datos YA ESTÁN EN LA NUBE (AlwaysData) y disponibles
+24/7. NO hace falta levantar Django ni MySQL en tu PC. Solo tenés que apuntar
+la app a la URL de AlwaysData.
 
-### Paso 1: Averiguar tu IP local
-
-  - Windows:  ejecutá "ipconfig" en cmd y buscá "Dirección IPv4" del adaptador
-              Ethernet o Wi-Fi. Ejemplo: 192.168.100.8
-
-### Paso 2: Agregar la IP a local.properties
+### Paso 1: Editar local.properties
 
 Abrí el archivo `local.properties` que está en la raíz del proyecto
 (al lado de settings.gradle, NO dentro de app/).
 
-Agregá esta línea al final:
+Agregá (o reemplazá) esta línea:
 
-    API_BASE_URL=http://TU_IP:8000/
-
-Reemplazá TU_IP por tu IP real. Ejemplo:
-
-    API_BASE_URL=http://192.168.100.8:8000/
+    API_BASE_URL=https://librerianazareth.alwaysdata.net/
 
 IMPORTANTE:
   - Termina en "/" (barra al final).
-  - Usa "http://", no "https://" (es desarrollo local).
+  - Usa "https://" (NO "http://").
+  - NO lleva puerto (NO ":8000").
   - NO subas este archivo a Git (ya está en .gitignore).
 
-### Paso 3: Levantar el backend
+### Paso 2: Sincronizar Gradle
 
-En la carpeta del proyecto Django (backend)--> ((Recuerden que esta en OTRO REPO 
-DENTRO DE LA ORGANIZACION: clonen o actualicen que tiene modificaciones)):
---> https://github.com/Webstars-ispc/LibreriaNazareth-Backend --> LEVANTAR CON VISUAL STUDIO CODE
+Después de cambiar local.properties:
+  - File > Sync Project with Gradle Files
+  - Build > Clean Project
+  - Build > Rebuild Project
 
-    python manage.py runserver 0.0.0.0:8000
+Verificá que en `BuildConfig.java` (autogenerado) figure:
+    public static final String API_BASE_URL = "https://librerianazareth.alwaysdata.net/";
 
-El "0.0.0.0:8000" es IMPORTANTE. Si solo pones "runserver", Django
-escucha solo en localhost y tu celular no lo va a alcanzar.
-
-### Paso 4: Verificar que la red esté en modo "Privada" (Windows)
-
-  - Configuración → Red e Internet → Ethernet (o Wi-Fi)
-  - Si dice "Red pública", cambiala a "Red privada".
-  - Sin esto, el firewall de Windows bloquea el puerto 8000.
-
-### Paso 5: Verificar conexión
+### Paso 3: Verificar conexión
 
 Desde el navegador del celular, abrí:
 
-    http://TU_IP:8000/admin/
+    https://librerianazareth.alwaysdata.net/api/
 
-Si carga la pantalla de admin de Django → todo OK.
-Si no carga → revisar firewall, IP, o que el celular esté en la misma red.
+Si ves el API Root de Django REST Framework → todo OK.
+
+También podés probar el admin:
+
+    https://librerianazareth.alwaysdata.net/admin/
+
+### Paso 4: Probar login en la app
+
+Las credenciales de prueba se comparten por el canal privado del equipo. NO se publican en el repositorio por seguridad.
+
+================================================================================
+4.b (Opcional) BACKEND LOCAL PARA DESARROLLO
+================================================================================
+
+Si necesitás levantar el backend en tu PC (por ejemplo, para probar cambios
+antes de subirlos a la nube), seguí estos pasos:
+
+  1. Clonar el repo backend:
+     git clone https://github.com/Webstars-ispc/LibreriaNazareth-Backend.git
+
+  2. Crear .env con tus credenciales locales (XAMPP/MySQL).
+
+  3. Levantar Django escuchando en toda la red:
+     python manage.py runserver 0.0.0.0:8000
+
+  4. Averiguar tu IP local (ipconfig en Windows).
+
+  5. En local.properties poner:
+     API_BASE_URL=http://TU_IP:8000/
+
+  6. Verificar que la red de Windows esté en modo "Privada" y que el firewall
+     permita el puerto 8000.
+
+  7. Probar desde el navegador del celular:
+     http://TU_IP:8000/admin/
+
+⚠️ Recordá volver a `https://librerianazareth.alwaysdata.net/` cuando termines
+   de probar localmente, para no romperle la conexión a tus compañeras.
 
 ================================================================================
 5. CÓMO USAR LA INFRAESTRUCTURA (EJEMPLO DE LOGIN)
@@ -414,21 +436,20 @@ El backend no tiene sesión que cerrar (es stateless con JWT).
 
 ### ¿Por qué no funciona desde mi celular?
 Revisá en este orden:
-  1. ¿El backend está corriendo con "0.0.0.0:8000"?
-  2. ¿Tu IP en local.properties es la correcta? (ejecutá "ipconfig")
-  3. ¿La red de Windows está en modo "Privada"?
-  4. ¿El celular está en la misma red Wi-Fi que la PC?
-  5. ¿El firewall permite el puerto 8000?
-  6. Probalo desde el navegador del celular:
-     http://TU_IP:8000/admin/
+  1. ¿La URL en local.properties es https://librerianazareth.alwaysdata.net/?
+  2. ¿Tu celular tiene internet (datos móviles o Wi-Fi)?
+  3. ¿Podés abrir https://librerianazareth.alwaysdata.net/api/ en el navegador del celular?
+  4. ¿Hiciste Clean + Rebuild después de cambiar local.properties?
+  5. ¿BuildConfig.java muestra la URL correcta?
 
 ### ¿Por qué me da error 401?
   - No te logueaste todavía, o el token expiró.
   - Solución: volvé a loguearte, o implementá refresh token.
 
 ### ¿Por qué me da error de red "CLEARTEXT not permitted"?
-Falta el android:usesCleartextTraffic="true" en AndroidManifest.xml.
-Ya está agregado, pero si lo ves, avisá al equipo.
+  - Antes pasaba porque el backend local usaba http://.
+  - Ahora con https:// de AlwaysData NO debería pasar.
+  - Si lo ves, avisá al equipo.
 
 ### ¿Puedo modificar RetrofitClient?
 NO. Es infraestructura compartida. Si necesitás cambiar algo,
@@ -444,6 +465,10 @@ Si hay conflicto de merge, AVISAR.
 
 ### ¿Puedo agregar modelos?
 SÍ. Creá nuevas clases en data/model/.
+
+### ¿Puedo usar el backend local en vez de AlwaysData?
+SÍ, pero solo para pruebas. Ver sección 4.b.
+Recordá volver a la URL de AlwaysData cuando termines.
 
 ================================================================================
 11. RESUMEN DE LO QUE NO SE TOCA

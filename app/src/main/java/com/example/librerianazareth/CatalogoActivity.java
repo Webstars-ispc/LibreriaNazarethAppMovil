@@ -2,6 +2,10 @@ package com.example.librerianazareth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +44,10 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
 
     private int paginaActual = 1;
     private int totalPaginas = 1;
+    private String textoBusqueda = "";
+
+    private final Handler searchHandler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +95,33 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         ImageView ivEscanearCodigo = findViewById(R.id.ivEscanearCodigo);
         ivEscanearCodigo.setOnClickListener(v -> iniciarEscaner());
 
+        // Búsqueda con debounce (500 ms)
+        etBuscarProducto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+                searchRunnable = () -> {
+                    textoBusqueda = s.toString().trim();
+                    paginaActual = 1;
+                    cargarPagina(paginaActual);
+                };
+                searchHandler.postDelayed(searchRunnable, 500);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         // Primera carga
+        cargarPagina(paginaActual);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         cargarPagina(paginaActual);
     }
 
@@ -95,47 +130,57 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         tvEstado.setVisibility(View.GONE);
         rvProductos.setVisibility(View.GONE);
 
-        RetrofitClient.getApi(this)
-                .getProductos(page)
-                .enqueue(new Callback<ProductoResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ProductoResponse> call,
-                                           @NonNull Response<ProductoResponse> response) {
-                        progressBar.setVisibility(View.GONE);
+        Call<ProductoResponse> call = textoBusqueda.isEmpty()
+                ? RetrofitClient.getApi(this).getProductos(page)
+                : RetrofitClient.getApi(this).getProductos(page, textoBusqueda);
 
-                        if (!response.isSuccessful() || response.body() == null) {
-                            mostrarEstado("Error al cargar productos");
-                            return;
-                        }
+        call.enqueue(new Callback<ProductoResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductoResponse> call,
+                                   @NonNull Response<ProductoResponse> response) {
+                progressBar.setVisibility(View.GONE);
 
-                        ProductoResponse page = response.body();
-                        List<Producto> productos = page.getResults();
-
-                        if (productos == null || productos.isEmpty()) {
-                            mostrarEstado("No hay productos");
-                            tvPagina.setText("Pág. " + paginaActual);
-                            return;
-                        }
-
-                        rvProductos.setVisibility(View.VISIBLE);
-                        productoAdapter.setProductos(productos);
-
-                        // Calcular total de páginas (10 por página)
-                        totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
-                        tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
-
-                        // Habilitar/deshabilitar botones
-                        btnAnterior.setEnabled(paginaActual > 1);
-                        btnSiguiente.setEnabled(paginaActual < totalPaginas);
+                if (!response.isSuccessful() || response.body() == null) {
+                    if (response.code() == 401) {
+                        Toast.makeText(CatalogoActivity.this, "Sesión expirada", Toast.LENGTH_SHORT).show();
+                    } else if (response.code() == 403) {
+                        mostrarEstado("No tenés permisos para ver el catálogo");
+                    } else {
+                        mostrarEstado("Error al cargar productos");
                     }
+                    return;
+                }
 
-                    @Override
-                    public void onFailure(@NonNull Call<ProductoResponse> call,
-                                          @NonNull Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        mostrarEstado("Error de red: " + t.getMessage());
-                    }
-                });
+                ProductoResponse page = response.body();
+                List<Producto> productos = page.getResults();
+
+                if (productos == null || productos.isEmpty()) {
+                    mostrarEstado(textoBusqueda.isEmpty()
+                            ? "No hay productos cargados"
+                            : "No se encontraron productos");
+                    tvPagina.setText("Pág. " + paginaActual);
+                    return;
+                }
+
+                rvProductos.setVisibility(View.VISIBLE);
+                productoAdapter.setProductos(productos);
+
+                // Calcular total de páginas (10 por página)
+                totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
+                tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
+
+                // Habilitar/deshabilitar botones
+                btnAnterior.setEnabled(paginaActual > 1);
+                btnSiguiente.setEnabled(paginaActual < totalPaginas);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProductoResponse> call,
+                                  @NonNull Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                mostrarEstado("Error de red: " + t.getMessage());
+            }
+        });
     }
 
     private void mostrarEstado(String mensaje) {
@@ -177,12 +222,46 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         Intent intent = new Intent(CatalogoActivity.this, FormularioCatalogoActivity.class);
         intent.putExtra("modo_edicion", true);
         intent.putExtra("producto_id", producto.getId());
+        intent.putExtra("nombre", producto.getNombre());
+        intent.putExtra("descripcion", producto.getDescripcion());
+        intent.putExtra("codigo_barras", producto.getCodigoBarras());
+        intent.putExtra("rubro", producto.getRubro());
+        intent.putExtra("marca", producto.getMarca());
+        intent.putExtra("precio_costo", producto.getPrecioCosto());
+        intent.putExtra("precio_venta", producto.getPrecioVenta());
+        intent.putExtra("stock", producto.getStock());
         startActivity(intent);
     }
 
     @Override
     public void onEliminar(Producto producto) {
-        // TODO: por ahora mostramos un Toast. Después se implementa el DELETE.
-        Toast.makeText(this, "Eliminar: " + producto.getNombre(), Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar producto")
+                .setMessage("¿Estás seguro de eliminar \"" + producto.getNombre() + "\"?")
+                .setPositiveButton("Eliminar", (dialog, which) ->
+                        RetrofitClient.getApi(this).eliminarProducto(producto.getId())
+                                .enqueue(new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(@NonNull Call<Void> call,
+                                                           @NonNull Response<Void> response) {
+                                        if (response.isSuccessful()) {
+                                            Toast.makeText(CatalogoActivity.this,
+                                                    "Producto eliminado", Toast.LENGTH_SHORT).show();
+                                            cargarPagina(paginaActual);
+                                        } else {
+                                            Toast.makeText(CatalogoActivity.this,
+                                                    "Error al eliminar", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull Call<Void> call,
+                                                          @NonNull Throwable t) {
+                                        Toast.makeText(CatalogoActivity.this,
+                                                "Error de conexión", Toast.LENGTH_SHORT).show();
+                                    }
+                                }))
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }
