@@ -59,4 +59,14 @@ public class TokenManager {
     public String getRole() {
         return prefs.getString("role", "");
     }
+
+    // --- Helpers de rol ---
+
+    public boolean isAdmin() {
+        return "Administrador".equalsIgnoreCase(getRole());
+    }
+
+    public boolean isEmpleado() {
+        return "Empleado".equalsIgnoreCase(getRole());
+    }
 }

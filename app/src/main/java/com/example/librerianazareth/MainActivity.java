@@ -19,10 +19,13 @@ public class MainActivity extends BaseActivity {
 
         tvBienvenida = findViewById(R.id.tvBienvenida);
 
+        // Modo invitado
         esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
 
+        // Token + datos del usuario
         TokenManager tokenManager = new TokenManager(this);
-        String usuario = tokenManager.getUsername();
+        String usuario = esInvitado ? "" : tokenManager.getUsername();
+        boolean esAdmin = !esInvitado && tokenManager.isAdmin();
 
         if (usuario != null && !usuario.isEmpty()) {
             tvBienvenida.setText("Bienvenido/a, " + usuario);
@@ -30,19 +33,23 @@ public class MainActivity extends BaseActivity {
             tvBienvenida.setText("Bienvenido/a");
         }
 
-        LinearLayout btnCatalogo = findViewById(R.id.btnCatalogo);
-        LinearLayout btnAgregar = findViewById(R.id.btnAgregar);
+        // Referencias a los botones del menú
+        LinearLayout btnCatalogo      = findViewById(R.id.btnCatalogo);
+        LinearLayout btnAgregar       = findViewById(R.id.btnAgregar);
         LinearLayout btnConfiguracion = findViewById(R.id.btnConfiguracion);
-        LinearLayout btnContacto = findViewById(R.id.btnContacto);
-        LinearLayout btnUsuarios = findViewById(R.id.btnUsuarios);
-        LinearLayout btnVenta = findViewById(R.id.btnVenta);
-        TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+        LinearLayout btnContacto      = findViewById(R.id.btnContacto);
+        LinearLayout btnUsuarios      = findViewById(R.id.btnUsuarios);
+        LinearLayout btnVenta         = findViewById(R.id.btnVenta);
+        TextView     btnCerrarSesion  = findViewById(R.id.btnCerrarSesion);
 
-
-        // Ocultar "Usuarios" y "Agregar" para invitados
+        // Visibilidad según rol / invitado
+        // - Invitados: no ven "Usuarios" ni "Agregar"
+        // - Empleados: no ven "Usuarios"
         if (esInvitado) {
             btnUsuarios.setVisibility(LinearLayout.GONE);
             btnAgregar.setVisibility(LinearLayout.GONE);
+        } else if (!esAdmin) {
+            btnUsuarios.setVisibility(LinearLayout.GONE);
         }
 
         btnCatalogo.setOnClickListener(v -> {
@@ -52,6 +59,11 @@ public class MainActivity extends BaseActivity {
 
         btnAgregar.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, FormularioCatalogoActivity.class);
+            startActivity(intent);
+        });
+
+        btnVenta.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, VentasActivity.class);
             startActivity(intent);
         });
 
@@ -68,10 +80,6 @@ public class MainActivity extends BaseActivity {
 
         btnUsuarios.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UsuariosActivity.class);
-            startActivity(intent);
-        });
-        btnVenta.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, VentasActivity.class);
             startActivity(intent);
         });
 
