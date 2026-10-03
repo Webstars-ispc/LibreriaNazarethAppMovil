@@ -23,6 +23,7 @@ import com.example.librerianazareth.adapter.ProductoAdapter;
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
+import com.example.librerianazareth.data.local.TokenManager;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -66,7 +67,8 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         etBuscarProducto  = findViewById(R.id.etBuscarProducto);
 
         // RecyclerView + Adapter
-        productoAdapter = new ProductoAdapter(this);
+        TokenManager tm = new TokenManager(this);
+        productoAdapter = new ProductoAdapter(this, tm.isAdmin());
         rvProductos.setLayoutManager(new LinearLayoutManager(this));
         rvProductos.setAdapter(productoAdapter);
 
