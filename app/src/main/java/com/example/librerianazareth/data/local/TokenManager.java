@@ -49,4 +49,24 @@ public class TokenManager {
     public String getUsername() {
         return prefs.getString("username", "");
     }
+
+    // --- Rol del usuario ---
+
+    public void saveRole(String role) {
+        prefs.edit().putString("role", role).apply();
+    }
+
+    public String getRole() {
+        return prefs.getString("role", "");
+    }
+
+    // --- Helpers de rol ---
+
+    public boolean isAdmin() {
+        return "Administrador".equalsIgnoreCase(getRole());
+    }
+
+    public boolean isEmpleado() {
+        return "Empleado".equalsIgnoreCase(getRole());
+    }
 }

@@ -25,9 +25,11 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
 
     private List<Producto> productos = new ArrayList<>();
     private final OnProductoClickListener listener;
+    private final boolean mostrarEliminar;
 
-    public ProductoAdapter(OnProductoClickListener listener) {
+    public ProductoAdapter(OnProductoClickListener listener, boolean mostrarEliminar) {
         this.listener = listener;
+        this.mostrarEliminar = mostrarEliminar;
     }
 
     public void setProductos(List<Producto> productos) {
@@ -47,6 +49,15 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
     public void onBindViewHolder(@NonNull ProductoViewHolder holder, int position) {
         Producto p = productos.get(position);
 
+        // Botón eliminar: visible solo si el usuario es admin
+        if (mostrarEliminar) {
+            holder.btnEliminar.setVisibility(View.VISIBLE);
+            holder.btnEliminar.setOnClickListener(v -> listener.onEliminar(p));
+        } else {
+            holder.btnEliminar.setVisibility(View.GONE);
+        }
+
+        // Datos del producto
         holder.tvNombre.setText(p.getNombre());
 
         String rubro = p.getRubroNombre() != null ? p.getRubroNombre() : "";
@@ -57,8 +68,8 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
         holder.tvPrecio.setText(String.format(Locale.getDefault(), "$%.2f", p.getPrecioVenta()));
         holder.tvStock.setText(String.format(Locale.getDefault(), "Stock: %d", p.getStock()));
 
+        // Botón editar
         holder.btnEditar.setOnClickListener(v -> listener.onEditar(p));
-        holder.btnEliminar.setOnClickListener(v -> listener.onEliminar(p));
     }
 
     @Override

@@ -117,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                         String username = "";
                         if (response.isSuccessful() && response.body() != null) {
                             username = response.body().getUsername();
+                            tokenManager.saveRole(response.body().getRole());
                         }
                         tokenManager.saveUsername(username);
 
