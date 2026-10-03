@@ -36,8 +36,17 @@ public class TokenManager {
         prefs.edit().clear().apply();
     }
 
-    //Devulve true si hay access token guardado
+    //Devuelve true si hay access token guardado
     public boolean isLoggedIn() {
         return getAccessToken() != null;
+    }
+
+    // --- Username del usuario logueado ---
+    public void saveUsername(String username) {
+        prefs.edit().putString("username", username).apply();
+    }
+
+    public String getUsername() {
+        return prefs.getString("username", "");
     }
 }

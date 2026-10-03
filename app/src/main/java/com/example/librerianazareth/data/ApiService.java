@@ -7,8 +7,12 @@ import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
 import com.example.librerianazareth.data.model.RegisterRequest;
 import com.example.librerianazareth.data.model.Rubro;
+import com.example.librerianazareth.data.model.UserProfileResponse;
 import com.example.librerianazareth.data.model.Usuario;
 import com.example.librerianazareth.data.model.UsuarioResponse;
+import com.example.librerianazareth.data.model.VentaRequest;
+import com.example.librerianazareth.data.model.VentaResponse;
+import com.example.librerianazareth.data.model.VentaListPageResponse;
 
 import java.util.List;
 
@@ -46,9 +50,22 @@ public interface ApiService {
     @POST("api/auth/login/")
     Call<LoginResponse> login(@Body LoginRequest request);
 
+    @GET("api/auth/me/")
+    Call<UserProfileResponse> me();
+
     // ============================================================
     // PRODUCTOS
     // ============================================================
+
+    @GET("api/productos/")
+    Call<ProductoResponse> buscarProductoPorCodigo(
+            @Query("codigo_barras") String codigoBarras
+    );
+
+    @GET("api/productos/")
+    Call<ProductoResponse> buscarProductoPorNombre(
+            @Query("search") String search
+    );
 
     @GET("api/productos/")
     Call<ProductoResponse> getProductos(
@@ -109,4 +126,23 @@ public interface ApiService {
 
     @DELETE("api/usuarios/{id}/")
     Call<Void> eliminarUsuario(@Path("id") int id);
+
+    // ============================================================
+    // VENTAS
+    // ============================================================
+
+    @POST("api/ventas/")
+    Call<VentaResponse> registrarVenta(
+            @Body VentaRequest venta
+    );
+
+    @GET("api/ventas/")
+    Call<VentaListPageResponse> getVentas(
+            @Query("filtro") String filtro,
+            @Query("page") int page
+    );
+
+    @GET("api/ventas/{id}/")
+    Call<VentaResponse> getVenta(@Path("id") int id);
+
 }

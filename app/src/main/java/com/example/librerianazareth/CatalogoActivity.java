@@ -95,7 +95,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         ImageView ivEscanearCodigo = findViewById(R.id.ivEscanearCodigo);
         ivEscanearCodigo.setOnClickListener(v -> iniciarEscaner());
 
-        // Búsqueda con debounce (500 ms): filtra en el backend por nombre o código de barras
+        // Búsqueda con debounce (500 ms)
         etBuscarProducto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -122,7 +122,6 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
     @Override
     protected void onResume() {
         super.onResume();
-        // Refresca la lista al volver del formulario (crear / editar) o de otra pantalla
         cargarPagina(paginaActual);
     }
 
@@ -136,52 +135,52 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                 : RetrofitClient.getApi(this).getProductos(page, textoBusqueda);
 
         call.enqueue(new Callback<ProductoResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ProductoResponse> call,
-                                           @NonNull Response<ProductoResponse> response) {
-                        progressBar.setVisibility(View.GONE);
+            @Override
+            public void onResponse(@NonNull Call<ProductoResponse> call,
+                                   @NonNull Response<ProductoResponse> response) {
+                progressBar.setVisibility(View.GONE);
 
-                        if (!response.isSuccessful() || response.body() == null) {
-                            if (response.code() == 401) {
-                                Toast.makeText(CatalogoActivity.this, "Sesión expirada", Toast.LENGTH_SHORT).show();
-                            } else if (response.code() == 403) {
-                                mostrarEstado("No tenés permisos para ver el catálogo");
-                            } else {
-                                mostrarEstado("Error al cargar productos");
-                            }
-                            return;
-                        }
-
-                        ProductoResponse page = response.body();
-                        List<Producto> productos = page.getResults();
-
-                        if (productos == null || productos.isEmpty()) {
-                            mostrarEstado(textoBusqueda.isEmpty()
-                                    ? "No hay productos cargados"
-                                    : "No se encontraron productos");
-                            tvPagina.setText("Pág. " + paginaActual);
-                            return;
-                        }
-
-                        rvProductos.setVisibility(View.VISIBLE);
-                        productoAdapter.setProductos(productos);
-
-                        // Calcular total de páginas (10 por página)
-                        totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
-                        tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
-
-                        // Habilitar/deshabilitar botones
-                        btnAnterior.setEnabled(paginaActual > 1);
-                        btnSiguiente.setEnabled(paginaActual < totalPaginas);
+                if (!response.isSuccessful() || response.body() == null) {
+                    if (response.code() == 401) {
+                        Toast.makeText(CatalogoActivity.this, "Sesión expirada", Toast.LENGTH_SHORT).show();
+                    } else if (response.code() == 403) {
+                        mostrarEstado("No tenés permisos para ver el catálogo");
+                    } else {
+                        mostrarEstado("Error al cargar productos");
                     }
+                    return;
+                }
 
-                    @Override
-                    public void onFailure(@NonNull Call<ProductoResponse> call,
-                                          @NonNull Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        mostrarEstado("Error de red: " + t.getMessage());
-                    }
-                });
+                ProductoResponse page = response.body();
+                List<Producto> productos = page.getResults();
+
+                if (productos == null || productos.isEmpty()) {
+                    mostrarEstado(textoBusqueda.isEmpty()
+                            ? "No hay productos cargados"
+                            : "No se encontraron productos");
+                    tvPagina.setText("Pág. " + paginaActual);
+                    return;
+                }
+
+                rvProductos.setVisibility(View.VISIBLE);
+                productoAdapter.setProductos(productos);
+
+                // Calcular total de páginas (10 por página)
+                totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
+                tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
+
+                // Habilitar/deshabilitar botones
+                btnAnterior.setEnabled(paginaActual > 1);
+                btnSiguiente.setEnabled(paginaActual < totalPaginas);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProductoResponse> call,
+                                  @NonNull Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                mostrarEstado("Error de red: " + t.getMessage());
+            }
+        });
     }
 
     private void mostrarEstado(String mensaje) {
@@ -244,7 +243,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                                 .enqueue(new Callback<Void>() {
                                     @Override
                                     public void onResponse(@NonNull Call<Void> call,
-                                                          @NonNull Response<Void> response) {
+                                                           @NonNull Response<Void> response) {
                                         if (response.isSuccessful()) {
                                             Toast.makeText(CatalogoActivity.this,
                                                     "Producto eliminado", Toast.LENGTH_SHORT).show();

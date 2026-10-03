@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.librerianazareth.data.local.TokenManager;
 
 public class MainActivity extends BaseActivity {
 
@@ -19,8 +19,10 @@ public class MainActivity extends BaseActivity {
 
         tvBienvenida = findViewById(R.id.tvBienvenida);
 
-        String usuario = getIntent().getStringExtra("EXTRA_USUARIO");
         esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
+
+        TokenManager tokenManager = new TokenManager(this);
+        String usuario = tokenManager.getUsername();
 
         if (usuario != null && !usuario.isEmpty()) {
             tvBienvenida.setText("Bienvenido/a, " + usuario);
@@ -33,6 +35,9 @@ public class MainActivity extends BaseActivity {
         LinearLayout btnConfiguracion = findViewById(R.id.btnConfiguracion);
         LinearLayout btnContacto = findViewById(R.id.btnContacto);
         LinearLayout btnUsuarios = findViewById(R.id.btnUsuarios);
+        LinearLayout btnVenta = findViewById(R.id.btnVenta);
+        TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+
 
         // Ocultar "Usuarios" y "Agregar" para invitados
         if (esInvitado) {
@@ -64,6 +69,19 @@ public class MainActivity extends BaseActivity {
         btnUsuarios.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UsuariosActivity.class);
             startActivity(intent);
+        });
+        btnVenta.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, VentasActivity.class);
+            startActivity(intent);
+        });
+
+        btnCerrarSesion.setOnClickListener(v -> {
+            new TokenManager(MainActivity.this).clear();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
 
         setupBottomNavigation(R.id.nav_inicio);
