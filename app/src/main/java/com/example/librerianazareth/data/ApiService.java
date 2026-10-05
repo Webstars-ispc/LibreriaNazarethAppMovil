@@ -6,6 +6,7 @@ import com.example.librerianazareth.data.model.Marca;
 import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
 import com.example.librerianazareth.data.model.RegisterPublicRequest;
+import com.example.librerianazareth.data.model.RegisterPublicResponse;
 import com.example.librerianazareth.data.model.RegisterRequest;
 import com.example.librerianazareth.data.model.Rubro;
 import com.example.librerianazareth.data.model.UserProfileResponse;
@@ -54,9 +55,8 @@ public interface ApiService {
     @GET("api/auth/me/")
     Call<UserProfileResponse> me();
 
-    /** Auto-registro público. El backend fuerza el rol Empleado. */
     @POST("api/auth/register/")
-    Call<Usuario> registerPublic(@Body RegisterPublicRequest request);
+    Call<RegisterPublicResponse> registerPublic(@Body RegisterPublicRequest request);
 
     // ============================================================
     // PRODUCTOS
