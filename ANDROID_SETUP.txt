@@ -323,6 +323,7 @@ Autenticación:
   POST    /api/auth/login/                     → login(email, password)
   POST    /api/auth/refresh/                   → refreshToken(refresh)
   GET     /api/auth/me/                        → getPerfil()
+  POST    /api/auth/register/                  → registerPublic(username, nombre, apellido, email, password) : (auto-registro público, fuerza rol Empleado)
 
 Usuarios:
   GET     /api/auth/usuarios/                  → getUsuarios()       [admin]
@@ -332,11 +333,13 @@ Usuarios:
   DELETE  /api/auth/usuarios/{id}/             → eliminarUsuario(id)
 
 Productos:
-  GET     /api/productos/                      → getProductos()
-  POST    /api/productos/                      → crearProducto(p)
+  GET     /api/productos/?page=N               → getProductos(page)            [paginado, 10 por página]
+  GET     /api/productos/?search=texto         → getProductos(page, texto)     [búsqueda por nombre]
+  GET     /api/productos/?codigo_barras=XXX    → buscarProductoPorCodigo(XXX)  [búsqueda por código]
+  POST    /api/productos/                      → crearProducto(p)              [acepta marca_nombre, rubro_nombre]
   GET     /api/productos/{id}/                 → getProducto(id)
   PUT     /api/productos/{id}/                 → actualizarProducto(id, p)
-  DELETE  /api/productos/{id}/                 → eliminarProducto(id)  [admin]
+  DELETE  /api/productos/{id}/                 → eliminarProducto(id)          [admin]
 
 Rubros:
   GET     /api/rubros/                         → getRubros()
@@ -353,10 +356,12 @@ Marcas:
   DELETE  /api/marcas/{id}/                    → eliminarMarca(id)
 
 Ventas:
-  GET     /api/ventas/                         → getVentas()
-  POST    /api/ventas/                         → crearVenta(v)
-  GET     /api/ventas/{id}/                    → getVenta(id)
-  DELETE  /api/ventas/{id}/                    → eliminarVenta(id)     [admin]
+  GET     /api/ventas/?filtro=hoy&page=N      → getVentas("hoy", page)       [sin detalles, paginado]
+  GET     /api/ventas/?filtro=mes&page=N      → getVentas("mes", page)       [sin detalles, paginado]
+  GET     /api/ventas/?page=N                 → getVentas("", page)          [todas]
+  POST    /api/ventas/                        → registrarVenta(v)            [descuenta stock]
+  GET     /api/ventas/{id}/                   → getVenta(id)                 [con detalles + producto_nombre]
+  DELETE  /api/ventas/{id}/                   → eliminarVenta(id)            [admin, revierte stock]
 
 Carga masiva y aumentos:
   POST    /api/cargar-excel/                   → cargarExcel(archivo)
@@ -364,6 +369,43 @@ Carga masiva y aumentos:
   POST    /api/aumentos/rubro/                 → aumentoPorRubro(datos)
   POST    /api/aumentos/marca/                 → aumentoPorMarca(datos)
   POST    /api/aumentos/individual/            → aumentoIndividual(datos)
+
+================================================================================
+7.b REGLAS IMPORTANTES DE LA API
+================================================================================
+
+### Paginación
+
+Los endpoints de listado (`/api/productos/`, `/api/ventas/`, etc.) están
+paginados en bloques de 10. La respuesta tiene esta forma:
+
+    {
+        "count": 22,
+        "next": "http://.../api/productos/?page=2",
+        "previous": null,
+        "results": [ { ...producto... }, ... ]
+    }
+
+⚠️ Si tu endpoint devuelve una lista paginada, el modelo Java tiene que
+   leer `results` (no el array directo).
+
+### Precios como string
+
+`precio_costo` y `precio_venta` se devuelven como STRING, no como número:
+
+    "precio_venta": "900.00"    ← string
+    "precio_venta": 900.00      ← número (NO)
+
+En Java, si necesitás hacer operaciones, parsealos con Double.parseDouble().
+
+### Roles
+
+- **Administrador**: ve todo, puede eliminar productos y ventas, gestiona usuarios.
+- **Empleado**: ve catálogo, crea/edita productos, registra ventas.
+  NO puede: gestionar usuarios, eliminar productos, ver la lista de ventas.
+
+El rol se obtiene de `GET /api/auth/me/` como `"role": "Administrador"` o `"role": "Empleado"`.
+Los auto-registrados (POST /api/auth/register/) son siempre Empleado.
 
 ================================================================================
 8. MANEJO DE ERRORES
@@ -422,13 +464,24 @@ la duración: en web lo hicimos mediante un modal con opcion "si" o "no").
 
 ### Logout
 
-El logout es simplemente borrar los tokens:
+El logout limpia todo (tokens + username + rol):
 
     new TokenManager(this).clear();
     startActivity(new Intent(this, LoginActivity.class));
     finish();
 
 El backend no tiene sesión que cerrar (es stateless con JWT).
+
+### TokenManager también guarda el rol
+
+Además de los tokens, `TokenManager` guarda:
+
+  - `getUsername()`   → nombre de usuario (para "Bienvenido/a, X")
+  - `saveRole(role)`  → guarda el rol ("Administrador" / "Empleado")
+  - `isAdmin()`       → true si el usuario es Administrador
+  - `isEmpleado()`    → true si el usuario es Empleado
+
+Se usan para mostrar/ocultar botones según el rol.
 
 ================================================================================
 10. PREGUNTAS FRECUENTES
