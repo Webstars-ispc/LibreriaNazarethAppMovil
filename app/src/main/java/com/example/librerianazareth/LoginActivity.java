@@ -40,11 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         tvIrAlRegistro = findViewById(R.id.tvIrAlRegistro);
         tokenManager   = new TokenManager(this);
 
-        String emailPrellenado = getIntent().getStringExtra("EXTRA_EMAIL");
-        if (emailPrellenado != null && !emailPrellenado.isEmpty()) {
-            etUsuario.setText(emailPrellenado);
-        }
-
         btnLogin.setOnClickListener(v -> intentarLogin());
 
         // Ir a la pantalla de registro

@@ -13,8 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.librerianazareth.data.RetrofitClient;
+import com.example.librerianazareth.data.local.TokenManager;
 import com.example.librerianazareth.data.model.RegisterPublicRequest;
-import com.example.librerianazareth.data.model.Usuario;
+import com.example.librerianazareth.data.model.RegisterPublicResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +26,7 @@ public class RegistroActivity extends AppCompatActivity {
     private EditText etNombre, etApellido, etUsuario, etEmail, etPassword, etPasswordConfirmar;
     private Button btnRegistro;
     private TextView tvIrAlLogin;
+    private TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class RegistroActivity extends AppCompatActivity {
         etPasswordConfirmar = findViewById(R.id.etRegistroPasswordConfirmar);
         btnRegistro         = findViewById(R.id.btnRegistro);
         tvIrAlLogin         = findViewById(R.id.tvIrAlLogin);
+        tokenManager        = new TokenManager(this);
 
         btnRegistro.setOnClickListener(v -> intentarRegistro());
 
@@ -115,17 +118,24 @@ public class RegistroActivity extends AppCompatActivity {
 
         RetrofitClient.getApi(this)
                 .registerPublic(request)
-                .enqueue(new Callback<Usuario>() {
+                .enqueue(new Callback<RegisterPublicResponse>() {
                     @Override
-                    public void onResponse(@NonNull Call<Usuario> call,
-                                           @NonNull Response<Usuario> response) {
-                        if (response.isSuccessful()) {
+                    public void onResponse(@NonNull Call<RegisterPublicResponse> call,
+                                           @NonNull Response<RegisterPublicResponse> response) {
+                        RegisterPublicResponse body = response.body();
+
+                        if (response.isSuccessful() && body != null) {
+                            tokenManager.saveTokens(body.getAccess(), body.getRefresh());
+                            tokenManager.saveUsername(body.getUsername());
+                            tokenManager.saveRole(body.getRole());
+
                             Toast.makeText(RegistroActivity.this,
-                                    "Cuenta creada. Podés iniciar sesión.",
+                                    "Cuenta creada. Bienvenido/a, " + body.getUsername(),
                                     Toast.LENGTH_LONG).show();
 
-                            Intent intent = new Intent(RegistroActivity.this, LoginActivity.class);
-                            intent.putExtra("EXTRA_EMAIL", email);
+                            Intent intent = new Intent(RegistroActivity.this, MainActivity.class);
+                            intent.putExtra("EXTRA_USUARIO", body.getUsername());
+                            intent.putExtra("ES_INVITADO", false);
                             startActivity(intent);
                             finish();
 
@@ -138,7 +148,7 @@ public class RegistroActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<Usuario> call,
+                    public void onFailure(@NonNull Call<RegisterPublicResponse> call,
                                           @NonNull Throwable t) {
                         restaurarBoton();
                         Toast.makeText(RegistroActivity.this,
