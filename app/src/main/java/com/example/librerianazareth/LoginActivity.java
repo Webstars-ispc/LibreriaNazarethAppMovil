@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etUsuario, etPassword;
     private Button btnLogin;
     private TextView tvModoInvitado;
+    private TextView tvIrAlRegistro;
     private TokenManager tokenManager;
 
     @Override
@@ -36,9 +37,21 @@ public class LoginActivity extends AppCompatActivity {
         etPassword     = findViewById(R.id.etPassword);
         btnLogin       = findViewById(R.id.btnLogin);
         tvModoInvitado = findViewById(R.id.tvModoInvitado);
+        tvIrAlRegistro = findViewById(R.id.tvIrAlRegistro);
         tokenManager   = new TokenManager(this);
 
+        String emailPrellenado = getIntent().getStringExtra("EXTRA_EMAIL");
+        if (emailPrellenado != null && !emailPrellenado.isEmpty()) {
+            etUsuario.setText(emailPrellenado);
+        }
+
         btnLogin.setOnClickListener(v -> intentarLogin());
+
+        // Ir a la pantalla de registro
+        tvIrAlRegistro.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, RegistroActivity.class);
+            startActivity(intent);
+        });
 
         // Modo invitado
         tvModoInvitado.setOnClickListener(v -> {
