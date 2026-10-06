@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.librerianazareth.adapter.ProductoAdapter;
 import com.example.librerianazareth.data.RetrofitClient;
+import com.example.librerianazareth.data.NetworkConstants;
 import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
 import com.example.librerianazareth.data.local.TokenManager;
@@ -189,7 +190,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                     btnAnterior.setEnabled(false);
                     btnSiguiente.setEnabled(false);
                 } else {
-                    totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
+                    totalPaginas = (int) Math.ceil(page.getCount() / (double) NetworkConstants.PAGE_SIZE);
                     tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
                     btnAnterior.setEnabled(paginaActual > 1);
                     btnSiguiente.setEnabled(paginaActual < totalPaginas);

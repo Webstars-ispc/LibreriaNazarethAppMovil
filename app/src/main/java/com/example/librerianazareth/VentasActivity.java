@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.librerianazareth.adapter.VentaAdapter;
 import com.example.librerianazareth.data.RetrofitClient;
+import com.example.librerianazareth.data.NetworkConstants;
 import com.example.librerianazareth.data.model.VentaListPageResponse;
 import com.example.librerianazareth.data.model.VentaListResponse;
 import com.example.librerianazareth.data.model.DetalleVentaResponse;
@@ -144,7 +145,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                         ventaAdapter.setVentas(ventas);
 
                         // Calcular total de páginas
-                        totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
+                        totalPaginas = (int) Math.ceil(page.getCount() / (double) NetworkConstants.PAGE_SIZE);
                         tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
 
                         btnAnterior.setEnabled(paginaActual > 1);

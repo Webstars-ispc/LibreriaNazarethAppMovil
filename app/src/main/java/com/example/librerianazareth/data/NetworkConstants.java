@@ -28,4 +28,7 @@ public final class NetworkConstants {
 
     /** Clave del token de refresco. */
     public static final String KEY_REFRESH = "refresh_token";
+
+    /** Cantidad de items por pagina **/
+    public static final int PAGE_SIZE = 10;
 }
