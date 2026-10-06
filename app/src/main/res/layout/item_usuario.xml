@@ -50,7 +50,7 @@
                 android:id="@+id/btnEditarUsuario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="EDITAR"
+                android:text="@string/editar_accion"
                 android:textColor="@color/dorado_claro"
                 android:backgroundTint="@color/borde"
                 android:textSize="12sp" />
@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="ELIMINAR"
+                android:text="@string/eliminar_accion"
                 android:textColor="@color/dorado_claro"
                 android:backgroundTint="@color/borde"
                 android:textSize="12sp" />

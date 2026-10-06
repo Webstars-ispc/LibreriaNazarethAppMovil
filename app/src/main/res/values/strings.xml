@@ -2,9 +2,24 @@
 <resources>
     <string name="app_name">Librería Nazareth</string>
 
-    <!-- Menú Principal -->
+    <!-- General -->
+    <string name="inicio">Inicio</string>
     <string name="bienvenida">Bienvenido/a</string>
     <string name="menu_principal">Menú Principal</string>
+    <string name="usuarios">Usuarios</string>
+    <string name="gestionar_usuarios">Gestionar usuarios</string>
+    <string name="gestion_equipo">Gestión de Equipo</string>
+    <string name="venta">Venta</string>
+    <string name="nueva_venta">Nueva venta</string>
+    <string name="cerrar_sesion">CERRAR SESIÓN</string>
+    <string name="volver">VOLVER</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="guardar">Guardar</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="logo">Logo</string>
+
+    <!-- Menú Principal -->
     <string name="catalogo">Catálogo</string>
     <string name="ver_productos">Ver productos</string>
     <string name="agregar">Agregar</string>
@@ -13,7 +28,20 @@
     <string name="ajustes">Ajustes</string>
     <string name="contacto">Contacto</string>
     <string name="soporte">Soporte</string>
-    <string name="cerrar_sesion">CERRAR SESIÓN</string>
+
+    <!-- Splash -->
+    <string name="splash_titulo">Librería Nazareth</string>
+    <string name="splash_subtitulo">Tu librería de confianza</string>
+
+    <!-- Login -->
+    <string name="login_titulo">INICIAR SESIÓN</string>
+    <string name="login_ingresar">INGRESAR</string>
+    <string name="login_invitado">Entrar como invitado</string>
+    <string name="login_registro">No tengo cuenta, registrarme</string>
+    <string name="hint_usuario">Usuario</string>
+    <string name="hint_correo">Correo electrónico</string>
+    <string name="hint_contrasena">Contraseña</string>
+    <string name="hint_email">Email</string>
 
     <!-- Catálogo -->
     <string name="catalogo_titulo">Catálogo de Productos</string>
@@ -21,6 +49,69 @@
     <string name="catalogo_escanear">Escanear código de barras</string>
     <string name="catalogo_editar">Editar</string>
     <string name="catalogo_agregar">Agregar producto</string>
+    <string name="anterior">Anterior</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="pag_default">Pág. 1/1</string>
+    <string name="hint_buscar_nombre">Buscar por nombre...</string>
+    <string name="hint_escanear_o_escribir">Escaneá o escribí el código/nombre</string>
+
+    <!-- Formulario producto -->
+    <string name="form_producto_titulo">Formulario Producto</string>
+    <string name="campo_nombre">Nombre *</string>
+    <string name="campo_nombre_hint">Nombre del producto</string>
+    <string name="campo_descripcion">Descripción</string>
+    <string name="campo_descripcion_hint">Descripción del producto</string>
+    <string name="campo_codigo_barras">Código de barras</string>
+    <string name="campo_rubro">Rubro *</string>
+    <string name="campo_marca">Marca</string>
+    <string name="campo_precio_costo">Precio costo</string>
+    <string name="campo_precio_venta">Precio venta</string>
+    <string name="campo_stock">Stock</string>
+    <string name="campo_stock_hint">Cantidad</string>
+    <string name="precio_hint">$0.00</string>
+    <string name="escanear_codigo_barras">Escanear código de barras</string>
+
+    <!-- Usuarios -->
+    <string name="buscar_usuario">Buscar usuario</string>
+    <string name="agregar_usuario">Agregar usuario</string>
+    <string name="campo_rol">Rol</string>
+    <string name="guardar_usuario">GUARDAR USUARIO</string>
+    <string name="editar_accion">EDITAR</string>
+    <string name="eliminar_accion">ELIMINAR</string>
+
+    <!-- Ventas -->
+    <string name="ventas_titulo">Ventas</string>
+    <string name="nueva_venta_titulo">Nueva Venta</string>
+    <string name="agregar_boton">Agregar</string>
+    <string name="carrito_vacio">El carrito está vacío</string>
+    <string name="total_default">TOTAL: $0</string>
+    <string name="confirmar_venta">Confirmar venta</string>
+    <string name="escanear_codigo">Escanear código</string>
+    <string name="ver_mas">Ver más</string>
+    <string name="cantidad_uno">1</string>
+    <string name="signo_mas">+</string>
+    <string name="signo_menos">−</string>
+
+    <!-- Configuración -->
+    <string name="configuracion_subtitulo">Ajustes de la aplicación</string>
+    <string name="notificaciones">Notificaciones</string>
+    <string name="modo_oscuro">Modo oscuro</string>
+    <string name="idioma">Idioma</string>
+    <string name="idioma_espanol">Español</string>
+    <string name="version">Versión</string>
+    <string name="version_valor">1.0.0</string>
+
+    <!-- Contacto -->
+    <string name="contacto_subtitulo">Soporte y información de contacto</string>
+    <string name="icono_telefono">📞</string>
+    <string name="icono_email">✉</string>
+    <string name="icono_ubicacion">📍</string>
+    <string name="contacto_telefono_label">Teléfono</string>
+    <string name="contacto_telefono">351-123-4567</string>
+    <string name="contacto_email_label">Email</string>
+    <string name="contacto_email">info@librerianazareth.com</string>
+    <string name="contacto_direccion_label">Dirección</string>
+    <string name="contacto_direccion">Av. Principal 1234, Córdoba</string>
 
     <!-- Productos de ejemplo (temporal) -->
     <string name="producto1_nombre">MARCADORES PARA PIZZARA</string>

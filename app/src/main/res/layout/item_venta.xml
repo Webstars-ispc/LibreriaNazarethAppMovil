@@ -52,7 +52,7 @@
             android:id="@+id/btnVerMas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ver más"
+            android:text="@string/ver_mas"
             android:textColor="@color/dorado_claro"
             android:backgroundTint="@color/borde"
             android:textSize="12sp" />

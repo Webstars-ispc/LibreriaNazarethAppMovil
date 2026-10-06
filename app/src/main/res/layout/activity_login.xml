@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="INICIAR SESIÓN"
+            android:text="@string/login_titulo"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/texto_titulo"
@@ -26,7 +26,7 @@
             android:id="@+id/etUsuario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
+            android:hint="@string/hint_email"
             android:inputType="textEmailAddress"
             android:textColor="@color/texto_principal"
             android:textColorHint="@color/texto_hint"
@@ -40,7 +40,7 @@
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Contraseña"
+            android:hint="@string/hint_contrasena"
             android:inputType="textPassword"
             android:textColor="@color/texto_principal"
             android:textColorHint="@color/texto_hint"
@@ -54,7 +54,7 @@
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="INGRESAR"
+            android:text="@string/login_ingresar"
             android:textColor="@color/boton_texto"
             android:background="@drawable/boton_redondeado"
             android:paddingTop="12dp"
@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="No tengo cuenta, registrarme"
+            android:text="@string/login_registro"
             android:textColor="@color/dorado_claro"
             android:textSize="14sp" />
 
@@ -76,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Entrar como invitado"
+            android:text="@string/login_invitado"
             android:textColor="@color/dorado_claro"
             android:textSize="14sp" />
 

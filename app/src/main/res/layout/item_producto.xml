@@ -100,7 +100,7 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="12dp"
                 android:paddingBottom="4dp"
-                android:text="Eliminar"
+                android:text="@string/eliminar"
                 android:textColor="@color/dorado_claro"
                 android:textSize="12sp" />
         </LinearLayout>

@@ -20,7 +20,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ventas"
+            android:text="@string/ventas_titulo"
             android:textColor="@color/texto_titulo"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -75,7 +75,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         app:layout_constraintBottom_toTopOf="@id/fabNuevaVenta"
@@ -87,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/borde"
-            android:text="Anterior"
+            android:text="@string/anterior"
             android:textColor="@color/dorado_claro" />
 
         <TextView
@@ -96,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Pág. 1/1"
+            android:text="@string/pag_default"
             android:textColor="@color/texto_principal"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -106,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/borde"
-            android:text="Siguiente"
+            android:text="@string/siguiente"
             android:textColor="@color/dorado_claro" />
     </LinearLayout>
 
@@ -117,7 +118,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_input_add"
-        android:contentDescription="Nueva venta"
+        android:contentDescription="@string/nueva_venta"
         app:backgroundTint="@color/dorado"
         app:tint="@color/boton_texto"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
@@ -127,7 +128,7 @@
     <include
         layout="@layout/bottom_nav"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

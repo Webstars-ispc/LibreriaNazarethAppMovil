@@ -25,7 +25,7 @@
                 android:id="@+id/tvTituloFormulario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Agregar usuario"
+                android:text="@string/agregar_usuario"
                 android:textColor="@color/texto_titulo"
                 android:textSize="26sp"
                 android:textStyle="bold" />
@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:hint="Usuario"
+                android:hint="@string/hint_usuario"
                 android:textColorHint="@color/texto_hint"
                 android:textColor="@color/texto_principal"
                 android:inputType="text"
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Correo electrónico"
+                android:hint="@string/hint_correo"
                 android:textColorHint="@color/texto_hint"
                 android:textColor="@color/texto_principal"
                 android:inputType="textEmailAddress"
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Contraseña"
+                android:hint="@string/hint_contrasena"
                 android:textColorHint="@color/texto_hint"
                 android:textColor="@color/texto_principal"
                 android:inputType="textPassword"
@@ -71,7 +71,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Rol"
+                android:labelFor="@id/spinnerRol"
+                android:text="@string/campo_rol"
                 android:textColor="@color/texto_principal"
                 android:textSize="14sp" />
 
@@ -88,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="GUARDAR USUARIO"
+                android:text="@string/guardar_usuario"
                 android:textColor="@color/boton_texto"
                 android:backgroundTint="@color/dorado"
                 android:minHeight="48dp" />
@@ -99,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="CANCELAR"
+                android:text="@string/cancelar"
                 android:textColor="@color/dorado_claro"
                 android:backgroundTint="@color/borde"
                 android:minHeight="48dp" />
