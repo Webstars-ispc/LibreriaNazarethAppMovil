@@ -6,6 +6,8 @@ import com.example.librerianazareth.data.model.Marca;
 import com.example.librerianazareth.data.model.Pagina;
 import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
+import com.example.librerianazareth.data.model.RegisterPublicRequest;
+import com.example.librerianazareth.data.model.RegisterPublicResponse;
 import com.example.librerianazareth.data.model.RegisterRequest;
 import com.example.librerianazareth.data.model.Rubro;
 import com.example.librerianazareth.data.model.UserProfileResponse;
@@ -53,6 +55,9 @@ public interface ApiService {
 
     @GET("api/auth/me/")
     Call<UserProfileResponse> me();
+
+    @POST("api/auth/register/")
+    Call<RegisterPublicResponse> registerPublic(@Body RegisterPublicRequest request);
 
     // ============================================================
     // PRODUCTOS

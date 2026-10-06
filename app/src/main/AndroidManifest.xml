@@ -31,6 +31,10 @@
             android:exported="false"
             android:theme="@style/Theme.LibreriaNazareth.NoActionBar" />
         <activity
+            android:name=".RegistroActivity"
+            android:exported="false"
+            android:theme="@style/Theme.LibreriaNazareth.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
