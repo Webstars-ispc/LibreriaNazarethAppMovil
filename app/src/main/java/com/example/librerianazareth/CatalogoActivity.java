@@ -136,9 +136,8 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         tvEstado.setVisibility(View.GONE);
         rvProductos.setVisibility(View.GONE);
 
-        Call<ProductoResponse> call = textoBusqueda.isEmpty()
-                ? RetrofitClient.getApi(this).getProductos(page)
-                : RetrofitClient.getApi(this).getProductos(page, textoBusqueda);
+        String searchParam = textoBusqueda.isEmpty() ? null : textoBusqueda;
+        Call<ProductoResponse> call = RetrofitClient.getApi(this).getProductosPaginados(page, searchParam);
 
         call.enqueue(new Callback<ProductoResponse>() {
             @Override

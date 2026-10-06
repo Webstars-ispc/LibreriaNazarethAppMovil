@@ -74,13 +74,10 @@ public interface ApiService {
     );
 
     @GET("api/productos/")
-    Call<ProductoResponse> getProductos(
+    Call<ProductoResponse> getProductosPaginados(
             @Query("page") int page,
             @Query("search") String search
     );
-
-    @GET("api/productos/")
-    Call<ProductoResponse> getProductos(@Query("page") int page);
 
     @POST("api/productos/")
     Call<Producto> crearProducto(@Body Producto producto);
