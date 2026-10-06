@@ -111,25 +111,19 @@ public interface ApiService {
     // USUARIOS
     // ============================================================
 
-    @GET("api/usuarios/")
-    Call<UsuarioResponse> getUsuarios(
-            @Query("page") int page,
-            @Query("search") String search
+    @GET("api/auth/usuarios/")
+    Call<List<Usuario>> getUsuarios();
+
+    @POST("api/auth/usuarios/create/")
+    Call<Usuario> crearUsuario(@Body RegisterRequest usuario);
+
+    @PUT("api/auth/usuarios/{id}/")
+    Call<Usuario> actualizarUsuario(
+            @Path("id") int id,
+            @Body RegisterRequest usuario
     );
 
-    @GET("api/usuarios/")
-    Call<UsuarioResponse> getUsuarios(@Query("page") int page);
-
-    @POST("api/usuarios/")
-    Call<Usuario> crearUsuario(@Body RegisterRequest request);
-
-    @GET("api/usuarios/{id}/")
-    Call<Usuario> getUsuario(@Path("id") int id);
-
-    @PUT("api/usuarios/{id}/")
-    Call<Usuario> actualizarUsuario(@Path("id") int id, @Body RegisterRequest request);
-
-    @DELETE("api/usuarios/{id}/")
+    @DELETE("api/auth/usuarios/{id}/")
     Call<Void> eliminarUsuario(@Path("id") int id);
 
     // ============================================================
