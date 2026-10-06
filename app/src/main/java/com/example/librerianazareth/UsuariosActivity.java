@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.librerianazareth.adapter.UsuarioAdapter;
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.Usuario;
+import com.example.librerianazareth.data.model.UsuarioResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,18 +160,18 @@ public class UsuariosActivity extends BaseActivity
         progressBar.setVisibility(View.VISIBLE);
         tvEstado.setVisibility(View.GONE);
 
-        Call<List<Usuario>> call =
+        Call<UsuarioResponse> call =
                 RetrofitClient
                         .getApi(this)
                         .getUsuarios();
 
         call.enqueue(
-                new Callback<List<Usuario>>() {
+                new Callback<UsuarioResponse>() {
 
                     @Override
                     public void onResponse(
-                            Call<List<Usuario>> call,
-                            Response<List<Usuario>> response) {
+                            Call<UsuarioResponse> call,
+                            Response<UsuarioResponse> response) {
 
                         progressBar.setVisibility(View.GONE);
 
@@ -182,7 +183,7 @@ public class UsuariosActivity extends BaseActivity
 
                             // Guardar usuarios recibidos
                             todosLosUsuarios.addAll(
-                                    response.body()
+                                    response.body().getResults()
                             );
 
                             // Mostrar todos
@@ -237,7 +238,7 @@ public class UsuariosActivity extends BaseActivity
 
                     @Override
                     public void onFailure(
-                            Call<List<Usuario>> call,
+                            Call<UsuarioResponse> call,
                             Throwable t) {
 
                         progressBar.setVisibility(View.GONE);

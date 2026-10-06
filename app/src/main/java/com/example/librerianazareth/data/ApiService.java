@@ -113,7 +113,7 @@ public interface ApiService {
     // ============================================================
 
     @GET("api/auth/usuarios/")
-    Call<List<Usuario>> getUsuarios();
+    Call<UsuarioResponse>getUsuarios();
 
     @POST("api/auth/usuarios/create/")
     Call<Usuario> crearUsuario(@Body RegisterRequest usuario);
