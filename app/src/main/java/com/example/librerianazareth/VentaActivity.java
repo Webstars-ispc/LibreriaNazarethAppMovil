@@ -204,8 +204,22 @@ public class VentaActivity extends BaseActivity {
     private void agregarItemAlCarrito(Producto producto) {
         int id = producto.getId();
 
+        // Si el producto no tiene stock, avisar y salir
+        if (producto.getStock() <= 0) {
+            Toast.makeText(this,
+                    "Sin stock disponible: " + producto.getNombre(),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         for (ItemVenta item : carrito) {
             if (item.getProductoId() == id) {
+                if (item.getCantidad() >= item.getStock()) {
+                    Toast.makeText(this,
+                            "Stock máximo alcanzado para: " + item.getNombre(),
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 item.setCantidad(item.getCantidad() + 1);
                 renderizarCarrito();
                 return;
@@ -216,6 +230,7 @@ public class VentaActivity extends BaseActivity {
                 id,
                 producto.getNombre(),
                 producto.getPrecioVenta(),
+                producto.getStock(),
                 1
         ));
         renderizarCarrito();
@@ -228,6 +243,17 @@ public class VentaActivity extends BaseActivity {
         if (carrito.isEmpty()) {
             Toast.makeText(this, "El carrito está vacío", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        // Verificar stock antes de enviar
+        for (ItemVenta item : carrito) {
+            if (item.getCantidad() > item.getStock()) {
+                Toast.makeText(this,
+                        "Stock insuficiente para: " + item.getNombre()
+                                + " (disponible: " + item.getStock() + ")",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
         }
 
         // Armar la lista de items para el request
@@ -339,6 +365,12 @@ public class VentaActivity extends BaseActivity {
             });
 
             btnMas.setOnClickListener(v -> {
+                if (item.getCantidad() >= item.getStock()) {
+                    Toast.makeText(VentaActivity.this,
+                            "Stock máximo alcanzado (" + item.getStock() + ")",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 item.setCantidad(item.getCantidad() + 1);
                 renderizarCarrito();
             });
