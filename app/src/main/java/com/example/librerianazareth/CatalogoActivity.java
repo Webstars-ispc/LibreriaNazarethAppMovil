@@ -136,8 +136,20 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         tvEstado.setVisibility(View.GONE);
         rvProductos.setVisibility(View.GONE);
 
-        String searchParam = textoBusqueda.isEmpty() ? null : textoBusqueda;
-        Call<ProductoResponse> call = RetrofitClient.getApi(this).getProductosPaginados(page, searchParam);
+        Call<ProductoResponse> call;
+
+        if (textoBusqueda.isEmpty()) {
+            // Sin búsqueda: listartodo paginado
+            call = RetrofitClient.getApi(this).getProductosPaginados(page, null);
+
+        } else if (esCodigoDeBarras(textoBusqueda)) {
+            // código de barras: buscar por código (sin paginar, no existe codigo de barra dubplicado)
+            call = RetrofitClient.getApi(this).buscarProductoPorCodigo(textoBusqueda);
+
+        } else {
+            // nombre: buscar por nombre paginado
+            call = RetrofitClient.getApi(this).getProductosPaginados(page, textoBusqueda);
+        }
 
         call.enqueue(new Callback<ProductoResponse>() {
             @Override
@@ -170,13 +182,18 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                 rvProductos.setVisibility(View.VISIBLE);
                 productoAdapter.setProductos(productos);
 
-                // Calcular total de páginas (10 por página)
-                totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
-                tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
-
-                // Habilitar/deshabilitar botones
-                btnAnterior.setEnabled(paginaActual > 1);
-                btnSiguiente.setEnabled(paginaActual < totalPaginas);
+                // Paginación: si es búsqueda por código, no paginamos
+                if (esCodigoDeBarras(textoBusqueda)) {
+                    totalPaginas = 1;
+                    tvPagina.setText("Pág. 1/1");
+                    btnAnterior.setEnabled(false);
+                    btnSiguiente.setEnabled(false);
+                } else {
+                    totalPaginas = (int) Math.ceil(page.getCount() / 10.0);
+                    tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
+                    btnAnterior.setEnabled(paginaActual > 1);
+                    btnSiguiente.setEnabled(paginaActual < totalPaginas);
+                }
             }
 
             @Override
@@ -186,6 +203,10 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                 mostrarEstado("Error de red: " + t.getMessage());
             }
         });
+    }
+
+    private boolean esCodigoDeBarras(String texto) {
+        return texto.matches("\\d+") && texto.length() >= 8;
     }
 
     private void mostrarEstado(String mensaje) {
