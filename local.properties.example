@@ -1,0 +1,15 @@
+# Copiar este archivo como "local.properties" y completar los valores.
+# local.properties NO se commitea (está en .gitignore).
+# Este archivo .example SÍ se commitea para que el equipo sepa qué configurar.
+
+# Ruta del SDK de Android (cambiar según tu máquina)
+# Ejemplo en Windows: C\:\\Users\\TuUsuario\\AppData\\Local\\Android\\Sdk
+
+sdk.dir=/ruta/a/tu/Android/Sdk
+
+# URL base de la API
+# Nosotros estamos en Producción (AlwaysData):
+API_BASE_URL=https://librerianazareth.alwaysdata.net/
+
+# Desarrollo local (emulador):
+# API_BASE_URL=http://10.0.2.2:8000/
