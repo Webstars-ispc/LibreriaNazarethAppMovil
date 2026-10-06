@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Soporte y información de contacto"
+                android:text="@string/contacto_subtitulo"
                 android:textColor="@color/texto_menu_subtitulo"
                 android:textSize="14sp" />
 
@@ -57,7 +57,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/circle_icon_bg"
                     android:gravity="center"
-                    android:text="📞"
+                    android:text="@string/icono_telefono"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -70,7 +70,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Teléfono"
+                        android:text="@string/contacto_telefono_label"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -78,7 +78,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="351-123-4567"
+                        android:text="@string/contacto_telefono"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -98,7 +98,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/circle_icon_bg"
                     android:gravity="center"
-                    android:text="✉"
+                    android:text="@string/icono_email"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -111,7 +111,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Email"
+                        android:text="@string/contacto_email_label"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -119,7 +119,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="info@librerianazareth.com"
+                        android:text="@string/contacto_email"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -139,7 +139,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/circle_icon_bg"
                     android:gravity="center"
-                    android:text="📍"
+                    android:text="@string/icono_ubicacion"
                     android:textSize="16sp" />
 
                 <LinearLayout
@@ -152,7 +152,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Dirección"
+                        android:text="@string/contacto_direccion_label"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -160,7 +160,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Av. Principal 1234, Córdoba"
+                        android:text="@string/contacto_direccion"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -174,7 +174,7 @@
                 android:background="@drawable/boton_redondeado"
                 android:gravity="center"
                 android:padding="14dp"
-                android:text="VOLVER"
+                android:text="@string/volver"
                 android:textColor="@color/boton_texto"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -187,7 +187,7 @@
     <include
         layout="@layout/bottom_nav"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

@@ -3,6 +3,7 @@ package com.example.librerianazareth.data;
 import com.example.librerianazareth.data.model.LoginRequest;
 import com.example.librerianazareth.data.model.LoginResponse;
 import com.example.librerianazareth.data.model.Marca;
+import com.example.librerianazareth.data.model.Pagina;
 import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.ProductoResponse;
 import com.example.librerianazareth.data.model.RegisterRequest;
@@ -93,14 +94,14 @@ public interface ApiService {
     // ============================================================
 
     @GET("api/rubros/")
-    Call<List<Rubro>> getRubros();
+    Call<Pagina<Rubro>> getRubros();
 
     // ============================================================
     // MARCAS
     // ============================================================
 
     @GET("api/marcas/")
-    Call<List<Marca>> getMarcas();
+    Call<Pagina<Marca>> getMarcas();
 
     // ============================================================
     // USUARIOS

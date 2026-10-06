@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.Marca;
+import com.example.librerianazareth.data.model.Pagina;
 import com.example.librerianazareth.data.model.Producto;
 import com.example.librerianazareth.data.model.Rubro;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -36,6 +37,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
 
     private List<Rubro> rubrosList = new ArrayList<>();
     private List<Marca> marcasList = new ArrayList<>();
+    private String errorRubros = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +82,13 @@ public class FormularioCatalogoActivity extends BaseActivity {
 
     private void cargarRubrosYMarcas() {
         // Cargar rubros
-        RetrofitClient.getApi(this).getRubros().enqueue(new Callback<List<Rubro>>() {
+        RetrofitClient.getApi(this).getRubros().enqueue(new Callback<Pagina<Rubro>>() {
             @Override
-            public void onResponse(Call<List<Rubro>> call, Response<List<Rubro>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    rubrosList = response.body();
+            public void onResponse(Call<Pagina<Rubro>> call, Response<Pagina<Rubro>> response) {
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getResults() != null) {
+                    rubrosList = response.body().getResults();
+                    errorRubros = null;
                     List<String> rubroNombres = new ArrayList<>();
                     rubroNombres.add("Seleccionar rubro");
                     for (Rubro r : rubrosList) {
@@ -107,28 +111,26 @@ public class FormularioCatalogoActivity extends BaseActivity {
                             }
                         }
                     }
+                } else {
+                    errorRubros = mensajeError(response);
+                    mostrarErrorRubros();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Rubro>> call, Throwable t) {
-                // Fallback a opciones hardcoded si falla
-                String[] rubros = {"Seleccionar rubro", "Librería", "Escolar", "Oficina", "Arte"};
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        FormularioCatalogoActivity.this,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        rubros
-                );
-                spinnerRubro.setAdapter(adapter);
+            public void onFailure(Call<Pagina<Rubro>> call, Throwable t) {
+                errorRubros = "Sin conexión con el servidor. Revisá tu internet.";
+                mostrarErrorRubros();
             }
         });
 
         // Cargar marcas
-        RetrofitClient.getApi(this).getMarcas().enqueue(new Callback<List<Marca>>() {
+        RetrofitClient.getApi(this).getMarcas().enqueue(new Callback<Pagina<Marca>>() {
             @Override
-            public void onResponse(Call<List<Marca>> call, Response<List<Marca>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    marcasList = response.body();
+            public void onResponse(Call<Pagina<Marca>> call, Response<Pagina<Marca>> response) {
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getResults() != null) {
+                    marcasList = response.body().getResults();
                     List<String> marcaNombres = new ArrayList<>();
                     marcaNombres.add("Seleccionar marca");
                     for (Marca m : marcasList) {
@@ -151,21 +153,37 @@ public class FormularioCatalogoActivity extends BaseActivity {
                             }
                         }
                     }
+                } else {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            FormularioCatalogoActivity.this,
+                            android.R.layout.simple_spinner_dropdown_item,
+                            new String[]{"No se pudo cargar"}
+                    );
+                    spinnerMarca.setAdapter(adapter);
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Marca>> call, Throwable t) {
-                // Fallback a opciones hardcoded si falla
-                String[] marcas = {"Seleccionar marca", "Bic", "Faber Castell", "Pelikan", "Sin marca"};
+            public void onFailure(Call<Pagina<Marca>> call, Throwable t) {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         FormularioCatalogoActivity.this,
                         android.R.layout.simple_spinner_dropdown_item,
-                        marcas
+                        new String[]{"No se pudo cargar"}
                 );
                 spinnerMarca.setAdapter(adapter);
             }
         });
+    }
+
+    /** Deja el spinner de rubros en estado de error (no se puede guardar sin rubros reales). */
+    private void mostrarErrorRubros() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                new String[]{"No se pudieron cargar los rubros"}
+        );
+        spinnerRubro.setAdapter(adapter);
+        Toast.makeText(this, errorRubros, Toast.LENGTH_LONG).show();
     }
 
     private void guardarProducto() {
@@ -200,8 +218,15 @@ public class FormularioCatalogoActivity extends BaseActivity {
             return;
         }
 
-        double precioCosto = Double.parseDouble(precioCostoStr);
-        double precioVenta = Double.parseDouble(precioVentaStr);
+        double precioCosto;
+        double precioVenta;
+        try {
+            precioCosto = Double.parseDouble(precioCostoStr.replace(",", "."));
+            precioVenta = Double.parseDouble(precioVentaStr.replace(",", "."));
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Ingresá precios válidos (ej: 1500.50)", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (precioVenta <= 0) {
             etPrecioVenta.setError("El precio de venta debe ser mayor a 0");
@@ -221,7 +246,14 @@ public class FormularioCatalogoActivity extends BaseActivity {
             return;
         }
 
-        int stock = Integer.parseInt(stockStr);
+        int stock;
+        try {
+            stock = Integer.parseInt(stockStr);
+        } catch (NumberFormatException e) {
+            etStock.setError("Ingresá un número entero");
+            etStock.requestFocus();
+            return;
+        }
 
         if (stock < 0) {
             etStock.setError("El stock no puede ser negativo");
@@ -232,6 +264,14 @@ public class FormularioCatalogoActivity extends BaseActivity {
         // Obtener IDs de rubro y marca
         int rubroId = -1;
         int marcaId = -1;
+
+        if (rubrosList.isEmpty()) {
+            Toast.makeText(this, errorRubros != null
+                            ? errorRubros
+                            : "No se pudieron cargar los rubros. Reintentá abrir el formulario.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
 
         if (spinnerRubro.getSelectedItemPosition() > 0 && spinnerRubro.getSelectedItemPosition() <= rubrosList.size()) {
             rubroId = rubrosList.get(spinnerRubro.getSelectedItemPosition() - 1).getId();
@@ -255,14 +295,14 @@ public class FormularioCatalogoActivity extends BaseActivity {
                                 Toast.makeText(FormularioCatalogoActivity.this, "Producto actualizado correctamente", Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
-                                Toast.makeText(FormularioCatalogoActivity.this, "Error al actualizar producto", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioCatalogoActivity.this, mensajeError(response), Toast.LENGTH_LONG).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Producto> call, Throwable t) {
                             btnGuardar.setEnabled(true);
-                            Toast.makeText(FormularioCatalogoActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FormularioCatalogoActivity.this, "Error de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
         } else {
@@ -275,17 +315,45 @@ public class FormularioCatalogoActivity extends BaseActivity {
                                 Toast.makeText(FormularioCatalogoActivity.this, "Producto creado correctamente", Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
-                                Toast.makeText(FormularioCatalogoActivity.this, "Error al crear producto", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioCatalogoActivity.this, mensajeError(response), Toast.LENGTH_LONG).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Producto> call, Throwable t) {
                             btnGuardar.setEnabled(true);
-                            Toast.makeText(FormularioCatalogoActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FormularioCatalogoActivity.this, "Error de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
         }
+    }
+
+    /** Convierte la respuesta HTTP de error en un mensaje entendible para el usuario. */
+    private String mensajeError(Response<?> response) {
+        int code = response.code();
+        if (code == 401) return "Sesión expirada. Cerrá sesión y volvé a iniciar sesión.";
+        if (code == 403) return "No tenés permisos para modificar productos";
+        if (code == 404) return "Producto no encontrado";
+        if (code == 400) {
+            String detalle = "";
+            try {
+                if (response.errorBody() != null) {
+                    detalle = response.errorBody().string();
+                }
+            } catch (Exception ignored) {
+            }
+            // Django responde {"campo": ["mensaje"]} o {"detail": "..."}
+            detalle = detalle.replaceAll("[\\[\\]\"]", "")
+                    .replace("{", "")
+                    .replace("}", "")
+                    .replace("detail:", "")
+                    .trim();
+            if (detalle.isEmpty()) {
+                return "Datos inválidos. Revisá los campos del formulario.";
+            }
+            return "Datos inválidos: " + detalle;
+        }
+        return "Error del servidor (código " + code + ")";
     }
 
     private void iniciarEscaner() {

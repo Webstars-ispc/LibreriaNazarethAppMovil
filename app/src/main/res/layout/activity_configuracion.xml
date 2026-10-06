@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Ajustes de la aplicación"
+                android:text="@string/configuracion_subtitulo"
                 android:textColor="@color/texto_menu_subtitulo"
                 android:textSize="14sp" />
 
@@ -56,7 +56,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Notificaciones"
+                    android:text="@string/notificaciones"
                     android:textColor="@color/white"
                     android:textSize="16sp" />
 
@@ -82,7 +82,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Modo oscuro"
+                    android:text="@string/modo_oscuro"
                     android:textColor="@color/white"
                     android:textSize="16sp" />
 
@@ -108,14 +108,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Idioma"
+                    android:text="@string/idioma"
                     android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Español"
+                    android:text="@string/idioma_espanol"
                     android:textColor="@color/texto_menu_subtitulo"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -133,14 +133,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Versión"
+                    android:text="@string/version"
                     android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1.0.0"
+                    android:text="@string/version_valor"
                     android:textColor="@color/texto_menu_subtitulo"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -167,7 +167,7 @@
                 android:background="@drawable/boton_redondeado"
                 android:gravity="center"
                 android:padding="14dp"
-                android:text="VOLVER"
+                android:text="@string/volver"
                 android:textColor="@color/boton_texto"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -180,7 +180,7 @@
     <include
         layout="@layout/bottom_nav"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

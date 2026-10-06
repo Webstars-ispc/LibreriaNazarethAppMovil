@@ -87,8 +87,12 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
             }
         });
 
-        // Botón agregar producto
-        findViewById(R.id.fabAgregarProducto).setOnClickListener(v -> {
+        // Botón agregar producto (solo con sesión iniciada: el backend exige JWT)
+        View fabAgregar = findViewById(R.id.fabAgregarProducto);
+        if (!tm.isLoggedIn()) {
+            fabAgregar.setVisibility(View.GONE);
+        }
+        fabAgregar.setOnClickListener(v -> {
             Intent intent = new Intent(CatalogoActivity.this, FormularioCatalogoActivity.class);
             startActivity(intent);
         });
@@ -228,7 +232,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         intent.putExtra("descripcion", producto.getDescripcion());
         intent.putExtra("codigo_barras", producto.getCodigoBarras());
         intent.putExtra("rubro", producto.getRubro());
-        intent.putExtra("marca", producto.getMarca());
+        intent.putExtra("marca", producto.getMarca() != null ? producto.getMarca() : -1);
         intent.putExtra("precio_costo", producto.getPrecioCosto());
         intent.putExtra("precio_venta", producto.getPrecioVenta());
         intent.putExtra("stock", producto.getStock());

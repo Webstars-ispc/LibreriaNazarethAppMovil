@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,17 +8,20 @@
 
     <!-- Contenido desplazable -->
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation"
-        android:fillViewport="true">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24sp">
+            android:padding="24dp">
 
             <!-- Título de Bienvenida -->
             <TextView
@@ -219,15 +222,15 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/circle_icon_bg"
-                        android:contentDescription="Usuarios"
+                        android:contentDescription="@string/usuarios"
                         android:padding="8dp"
-                        android:src="@android:drawable/ic_menu_myplaces" />
+                        android:src="@drawable/ic_usuarios" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Usuarios"
+                        android:text="@string/usuarios"
                         android:textColor="@color/white"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -236,7 +239,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Gestionar usuarios"
+                        android:text="@string/gestionar_usuarios"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
 
@@ -258,15 +261,15 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/circle_icon_bg"
-                        android:contentDescription="Venta"
+                        android:contentDescription="@string/venta"
                         android:padding="8dp"
-                        android:src="@android:drawable/ic_menu_add" />
+                        android:src="@drawable/ic_venta" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Venta"
+                        android:text="@string/venta"
                         android:textColor="@color/white"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -275,7 +278,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Nueva venta"
+                        android:text="@string/nueva_venta"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -303,6 +306,12 @@
     </ScrollView>
 
     <!-- Menú inferior fijo -->
-    <include layout="@layout/bottom_nav" />
+    <include
+        layout="@layout/bottom_nav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

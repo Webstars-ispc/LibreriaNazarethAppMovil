@@ -23,7 +23,7 @@ public class Producto {
     private String rubroNombre;
 
     @SerializedName("marca")
-    private int marca;
+    private Integer marca;
 
     @SerializedName("marca_nombre")
     private String marcaNombre;
@@ -46,7 +46,8 @@ public class Producto {
         this.descripcion = descripcion;
         this.codigoBarras = codigoBarras;
         this.rubro = rubro;
-        this.marca = marca;
+        // marca < 0 significa "sin marca": el backend acepta null, no -1
+        this.marca = marca < 0 ? null : marca;
         this.precioCosto = precioCosto;
         this.precioVenta = precioVenta;
         this.stock = stock;
@@ -70,8 +71,8 @@ public class Producto {
     public String getRubroNombre() { return rubroNombre; }
     public void setRubroNombre(String rubroNombre) { this.rubroNombre = rubroNombre; }
 
-    public int getMarca() { return marca; }
-    public void setMarca(int marca) { this.marca = marca; }
+    public Integer getMarca() { return marca; }
+    public void setMarca(Integer marca) { this.marca = marca; }
 
     public String getMarcaNombre() { return marcaNombre; }
     public void setMarcaNombre(String marcaNombre) { this.marcaNombre = marcaNombre; }

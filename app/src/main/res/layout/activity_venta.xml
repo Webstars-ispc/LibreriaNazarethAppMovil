@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Nueva Venta"
+        android:text="@string/nueva_venta_titulo"
         android:textColor="@color/texto_titulo"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -41,7 +41,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:hint="Escaneá o escribí el código/nombre"
+            android:hint="@string/hint_escanear_o_escribir"
             android:inputType="text"
             android:textColor="@color/texto_principal"
             android:textColorHint="@color/texto_hint"
@@ -53,7 +53,7 @@
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Escanear código"
+            android:contentDescription="@string/escanear_codigo"
             android:src="@android:drawable/ic_menu_camera"
             app:tint="@color/dorado_claro" />
 
@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Agregar"
+            android:text="@string/agregar_boton"
             android:textColor="@color/boton_texto"
             android:backgroundTint="@color/dorado"
             android:textSize="12sp" />
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:gravity="center"
-                android:text="El carrito está vacío"
+                android:text="@string/carrito_vacio"
                 android:textColor="@color/texto_hint"
                 android:textSize="16sp" />
 
@@ -120,7 +120,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="TOTAL: $0"
+            android:text="@string/total_default"
             android:textColor="@color/dorado_claro"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -137,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="Cancelar"
+                android:text="@string/cancelar"
                 android:textColor="@color/dorado_claro"
                 android:backgroundTint="@color/borde" />
 
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="Confirmar venta"
+                android:text="@string/confirmar_venta"
                 android:textColor="@color/boton_texto"
                 android:backgroundTint="@color/dorado" />
         </LinearLayout>
@@ -157,7 +157,7 @@
     <include
         layout="@layout/bottom_nav"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
