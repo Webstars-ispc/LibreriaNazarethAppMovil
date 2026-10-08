@@ -125,6 +125,11 @@ public class RegistroActivity extends AppCompatActivity {
                         RegisterPublicResponse body = response.body();
 
                         if (response.isSuccessful() && body != null) {
+                            if (body.getAccess() == null || body.getRefresh() == null) {
+                                volverAlLogin(email, "Cuenta creada. Iniciá sesión.");
+                                return;
+                            }
+
                             tokenManager.saveTokens(body.getAccess(), body.getRefresh());
                             tokenManager.saveUsername(body.getUsername());
                             tokenManager.saveRole(body.getRole());
@@ -142,7 +147,7 @@ public class RegistroActivity extends AppCompatActivity {
                         } else {
                             restaurarBoton();
                             Toast.makeText(RegistroActivity.this,
-                                    mensajeError(response.code()),
+                                    mensajeError(response),
                                     Toast.LENGTH_LONG).show();
                         }
                     }
@@ -158,17 +163,41 @@ public class RegistroActivity extends AppCompatActivity {
                 });
     }
 
-    private String mensajeError(int code) {
-        if (code == 400) {
-            return "Datos inválidos. Revisá el usuario y el correo.";
-        }
+    private void volverAlLogin(String email, String mensaje) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("EXTRA_EMAIL", email);
+        startActivity(intent);
+        finish();
+    }
+
+    private String mensajeError(Response<?> response) {
+        int code = response.code();
         if (code == 401 || code == 403) {
             return "No autorizado para registrarse.";
         }
-        if (code == 409) {
-            return "Ese usuario o correo ya está registrado.";
+
+        String detalle = "";
+        try {
+            if (response.errorBody() != null) {
+                detalle = response.errorBody().string();
+            }
+        } catch (Exception ignored) {
         }
-        return "No se pudo crear la cuenta (error " + code + ")";
+
+        detalle = detalle.replaceAll("[\\[\\]\"]", "")
+                .replace("{", "")
+                .replace("}", "")
+                .replace("detail:", "")
+                .trim();
+
+        if (detalle.isEmpty()) {
+            if (code == 400) {
+                return "Datos inválidos. Revisá los campos del formulario.";
+            }
+            return "No se pudo crear la cuenta (error " + code + ")";
+        }
+        return "Datos inválidos: " + detalle;
     }
 
     private void restaurarBoton() {
