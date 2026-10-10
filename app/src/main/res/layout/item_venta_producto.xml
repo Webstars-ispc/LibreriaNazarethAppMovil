@@ -26,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/white"
+                android:textColor="@color/texto_card"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:textColor="@color/white"
+                android:textColor="@color/texto_card"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>

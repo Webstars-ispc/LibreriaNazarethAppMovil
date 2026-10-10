@@ -40,7 +40,6 @@ public class MainActivity extends BaseActivity {
         LinearLayout btnContacto      = findViewById(R.id.btnContacto);
         LinearLayout btnUsuarios      = findViewById(R.id.btnUsuarios);
         LinearLayout btnVenta         = findViewById(R.id.btnVenta);
-        TextView     btnCerrarSesion  = findViewById(R.id.btnCerrarSesion);
 
         // Visibilidad según rol / invitado
         // - Invitados: no ven "Usuarios" ni "Agregar"
@@ -88,15 +87,6 @@ public class MainActivity extends BaseActivity {
         btnUsuarios.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UsuariosActivity.class);
             startActivity(intent);
-        });
-
-        btnCerrarSesion.setOnClickListener(v -> {
-            new TokenManager(MainActivity.this).clear();
-
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
         });
 
         setupBottomNavigation(R.id.nav_inicio);
