@@ -6,6 +6,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.librerianazareth.data.local.JwtUtils;
 import com.example.librerianazareth.data.local.TokenManager;
 
 public class SplashActivity extends AppCompatActivity {
@@ -20,12 +21,21 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 TokenManager tokenManager = new TokenManager(SplashActivity.this);
 
+                String accessToken = tokenManager.getAccessToken();
+
+                // Hay sesión solo si existe el token y NO está expirado
+                boolean sesionValida = accessToken != null
+                        && !JwtUtils.isExpired(accessToken);
+
                 Intent intent;
-                if (tokenManager.isLoggedIn()) {
-                    // Ya hay token guardado → al menú principal
+                if (sesionValida) {
+                    // Token válido → al menú principal
                     intent = new Intent(SplashActivity.this, MainActivity.class);
                 } else {
-                    // No hay token → al login
+                    // Sin token o token expirado → limpiar y al login
+                    if (accessToken != null) {
+                        tokenManager.clear();
+                    }
                     intent = new Intent(SplashActivity.this, LoginActivity.class);
                 }
 

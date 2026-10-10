@@ -18,10 +18,12 @@ import com.example.librerianazareth.data.model.Usuario;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import com.example.librerianazareth.data.model.RegisterRequest;
+
 public class FormularioUsuarioActivity extends AppCompatActivity {
 
     private TextView tvTituloFormulario;
+    private EditText etNombre;
+    private EditText etApellido;
     private EditText etNombreUsuario;
     private EditText etCorreoUsuario;
     private EditText etContrasenaUsuario;
@@ -38,6 +40,8 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         setContentView(R.layout.activity_formulario_usuario);
 
         tvTituloFormulario  = findViewById(R.id.tvTituloFormulario);
+        etNombre            = findViewById(R.id.etNombre);
+        etApellido          = findViewById(R.id.etApellido);
         etNombreUsuario     = findViewById(R.id.etNombreUsuario);
         etCorreoUsuario     = findViewById(R.id.etCorreoUsuario);
         etContrasenaUsuario = findViewById(R.id.etContrasenaUsuario);
@@ -70,16 +74,19 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             tvTituloFormulario.setText("Editar usuario");
             usuarioId = getIntent().getIntExtra("usuario_id", -1);
 
-            String nombre = getIntent().getStringExtra(
-                    "nombre_usuario"
-            );
-
-            String correo = getIntent().getStringExtra(
-                    "correo_usuario"
-            );
+            String nombre = getIntent().getStringExtra("nombre_usuario");
+            String apellido = getIntent().getStringExtra("apellido_usuario");
+            String username = getIntent().getStringExtra("username_usuario");
+            String correo = getIntent().getStringExtra("correo_usuario");
             String rol = getIntent().getStringExtra("rol_usuario");
 
-            if (nombre != null) etNombreUsuario.setText(nombre);
+            if (username != null) {
+                etNombreUsuario.setText(username);
+            } else if (nombre != null) {
+                etNombreUsuario.setText(nombre);
+            }
+            if (nombre != null) etNombre.setText(nombre);
+            if (apellido != null) etApellido.setText(apellido);
             if (correo != null) etCorreoUsuario.setText(correo);
 
             etContrasenaUsuario.setHint(
@@ -110,34 +117,29 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
 
     private void guardarUsuario() {
 
-        String username = etNombreUsuario
-                .getText()
-                .toString()
-                .trim();
-
-        String email = etCorreoUsuario
-                .getText()
-                .toString()
-                .trim();
-
-        String password = etContrasenaUsuario
-                .getText()
-                .toString()
-                .trim();
-
-        String role = spinnerRol
-                .getSelectedItem()
-                .toString();
+        String nombre = etNombre.getText().toString().trim();
+        String apellido = etApellido.getText().toString().trim();
+        String username = etNombreUsuario.getText().toString().trim();
+        String email = etCorreoUsuario.getText().toString().trim();
+        String password = etContrasenaUsuario.getText().toString().trim();
+        String role = spinnerRol.getSelectedItem().toString();
 
         // Validaciones
+        if (TextUtils.isEmpty(nombre)) {
+            etNombre.setError("Ingresá un nombre");
+            etNombre.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(apellido)) {
+            etApellido.setError("Ingresá un apellido");
+            etApellido.requestFocus();
+            return;
+        }
         if (TextUtils.isEmpty(username)) {
-            etNombreUsuario.setError(
-                    "Ingresá un usuario"
-            );
+            etNombreUsuario.setError("Ingresá un usuario");
             etNombreUsuario.requestFocus();
             return;
         }
-
         if (username.length() < 3) {
             etNombreUsuario.setError("Mínimo 3 caracteres");
             etNombreUsuario.requestFocus();
@@ -188,7 +190,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
 
         btnGuardarUsuario.setEnabled(false);
 
-        RegisterRequest req = new RegisterRequest(username, email, password, role);
+        RegisterRequest req = new RegisterRequest(username, nombre, apellido, email, password, role);
 
         if (modoEdicion && usuarioId != -1) {
             RetrofitClient.getApi(this).actualizarUsuario(usuarioId, req)

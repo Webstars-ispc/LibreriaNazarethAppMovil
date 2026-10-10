@@ -344,30 +344,13 @@ public class UsuariosActivity extends BaseActivity
                 FormularioUsuarioActivity.class
         );
 
-        intent.putExtra(
-                "modo_edicion",
-                true
-        );
-
-        intent.putExtra(
-                "usuario_id",
-                usuario.getId()
-        );
-
-        intent.putExtra(
-                "nombre_usuario",
-                usuario.getUsername()
-        );
-
-        intent.putExtra(
-                "correo_usuario",
-                usuario.getEmail()
-        );
-
-        intent.putExtra(
-                "rol_usuario",
-                usuario.getRole()
-        );
+        intent.putExtra("modo_edicion", true);
+        intent.putExtra("usuario_id", usuario.getId());
+        intent.putExtra("username_usuario", usuario.getUsername());
+        intent.putExtra("nombre_usuario", usuario.getNombre());
+        intent.putExtra("apellido_usuario", usuario.getApellido());
+        intent.putExtra("correo_usuario", usuario.getEmail());
+        intent.putExtra("rol_usuario", usuario.getRole());
 
         startActivity(intent);
     }

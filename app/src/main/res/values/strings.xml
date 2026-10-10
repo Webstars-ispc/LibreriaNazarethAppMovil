@@ -39,6 +39,8 @@
     <string name="login_invitado">Entrar como invitado</string>
     <string name="login_registro">No tengo cuenta, registrarme</string>
     <string name="hint_usuario">Usuario</string>
+    <string name="hint_nombre">Nombre</string>
+    <string name="hint_apellido">Apellido</string>
     <string name="hint_correo">Correo electrónico</string>
     <string name="hint_contrasena">Contraseña</string>
     <string name="hint_email">Email</string>
