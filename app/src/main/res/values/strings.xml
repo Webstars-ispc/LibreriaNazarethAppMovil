@@ -113,6 +113,24 @@
     <string name="contacto_direccion_label">Dirección</string>
     <string name="contacto_direccion">Av. Principal 1234, Córdoba</string>
 
+    <!-- Formulario de comunicaciones -->
+    <string name="form_comunicaciones_titulo">Enviar mensaje</string>
+    <string name="form_comunicaciones_subtitulo">Completá el formulario y te vamos a responder</string>
+    <string name="campo_nombre_contacto">Nombre *</string>
+    <string name="hint_nombre_contacto">Tu nombre</string>
+    <string name="campo_email_contacto">Email *</string>
+    <string name="hint_email_contacto">tucorreo@ejemplo.com</string>
+    <string name="campo_asunto_contacto">Asunto *</string>
+    <string name="hint_asunto_contacto">Motivo de tu consulta</string>
+    <string name="campo_mensaje_contacto">Mensaje *</string>
+    <string name="hint_mensaje_contacto">Escribí tu mensaje...</string>
+    <string name="enviar_mensaje">ENVIAR</string>
+    <string name="enviando_mensaje">ENVIANDO...</string>
+    <string name="msj_campos_obligatorios">Completá todos los campos obligatorios</string>
+    <string name="msj_email_invalido">Ingresá un email válido</string>
+    <string name="msj_mensaje_enviado">Mensaje enviado correctamente</string>
+    <string name="msj_sin_app_email">No hay aplicación de email disponible</string>
+
     <!-- Productos de ejemplo (temporal) -->
     <string name="producto1_nombre">MARCADORES PARA PIZZARA</string>
     <string name="producto1_precio">$5000.00</string>
