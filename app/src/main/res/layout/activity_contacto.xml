@@ -71,7 +71,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/contacto_telefono_label"
-                        android:textColor="@color/white"
+                        android:textColor="@color/texto_card"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -112,7 +112,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/contacto_email_label"
-                        android:textColor="@color/white"
+                        android:textColor="@color/texto_card"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -153,7 +153,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/contacto_direccion_label"
-                        android:textColor="@color/white"
+                        android:textColor="@color/texto_card"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -165,6 +165,100 @@
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/form_comunicaciones_titulo"
+                android:textColor="@color/texto_menu_titulo"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/form_comunicaciones_subtitulo"
+                android:textColor="@color/texto_menu_subtitulo"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/etContactoNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/input_fondo"
+                android:hint="@string/hint_nombre_contacto"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/texto_principal"
+                android:textColorHint="@color/texto_hint" />
+
+            <EditText
+                android:id="@+id/etContactoEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/input_fondo"
+                android:hint="@string/hint_email_contacto"
+                android:importantForAutofill="no"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/texto_principal"
+                android:textColorHint="@color/texto_hint" />
+
+            <EditText
+                android:id="@+id/etContactoAsunto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/input_fondo"
+                android:hint="@string/hint_asunto_contacto"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/texto_principal"
+                android:textColorHint="@color/texto_hint" />
+
+            <EditText
+                android:id="@+id/etContactoMensaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/input_fondo"
+                android:gravity="top"
+                android:hint="@string/hint_mensaje_contacto"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:lines="4"
+                android:maxLines="6"
+                android:minHeight="110dp"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/texto_principal"
+                android:textColorHint="@color/texto_hint" />
+
+            <TextView
+                android:id="@+id/btnEnviarMensaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/boton_redondeado"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="@string/enviar_mensaje"
+                android:textColor="@color/boton_texto"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/btnVolver"

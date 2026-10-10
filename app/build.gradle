@@ -2,25 +2,51 @@ plugins {
     id 'com.android.application'
 }
 
+// Firma de release: se lee desde keystore.properties (archivo local, NO versionado).
+// Si el archivo no existe, el release se compila sin firmar (no rompe el build).
+def keystorePropsFile = rootProject.file("keystore.properties")
+def keystoreProps = new Properties()
+def tieneKeystore = keystorePropsFile.exists()
+if (tieneKeystore) {
+    keystoreProps.load(new FileInputStream(keystorePropsFile))
+}
+
 android {
     namespace 'com.example.librerianazareth'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.librerianazareth"
+        applicationId "com.ispc.librerianazareth"
         minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
 
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
         // URL base de la API (se lee desde local.properties)
         buildConfigField "String", "API_BASE_URL", "\"${getApiBaseUrl()}\""
     }
 
+    signingConfigs {
+        if (tieneKeystore) {
+            release {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (tieneKeystore) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
@@ -31,6 +57,11 @@ android {
 
     buildFeatures {
         buildConfig true
+    }
+
+    // Desactiva las animaciones en los tests instrumentados (evita flakiness)
+    testOptions {
+        animationsDisabled = true
     }
 }
 

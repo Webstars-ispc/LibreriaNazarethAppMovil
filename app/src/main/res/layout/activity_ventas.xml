@@ -117,7 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_agregar"
         android:contentDescription="@string/nueva_venta"
         app:backgroundTint="@color/dorado"
         app:tint="@color/boton_texto"

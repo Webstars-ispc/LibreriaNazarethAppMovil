@@ -28,4 +28,10 @@ public final class NetworkConstants {
 
     /** Clave del token de refresco. */
     public static final String KEY_REFRESH = "refresh_token";
+
+    /** Dominio de producción al que se aplica el pinning del certificado. */
+    public static final String PINNED_DOMAIN = "librerianazareth.alwaysdata.net";
+
+    /** Pin SHA-256 (SPKI) del certificado TLS de producción. */
+    public static final String CERT_SHA256_PIN = "sha256/flYolyphMsrOB8xnd3H5t0wvzeBuUcLy0AWKs4Tfd+I=";
 }

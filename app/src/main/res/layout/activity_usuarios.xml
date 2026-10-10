@@ -41,7 +41,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@string/buscar_usuario"
-                android:src="@android:drawable/ic_menu_search"
+                android:src="@drawable/ic_buscar"
                 app:tint="@color/dorado_claro" />
 
             <EditText
@@ -101,7 +101,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_agregar"
         android:contentDescription="@string/agregar_usuario"
         app:backgroundTint="@color/dorado"
         app:tint="@color/boton_texto"

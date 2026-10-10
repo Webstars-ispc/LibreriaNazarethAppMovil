@@ -39,9 +39,17 @@
     <string name="login_invitado">Entrar como invitado</string>
     <string name="login_registro">No tengo cuenta, registrarme</string>
     <string name="hint_usuario">Usuario</string>
+    <string name="hint_nombre">Nombre</string>
+    <string name="hint_apellido">Apellido</string>
     <string name="hint_correo">Correo electrónico</string>
     <string name="hint_contrasena">Contraseña</string>
     <string name="hint_email">Email</string>
+
+    <!-- Registro público -->
+    <string name="registro_titulo">CREAR CUENTA</string>
+    <string name="hint_confirmar_contrasena">Confirmar contraseña</string>
+    <string name="registro_boton">REGISTRARME</string>
+    <string name="registro_ir_login">Ya tengo cuenta, iniciar sesión</string>
 
     <!-- Catálogo -->
     <string name="catalogo_titulo">Catálogo de Productos</string>
@@ -113,6 +121,24 @@
     <string name="contacto_direccion_label">Dirección</string>
     <string name="contacto_direccion">Av. Principal 1234, Córdoba</string>
 
+    <!-- Formulario de comunicaciones -->
+    <string name="form_comunicaciones_titulo">Enviar mensaje</string>
+    <string name="form_comunicaciones_subtitulo">Completá el formulario y te vamos a responder</string>
+    <string name="campo_nombre_contacto">Nombre *</string>
+    <string name="hint_nombre_contacto">Tu nombre</string>
+    <string name="campo_email_contacto">Email *</string>
+    <string name="hint_email_contacto">tucorreo@ejemplo.com</string>
+    <string name="campo_asunto_contacto">Asunto *</string>
+    <string name="hint_asunto_contacto">Motivo de tu consulta</string>
+    <string name="campo_mensaje_contacto">Mensaje *</string>
+    <string name="hint_mensaje_contacto">Escribí tu mensaje...</string>
+    <string name="enviar_mensaje">ENVIAR</string>
+    <string name="enviando_mensaje">ENVIANDO...</string>
+    <string name="msj_campos_obligatorios">Completá todos los campos obligatorios</string>
+    <string name="msj_email_invalido">Ingresá un email válido</string>
+    <string name="msj_mensaje_enviado">Mensaje enviado correctamente</string>
+    <string name="msj_sin_app_email">No hay aplicación de email disponible</string>
+
     <!-- Productos de ejemplo (temporal) -->
     <string name="producto1_nombre">MARCADORES PARA PIZZARA</string>
     <string name="producto1_precio">$5000.00</string>
@@ -125,4 +151,133 @@
     <string name="producto3_nombre">CUERDA 5MM</string>
     <string name="producto3_precio">$350.00</string>
     <string name="producto3_stock">Stock: 100</string>
+
+    <!-- Mensajes dinámicos (Java) -->
+    <string name="main_bienvenido">Bienvenido/a</string>
+    <string name="main_bienvenido_usuario">Bienvenido/a, %1$s</string>
+
+    <!-- Mensajes genéricos -->
+    <string name="msj_sesion_expirada">Sesión expirada</string>
+    <string name="msj_sesion_expirada_larga">Sesión expirada. Cerrá sesión y volvé a iniciar sesión.</string>
+    <string name="msj_error_conexion">Error de conexión</string>
+    <string name="msj_error_conexion_detalle">Error de conexión: %1$s</string>
+    <string name="msj_error_red">Error de red: %1$s</string>
+    <string name="msj_sin_conexion">Sin conexión con el servidor. Revisá tu internet.</string>
+    <string name="msj_datos_invalidos">Datos inválidos. Revisá los campos del formulario.</string>
+    <string name="msj_datos_invalidos_detalle">Datos inválidos: %1$s</string>
+    <string name="msj_escaneo_cancelado">Escaneo cancelado</string>
+
+    <!-- Paginación -->
+    <string name="pagina_actual">Pág. %1$d</string>
+    <string name="pagina_de">Pág. %1$d/%2$d</string>
+
+    <!-- Catálogo -->
+    <string name="msj_sin_permiso_catalogo">No tenés permisos para ver el catálogo</string>
+    <string name="msj_error_cargar_productos">Error al cargar productos</string>
+    <string name="msj_sin_productos">No hay productos cargados</string>
+    <string name="msj_sin_resultados_productos">No se encontraron productos</string>
+    <string name="escanear_prompt">Apuntá al código de barras</string>
+    <string name="escanear_prompt_producto">Apuntá al código de barras del producto</string>
+    <string name="dialog_eliminar_producto_titulo">Eliminar producto</string>
+    <string name="dialog_eliminar_producto_msg">¿Estás seguro de eliminar \"%1$s\"?</string>
+    <string name="msj_producto_eliminado">Producto eliminado</string>
+    <string name="msj_error_eliminar">Error al eliminar</string>
+    <string name="producto_marca_prefijo">- %1$s</string>
+    <string name="producto_precio">$%1$.2f</string>
+    <string name="producto_stock">Stock: %1$d</string>
+
+    <!-- Formulario producto -->
+    <string name="error_nombre_producto">Ingresá el nombre del producto</string>
+    <string name="msj_seleccionar_rubro">Seleccioná un rubro</string>
+    <string name="error_precio_costo">Ingresá el precio de costo</string>
+    <string name="error_precio_venta">Ingresá el precio de venta</string>
+    <string name="msj_precios_invalidos">Ingresá precios válidos (ej: 1500.50)</string>
+    <string name="error_precio_venta_mayor_cero">El precio de venta debe ser mayor a 0</string>
+    <string name="error_precio_venta_menor_costo">El precio de venta no puede ser menor al de costo</string>
+    <string name="error_stock">Ingresá el stock</string>
+    <string name="error_stock_entero">Ingresá un número entero</string>
+    <string name="error_stock_negativo">El stock no puede ser negativo</string>
+    <string name="msj_error_rubros_reintentar">No se pudieron cargar los rubros. Reintentá abrir el formulario.</string>
+    <string name="msj_producto_actualizado">Producto actualizado correctamente</string>
+    <string name="msj_producto_creado">Producto creado correctamente</string>
+    <string name="msj_no_se_pudo_cargar">No se pudo cargar</string>
+    <string name="msj_no_se_pudieron_cargar_rubros">No se pudieron cargar los rubros</string>
+    <string name="spinner_seleccionar_rubro">Seleccionar rubro</string>
+    <string name="spinner_seleccionar_marca">Seleccionar marca</string>
+    <string name="msj_sin_permiso_modificar_producto">No tenés permisos para modificar productos</string>
+    <string name="msj_producto_no_encontrado">Producto no encontrado</string>
+    <string name="msj_error_servidor_codigo">Error del servidor (código %1$d)</string>
+
+    <!-- Formulario y gestión de usuarios -->
+    <string name="form_usuario_titulo_editar">Editar usuario</string>
+    <string name="msj_contrasena_dejar_vacio">Contraseña (dejar vacío para no cambiar)</string>
+    <string name="error_ingresar_nombre">Ingresá un nombre</string>
+    <string name="error_ingresar_apellido">Ingresá un apellido</string>
+    <string name="error_ingresar_usuario">Ingresá un usuario</string>
+    <string name="error_minimo_3">Mínimo 3 caracteres</string>
+    <string name="error_ingresar_correo">Ingresá un correo</string>
+    <string name="error_correo_invalido">Correo inválido</string>
+    <string name="error_ingresar_contrasena">Ingresá una contraseña</string>
+    <string name="error_minimo_8">Mínimo 8 caracteres</string>
+    <string name="msj_usuario_actualizado">Usuario actualizado correctamente</string>
+    <string name="msj_error_actualizar_usuario">Error al actualizar usuario</string>
+    <string name="msj_usuario_guardado">Usuario guardado correctamente</string>
+    <string name="msj_error_crear_usuario">Error al crear usuario</string>
+    <string name="usuario_rol_prefijo">Rol: %1$s</string>
+    <string name="msj_sin_usuarios">No se encontraron usuarios</string>
+    <string name="msj_sin_permiso_gestionar_usuarios">No tenés permisos para gestionar usuarios</string>
+    <string name="msj_error_cargar_usuarios_codigo">Error al cargar usuarios: %1$d</string>
+    <string name="dialog_eliminar_usuario_titulo">Eliminar usuario</string>
+    <string name="dialog_eliminar_usuario_msg">¿Estás seguro de eliminar \"%1$s\"?</string>
+    <string name="msj_usuario_eliminado">Usuario eliminado correctamente</string>
+    <string name="msj_error_eliminar_usuario_codigo">Error al eliminar usuario: %1$d</string>
+
+    <!-- Registro público (dinámico) -->
+    <string name="error_ingresar_tu_nombre">Ingresá tu nombre</string>
+    <string name="error_ingresar_tu_apellido">Ingresá tu apellido</string>
+    <string name="error_ingresar_tu_correo">Ingresá tu correo</string>
+    <string name="error_contrasenas_no_coinciden">Las contraseñas no coinciden</string>
+    <string name="registro_boton_cargando">Registrando...</string>
+    <string name="msj_cuenta_creada_iniciar_sesion">Cuenta creada. Iniciá sesión.</string>
+    <string name="msj_cuenta_creada_bienvenido">Cuenta creada. Bienvenido/a, %1$s</string>
+    <string name="msj_no_autorizado_registro">No autorizado para registrarse.</string>
+    <string name="msj_no_se_pudo_crear_cuenta">No se pudo crear la cuenta (error %1$d)</string>
+
+    <!-- Login (dinámico) -->
+    <string name="btn_ingresando">Ingresando...</string>
+    <string name="error_ingresar_correo_valido">Ingresá un correo válido</string>
+    <string name="error_ingresar_tu_contrasena">Ingresá tu contraseña</string>
+
+    <!-- Ventas -->
+    <string name="msj_ingresar_escanear_codigo">Ingresá o escaneá un código o nombre</string>
+    <string name="dialog_seleccionar_producto">Seleccioná un producto</string>
+    <string name="producto_precio_seleccion">%1$s - $%2$.0f</string>
+    <string name="precio_format">$%1$.0f</string>
+    <string name="total_format">TOTAL: $%1$.0f</string>
+    <string name="btn_procesando">Procesando...</string>
+    <string name="msj_venta_registrada">Venta #%1$d registrada</string>
+    <string name="msj_error_registrar_venta">Error al registrar la venta</string>
+    <string name="venta_numero">Venta #%1$d</string>
+    <string name="venta_total_item">$%1$s</string>
+    <string name="filtro_ventas_dia">Ventas del día</string>
+    <string name="filtro_ventas_mes">Ventas del mes</string>
+    <string name="msj_error_cargar_ventas">Error al cargar ventas</string>
+    <string name="msj_sin_ventas">No hay ventas para mostrar</string>
+    <string name="msj_no_detalle">No se pudo cargar el detalle</string>
+    <string name="detalle_venta_fecha">Fecha: %1$s</string>
+    <string name="detalle_venta_usuario">Usuario: %1$s</string>
+    <string name="detalle_venta_total">TOTAL: $%1$s</string>
+    <string name="detalle_cantidad">%1$dx</string>
+    <string name="detalle_sin_nombre">(sin nombre)</string>
+    <string name="detalle_subtotal">$%1$s</string>
+    <string name="dialog_cerrar">Cerrar</string>
+
+    <!-- Configuración (dinámico) -->
+    <string name="config_salir_invitado">Salir del modo invitado</string>
+    <string name="msj_notif_activadas">Notificaciones activadas</string>
+    <string name="msj_notif_desactivadas">Notificaciones desactivadas</string>
+    <string name="dialog_cerrar_sesion">Cerrar sesión</string>
+    <string name="dialog_salir_invitado_msg">¿Querés salir del modo invitado?</string>
+    <string name="dialog_cerrar_sesion_msg">¿Estás seguro de que querés cerrar sesión?</string>
+    <string name="accion_salir">Salir</string>
 </resources>

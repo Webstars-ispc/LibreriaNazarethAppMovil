@@ -3,7 +3,10 @@ package com.example.librerianazareth.data;
 import android.content.Context;
 import com.example.librerianazareth.BuildConfig;
 import java.util.concurrent.TimeUnit;
+import okhttp3.ConnectionSpec;
+import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
+import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -67,8 +70,18 @@ public final class RetrofitClient {
                 ? HttpLoggingInterceptor.Level.BODY
                 : HttpLoggingInterceptor.Level.NONE);
 
+        // Forzar TLS 1.2+ y pinning del certificado del backend en producción
+        ConnectionSpec tlsSpec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                .tlsVersions(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3)
+                .build();
+        CertificatePinner certificatePinner = new CertificatePinner.Builder()
+                .add(NetworkConstants.PINNED_DOMAIN, NetworkConstants.CERT_SHA256_PIN)
+                .build();
+
         // Cliente HTTP con interceptores y timeouts
         OkHttpClient client = new OkHttpClient.Builder()
+                .connectionSpecs(java.util.Collections.singletonList(tlsSpec))
+                .certificatePinner(certificatePinner)
                 .addInterceptor(new AuthInterceptor(context))
                 .addInterceptor(logging)
                 .connectTimeout(30, TimeUnit.SECONDS)
