@@ -13,6 +13,8 @@ android {
         versionCode 1
         versionName "1.0"
 
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
         // URL base de la API (se lee desde local.properties)
         buildConfigField "String", "API_BASE_URL", "\"${getApiBaseUrl()}\""
     }
@@ -33,6 +35,11 @@ android {
     buildFeatures {
         buildConfig true
     }
+
+    // Desactiva las animaciones en los tests instrumentados (evita flakiness)
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dependencies {
@@ -46,6 +53,22 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     // Cifrado de preferencias (tokens y datos del usuario)
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+    // ViewModel + LiveData (arquitectura MVVM)
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
+
+    // ---- Tests unitarios locales (app/src/test) ----
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
+
+    // ---- Tests instrumentados (app/src/androidTest) ----
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.5.1'
 }
 
 // Lee API_BASE_URL desde local.properties.
