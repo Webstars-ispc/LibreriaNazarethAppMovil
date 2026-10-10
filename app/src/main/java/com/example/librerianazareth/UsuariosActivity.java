@@ -197,7 +197,7 @@ public class UsuariosActivity extends BaseActivity
                             if (todosLosUsuarios.isEmpty()) {
 
                                 tvEstado.setText(
-                                        "No se encontraron usuarios"
+                                        getString(R.string.msj_sin_usuarios)
                                 );
 
                                 tvEstado.setVisibility(
@@ -209,14 +209,14 @@ public class UsuariosActivity extends BaseActivity
 
                             Toast.makeText(
                                     UsuariosActivity.this,
-                                    "Sesión expirada",
+                                    R.string.msj_sesion_expirada,
                                     Toast.LENGTH_SHORT
                             ).show();
 
                         } else if (response.code() == 403) {
 
                             tvEstado.setText(
-                                    "No tenés permisos para gestionar usuarios"
+                                    R.string.msj_sin_permiso_gestionar_usuarios
                             );
 
                             tvEstado.setVisibility(
@@ -226,8 +226,7 @@ public class UsuariosActivity extends BaseActivity
                         } else {
 
                             tvEstado.setText(
-                                    "Error al cargar usuarios: "
-                                            + response.code()
+                                    getString(R.string.msj_error_cargar_usuarios_codigo, response.code())
                             );
 
                             tvEstado.setVisibility(
@@ -244,8 +243,7 @@ public class UsuariosActivity extends BaseActivity
                         progressBar.setVisibility(View.GONE);
 
                         tvEstado.setText(
-                                "Error de conexión: "
-                                        + t.getMessage()
+                                getString(R.string.msj_error_conexion_detalle, t.getMessage())
                         );
 
                         tvEstado.setVisibility(
@@ -274,7 +272,7 @@ public class UsuariosActivity extends BaseActivity
             if (todosLosUsuarios.isEmpty()) {
 
                 tvEstado.setText(
-                        "No se encontraron usuarios"
+                        getString(R.string.msj_sin_usuarios)
                 );
 
                 tvEstado.setVisibility(
@@ -317,7 +315,7 @@ public class UsuariosActivity extends BaseActivity
         if (usuariosFiltrados.isEmpty()) {
 
             tvEstado.setText(
-                    "No se encontraron usuarios"
+                    getString(R.string.msj_sin_usuarios)
             );
 
             tvEstado.setVisibility(
@@ -364,16 +362,14 @@ public class UsuariosActivity extends BaseActivity
 
         new AlertDialog.Builder(this)
 
-                .setTitle("Eliminar usuario")
+                .setTitle(R.string.dialog_eliminar_usuario_titulo)
 
                 .setMessage(
-                        "¿Estás seguro de eliminar \""
-                                + usuario.getUsername()
-                                + "\"?"
+                        getString(R.string.dialog_eliminar_usuario_msg, usuario.getUsername())
                 )
 
                 .setPositiveButton(
-                        "Eliminar",
+                        R.string.eliminar,
                         (dialog, which) -> {
 
                             RetrofitClient
@@ -393,7 +389,7 @@ public class UsuariosActivity extends BaseActivity
 
                                                         Toast.makeText(
                                                                 UsuariosActivity.this,
-                                                                "Usuario eliminado correctamente",
+                                                                R.string.msj_usuario_eliminado,
                                                                 Toast.LENGTH_SHORT
                                                         ).show();
 
@@ -403,8 +399,7 @@ public class UsuariosActivity extends BaseActivity
 
                                                         Toast.makeText(
                                                                 UsuariosActivity.this,
-                                                                "Error al eliminar usuario: "
-                                                                        + response.code(),
+                                                                getString(R.string.msj_error_eliminar_usuario_codigo, response.code()),
                                                                 Toast.LENGTH_SHORT
                                                         ).show();
                                                     }
@@ -417,7 +412,7 @@ public class UsuariosActivity extends BaseActivity
 
                                                     Toast.makeText(
                                                             UsuariosActivity.this,
-                                                            "Error de conexión",
+                                                            R.string.msj_error_conexion,
                                                             Toast.LENGTH_SHORT
                                                     ).show();
                                                 }
@@ -427,7 +422,7 @@ public class UsuariosActivity extends BaseActivity
                 )
 
                 .setNegativeButton(
-                        "Cancelar",
+                        R.string.cancelar,
                         null
                 )
 

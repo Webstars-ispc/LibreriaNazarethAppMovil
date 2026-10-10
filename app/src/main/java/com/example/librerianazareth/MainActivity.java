@@ -28,9 +28,9 @@ public class MainActivity extends BaseActivity {
         boolean esAdmin = !esInvitado && tokenManager.isAdmin();
 
         if (usuario != null && !usuario.isEmpty()) {
-            tvBienvenida.setText("Bienvenido/a, " + usuario);
+            tvBienvenida.setText(getString(R.string.main_bienvenido_usuario, usuario));
         } else {
-            tvBienvenida.setText("Bienvenido/a");
+            tvBienvenida.setText(R.string.main_bienvenido);
         }
 
         // Referencias a los botones del menú

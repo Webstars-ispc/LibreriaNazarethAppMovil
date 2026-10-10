@@ -48,7 +48,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.UsuarioV
 
         holder.tvNombre.setText(u.getUsername());
         holder.tvCorreo.setText(u.getEmail());
-        holder.tvRol.setText("Rol: " + u.getRole());
+        holder.tvRol.setText(holder.itemView.getContext().getString(R.string.usuario_rol_prefijo, u.getRole()));
 
         holder.btnEditar.setOnClickListener(v -> listener.onEditar(u));
         holder.btnEliminar.setOnClickListener(v -> listener.onEliminar(u));

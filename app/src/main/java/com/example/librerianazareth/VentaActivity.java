@@ -27,7 +27,6 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,7 +88,7 @@ public class VentaActivity extends BaseActivity {
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
-        integrator.setPrompt("Apuntá al código de barras");
+        integrator.setPrompt(getString(R.string.escanear_prompt));
         integrator.setBeepEnabled(true);
         integrator.setOrientationLocked(true);
         integrator.setCaptureActivity(CaptureActivityPortrait.class);
@@ -117,7 +116,7 @@ public class VentaActivity extends BaseActivity {
         final String texto = etCodigoVenta.getText().toString().trim();
 
         if (texto.isEmpty()) {
-            Toast.makeText(this, "Ingresá o escaneá un código o nombre", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msj_ingresar_escanear_codigo, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -141,7 +140,7 @@ public class VentaActivity extends BaseActivity {
                     public void onFailure(@NonNull Call<ProductoResponse> call,
                                           @NonNull Throwable t) {
                         Toast.makeText(VentaActivity.this,
-                                "Error de red: " + t.getMessage(),
+                                getString(R.string.msj_error_red, t.getMessage()),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -158,7 +157,7 @@ public class VentaActivity extends BaseActivity {
                                 || response.body().getResults() == null
                                 || response.body().getResults().isEmpty()) {
                             Toast.makeText(VentaActivity.this,
-                                    "Producto no encontrado",
+                                    R.string.msj_producto_no_encontrado,
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -177,7 +176,7 @@ public class VentaActivity extends BaseActivity {
                     public void onFailure(@NonNull Call<ProductoResponse> call,
                                           @NonNull Throwable t) {
                         Toast.makeText(VentaActivity.this,
-                                "Error de red: " + t.getMessage(),
+                                getString(R.string.msj_error_red, t.getMessage()),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -187,17 +186,17 @@ public class VentaActivity extends BaseActivity {
         String[] items = new String[productos.size()];
         for (int i = 0; i < productos.size(); i++) {
             Producto p = productos.get(i);
-            items[i] = String.format(Locale.getDefault(),
-                    "%s - $%.0f", p.getNombre(), p.getPrecioVenta());
+            items[i] = getString(R.string.producto_precio_seleccion,
+                    p.getNombre(), p.getPrecioVenta());
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("Seleccioná un producto")
+                .setTitle(R.string.dialog_seleccionar_producto)
                 .setItems(items, (dialog, which) -> {
                     agregarItemAlCarrito(productos.get(which));
                     etCodigoVenta.setText("");
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(R.string.cancelar, null)
                 .show();
     }
 
@@ -226,7 +225,7 @@ public class VentaActivity extends BaseActivity {
     // ---------------------------------------------------------------
     private void confirmarVenta() {
         if (carrito.isEmpty()) {
-            Toast.makeText(this, "El carrito está vacío", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.carrito_vacio, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -240,7 +239,7 @@ public class VentaActivity extends BaseActivity {
 
         // Deshabilitar el botón mientras se procesa
         btnConfirmarVenta.setEnabled(false);
-        btnConfirmarVenta.setText("Procesando...");
+        btnConfirmarVenta.setText(R.string.btn_procesando);
 
         RetrofitClient.getApi(this)
                 .registrarVenta(request)
@@ -254,7 +253,7 @@ public class VentaActivity extends BaseActivity {
                             VentaResponse venta = response.body();
 
                             Toast.makeText(VentaActivity.this,
-                                    "Venta #" + venta.getId() + " registrada",
+                                    getString(R.string.msj_venta_registrada, venta.getId()),
                                     Toast.LENGTH_LONG).show();
 
                             // Limpiar carrito
@@ -265,7 +264,7 @@ public class VentaActivity extends BaseActivity {
 
                         } else {
                             // Error del backend (400, 401, 500, etc.)
-                            String mensaje = "Error al registrar la venta";
+                            String mensaje = getString(R.string.msj_error_registrar_venta);
                             try {
                                 if (response.errorBody() != null) {
                                     mensaje = response.errorBody().string();
@@ -283,7 +282,7 @@ public class VentaActivity extends BaseActivity {
                                           @NonNull Throwable t) {
                         restaurarBotonConfirmar();
                         Toast.makeText(VentaActivity.this,
-                                "Error de red: " + t.getMessage(),
+                                getString(R.string.msj_error_red, t.getMessage()),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -291,7 +290,7 @@ public class VentaActivity extends BaseActivity {
 
     private void restaurarBotonConfirmar() {
         btnConfirmarVenta.setEnabled(true);
-        btnConfirmarVenta.setText("Confirmar venta");
+        btnConfirmarVenta.setText(R.string.confirmar_venta);
     }
 
     // ---------------------------------------------------------------
@@ -302,7 +301,7 @@ public class VentaActivity extends BaseActivity {
 
         if (carrito.isEmpty()) {
             tvCarritoVacio.setVisibility(View.VISIBLE);
-            tvTotalVenta.setText("TOTAL: $0");
+            tvTotalVenta.setText(R.string.total_default);
             return;
         }
 
@@ -325,11 +324,9 @@ public class VentaActivity extends BaseActivity {
             View     btnEliminar = itemView.findViewById(R.id.ivEliminarItemVenta);
 
             tvNombre.setText(item.getNombre());
-            tvPrecio.setText(String.format(Locale.getDefault(),
-                    "$%.0f", item.getPrecioUnitario()));
+            tvPrecio.setText(getString(R.string.precio_format, item.getPrecioUnitario()));
             tvCantidad.setText(String.valueOf(item.getCantidad()));
-            tvSubtotal.setText(String.format(Locale.getDefault(),
-                    "$%.0f", item.getSubtotal()));
+            tvSubtotal.setText(getString(R.string.precio_format, item.getSubtotal()));
 
             btnMenos.setOnClickListener(v -> {
                 if (item.getCantidad() > 1) {
@@ -359,6 +356,6 @@ public class VentaActivity extends BaseActivity {
         for (ItemVenta item : carrito) {
             total += item.getSubtotal();
         }
-        tvTotalVenta.setText(String.format(Locale.getDefault(), "TOTAL: $%.0f", total));
+        tvTotalVenta.setText(getString(R.string.total_format, total));
     }
 }

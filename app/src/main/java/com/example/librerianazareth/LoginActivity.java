@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             switch (state.status) {
                 case LOADING:
                     btnLogin.setEnabled(false);
-                    btnLogin.setText("Ingresando...");
+                    btnLogin.setText(R.string.btn_ingresando);
                     break;
 
                 case SUCCESS:
@@ -106,17 +106,17 @@ public class LoginActivity extends AppCompatActivity {
 
         // Validaciones locales (muestran el error debajo de cada campo)
         if (email.isEmpty()) {
-            etUsuario.setError("Ingresá tu correo");
+            etUsuario.setError(getString(R.string.error_ingresar_tu_correo));
             etUsuario.requestFocus();
             return;
         }
         if (!LoginValidator.isValidEmail(email)) {
-            etUsuario.setError("Ingresá un correo válido");
+            etUsuario.setError(getString(R.string.error_ingresar_correo_valido));
             etUsuario.requestFocus();
             return;
         }
         if (password.isEmpty()) {
-            etPassword.setError("Ingresá tu contraseña");
+            etPassword.setError(getString(R.string.error_ingresar_tu_contrasena));
             etPassword.requestFocus();
             return;
         }
@@ -126,6 +126,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void restaurarBoton() {
         btnLogin.setEnabled(true);
-        btnLogin.setText("INGRESAR");
+        btnLogin.setText(R.string.login_ingresar);
     }
 }

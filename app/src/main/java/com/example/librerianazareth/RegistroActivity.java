@@ -57,61 +57,61 @@ public class RegistroActivity extends AppCompatActivity {
         String confirmar = etPasswordConfirmar.getText().toString().trim();
 
         if (TextUtils.isEmpty(nombre)) {
-            etNombre.setError("Ingresá tu nombre");
+            etNombre.setError(getString(R.string.error_ingresar_tu_nombre));
             etNombre.requestFocus();
             return;
         }
 
         if (TextUtils.isEmpty(apellido)) {
-            etApellido.setError("Ingresá tu apellido");
+            etApellido.setError(getString(R.string.error_ingresar_tu_apellido));
             etApellido.requestFocus();
             return;
         }
 
         if (TextUtils.isEmpty(username)) {
-            etUsuario.setError("Ingresá un usuario");
+            etUsuario.setError(getString(R.string.error_ingresar_usuario));
             etUsuario.requestFocus();
             return;
         }
 
         if (username.length() < 3) {
-            etUsuario.setError("Mínimo 3 caracteres");
+            etUsuario.setError(getString(R.string.error_minimo_3));
             etUsuario.requestFocus();
             return;
         }
 
         if (TextUtils.isEmpty(email)) {
-            etEmail.setError("Ingresá tu correo");
+            etEmail.setError(getString(R.string.error_ingresar_tu_correo));
             etEmail.requestFocus();
             return;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Correo inválido");
+            etEmail.setError(getString(R.string.error_correo_invalido));
             etEmail.requestFocus();
             return;
         }
 
         if (TextUtils.isEmpty(password)) {
-            etPassword.setError("Ingresá una contraseña");
+            etPassword.setError(getString(R.string.error_ingresar_contrasena));
             etPassword.requestFocus();
             return;
         }
 
         if (password.length() < 8) {
-            etPassword.setError("Mínimo 8 caracteres");
+            etPassword.setError(getString(R.string.error_minimo_8));
             etPassword.requestFocus();
             return;
         }
 
         if (!password.equals(confirmar)) {
-            etPasswordConfirmar.setError("Las contraseñas no coinciden");
+            etPasswordConfirmar.setError(getString(R.string.error_contrasenas_no_coinciden));
             etPasswordConfirmar.requestFocus();
             return;
         }
 
         btnRegistro.setEnabled(false);
-        btnRegistro.setText("Registrando...");
+        btnRegistro.setText(R.string.registro_boton_cargando);
 
         RegisterPublicRequest request =
                 new RegisterPublicRequest(username, nombre, apellido, email, password);
@@ -126,7 +126,7 @@ public class RegistroActivity extends AppCompatActivity {
 
                         if (response.isSuccessful() && body != null) {
                             if (body.getAccess() == null || body.getRefresh() == null) {
-                                volverAlLogin(email, "Cuenta creada. Iniciá sesión.");
+                                volverAlLogin(email, getString(R.string.msj_cuenta_creada_iniciar_sesion));
                                 return;
                             }
 
@@ -135,7 +135,7 @@ public class RegistroActivity extends AppCompatActivity {
                             tokenManager.saveRole(body.getRole());
 
                             Toast.makeText(RegistroActivity.this,
-                                    "Cuenta creada. Bienvenido/a, " + body.getUsername(),
+                                    getString(R.string.msj_cuenta_creada_bienvenido, body.getUsername()),
                                     Toast.LENGTH_LONG).show();
 
                             Intent intent = new Intent(RegistroActivity.this, MainActivity.class);
@@ -157,7 +157,7 @@ public class RegistroActivity extends AppCompatActivity {
                                           @NonNull Throwable t) {
                         restaurarBoton();
                         Toast.makeText(RegistroActivity.this,
-                                "Error de red: " + t.getMessage(),
+                                getString(R.string.msj_error_red, t.getMessage()),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -174,7 +174,7 @@ public class RegistroActivity extends AppCompatActivity {
     private String mensajeError(Response<?> response) {
         int code = response.code();
         if (code == 401 || code == 403) {
-            return "No autorizado para registrarse.";
+            return getString(R.string.msj_no_autorizado_registro);
         }
 
         String detalle = "";
@@ -193,15 +193,15 @@ public class RegistroActivity extends AppCompatActivity {
 
         if (detalle.isEmpty()) {
             if (code == 400) {
-                return "Datos inválidos. Revisá los campos del formulario.";
+                return getString(R.string.msj_datos_invalidos);
             }
-            return "No se pudo crear la cuenta (error " + code + ")";
+            return getString(R.string.msj_no_se_pudo_crear_cuenta, code);
         }
-        return "Datos inválidos: " + detalle;
+        return getString(R.string.msj_datos_invalidos_detalle, detalle);
     }
 
     private void restaurarBoton() {
         btnRegistro.setEnabled(true);
-        btnRegistro.setText("REGISTRARME");
+        btnRegistro.setText(R.string.registro_boton);
     }
 }

@@ -90,7 +90,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                     rubrosList = response.body().getResults();
                     errorRubros = null;
                     List<String> rubroNombres = new ArrayList<>();
-                    rubroNombres.add("Seleccionar rubro");
+                    rubroNombres.add(getString(R.string.spinner_seleccionar_rubro));
                     for (Rubro r : rubrosList) {
                         rubroNombres.add(r.getNombre());
                     }
@@ -119,7 +119,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<Pagina<Rubro>> call, Throwable t) {
-                errorRubros = "Sin conexión con el servidor. Revisá tu internet.";
+                errorRubros = getString(R.string.msj_sin_conexion);
                 mostrarErrorRubros();
             }
         });
@@ -132,7 +132,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                         && response.body().getResults() != null) {
                     marcasList = response.body().getResults();
                     List<String> marcaNombres = new ArrayList<>();
-                    marcaNombres.add("Seleccionar marca");
+                    marcaNombres.add(getString(R.string.spinner_seleccionar_marca));
                     for (Marca m : marcasList) {
                         marcaNombres.add(m.getNombre());
                     }
@@ -157,7 +157,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             FormularioCatalogoActivity.this,
                             android.R.layout.simple_spinner_dropdown_item,
-                            new String[]{"No se pudo cargar"}
+                            new String[]{getString(R.string.msj_no_se_pudo_cargar)}
                     );
                     spinnerMarca.setAdapter(adapter);
                 }
@@ -168,7 +168,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         FormularioCatalogoActivity.this,
                         android.R.layout.simple_spinner_dropdown_item,
-                        new String[]{"No se pudo cargar"}
+                        new String[]{getString(R.string.msj_no_se_pudo_cargar)}
                 );
                 spinnerMarca.setAdapter(adapter);
             }
@@ -180,7 +180,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,
-                new String[]{"No se pudieron cargar los rubros"}
+                new String[]{getString(R.string.msj_no_se_pudieron_cargar_rubros)}
         );
         spinnerRubro.setAdapter(adapter);
         Toast.makeText(this, errorRubros, Toast.LENGTH_LONG).show();
@@ -196,24 +196,24 @@ public class FormularioCatalogoActivity extends BaseActivity {
 
         // Validaciones
         if (TextUtils.isEmpty(nombre)) {
-            etNombre.setError("Ingresá el nombre del producto");
+            etNombre.setError(getString(R.string.error_nombre_producto));
             etNombre.requestFocus();
             return;
         }
 
         if (spinnerRubro.getSelectedItemPosition() == 0) {
-            Toast.makeText(this, "Seleccioná un rubro", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msj_seleccionar_rubro, Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (TextUtils.isEmpty(precioCostoStr)) {
-            etPrecioCosto.setError("Ingresá el precio de costo");
+            etPrecioCosto.setError(getString(R.string.error_precio_costo));
             etPrecioCosto.requestFocus();
             return;
         }
 
         if (TextUtils.isEmpty(precioVentaStr)) {
-            etPrecioVenta.setError("Ingresá el precio de venta");
+            etPrecioVenta.setError(getString(R.string.error_precio_venta));
             etPrecioVenta.requestFocus();
             return;
         }
@@ -224,24 +224,24 @@ public class FormularioCatalogoActivity extends BaseActivity {
             precioCosto = Double.parseDouble(precioCostoStr.replace(",", "."));
             precioVenta = Double.parseDouble(precioVentaStr.replace(",", "."));
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Ingresá precios válidos (ej: 1500.50)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msj_precios_invalidos, Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (precioVenta <= 0) {
-            etPrecioVenta.setError("El precio de venta debe ser mayor a 0");
+            etPrecioVenta.setError(getString(R.string.error_precio_venta_mayor_cero));
             etPrecioVenta.requestFocus();
             return;
         }
 
         if (precioVenta < precioCosto) {
-            etPrecioVenta.setError("El precio de venta no puede ser menor al de costo");
+            etPrecioVenta.setError(getString(R.string.error_precio_venta_menor_costo));
             etPrecioVenta.requestFocus();
             return;
         }
 
         if (TextUtils.isEmpty(stockStr)) {
-            etStock.setError("Ingresá el stock");
+            etStock.setError(getString(R.string.error_stock));
             etStock.requestFocus();
             return;
         }
@@ -250,13 +250,13 @@ public class FormularioCatalogoActivity extends BaseActivity {
         try {
             stock = Integer.parseInt(stockStr);
         } catch (NumberFormatException e) {
-            etStock.setError("Ingresá un número entero");
+            etStock.setError(getString(R.string.error_stock_entero));
             etStock.requestFocus();
             return;
         }
 
         if (stock < 0) {
-            etStock.setError("El stock no puede ser negativo");
+            etStock.setError(getString(R.string.error_stock_negativo));
             etStock.requestFocus();
             return;
         }
@@ -268,7 +268,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
         if (rubrosList.isEmpty()) {
             Toast.makeText(this, errorRubros != null
                             ? errorRubros
-                            : "No se pudieron cargar los rubros. Reintentá abrir el formulario.",
+                            : getString(R.string.msj_error_rubros_reintentar),
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -292,7 +292,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                         public void onResponse(Call<Producto> call, Response<Producto> response) {
                             btnGuardar.setEnabled(true);
                             if (response.isSuccessful()) {
-                                Toast.makeText(FormularioCatalogoActivity.this, "Producto actualizado correctamente", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioCatalogoActivity.this, R.string.msj_producto_actualizado, Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
                                 Toast.makeText(FormularioCatalogoActivity.this, mensajeError(response), Toast.LENGTH_LONG).show();
@@ -302,7 +302,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                         @Override
                         public void onFailure(Call<Producto> call, Throwable t) {
                             btnGuardar.setEnabled(true);
-                            Toast.makeText(FormularioCatalogoActivity.this, "Error de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(FormularioCatalogoActivity.this, getString(R.string.msj_error_conexion_detalle, t.getMessage()), Toast.LENGTH_LONG).show();
                         }
                     });
         } else {
@@ -312,7 +312,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                         public void onResponse(Call<Producto> call, Response<Producto> response) {
                             btnGuardar.setEnabled(true);
                             if (response.isSuccessful()) {
-                                Toast.makeText(FormularioCatalogoActivity.this, "Producto creado correctamente", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioCatalogoActivity.this, R.string.msj_producto_creado, Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
                                 Toast.makeText(FormularioCatalogoActivity.this, mensajeError(response), Toast.LENGTH_LONG).show();
@@ -322,7 +322,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
                         @Override
                         public void onFailure(Call<Producto> call, Throwable t) {
                             btnGuardar.setEnabled(true);
-                            Toast.makeText(FormularioCatalogoActivity.this, "Error de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(FormularioCatalogoActivity.this, getString(R.string.msj_error_conexion_detalle, t.getMessage()), Toast.LENGTH_LONG).show();
                         }
                     });
         }
@@ -331,9 +331,9 @@ public class FormularioCatalogoActivity extends BaseActivity {
     /** Convierte la respuesta HTTP de error en un mensaje entendible para el usuario. */
     private String mensajeError(Response<?> response) {
         int code = response.code();
-        if (code == 401) return "Sesión expirada. Cerrá sesión y volvé a iniciar sesión.";
-        if (code == 403) return "No tenés permisos para modificar productos";
-        if (code == 404) return "Producto no encontrado";
+        if (code == 401) return getString(R.string.msj_sesion_expirada_larga);
+        if (code == 403) return getString(R.string.msj_sin_permiso_modificar_producto);
+        if (code == 404) return getString(R.string.msj_producto_no_encontrado);
         if (code == 400) {
             String detalle = "";
             try {
@@ -349,17 +349,17 @@ public class FormularioCatalogoActivity extends BaseActivity {
                     .replace("detail:", "")
                     .trim();
             if (detalle.isEmpty()) {
-                return "Datos inválidos. Revisá los campos del formulario.";
+                return getString(R.string.msj_datos_invalidos);
             }
-            return "Datos inválidos: " + detalle;
+            return getString(R.string.msj_datos_invalidos_detalle, detalle);
         }
-        return "Error del servidor (código " + code + ")";
+        return getString(R.string.msj_error_servidor_codigo, code);
     }
 
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
-        integrator.setPrompt("Apuntá al código de barras del producto");
+        integrator.setPrompt(getString(R.string.escanear_prompt_producto));
         integrator.setBeepEnabled(true);
         integrator.setOrientationLocked(true);
         integrator.setCaptureActivity(CaptureActivityPortrait.class);
@@ -371,7 +371,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
-                Toast.makeText(this, "Escaneo cancelado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msj_escaneo_cancelado, Toast.LENGTH_SHORT).show();
             } else {
                 String codigo = result.getContents();
                 etCodigoBarras.setText(codigo);

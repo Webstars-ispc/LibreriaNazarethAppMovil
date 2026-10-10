@@ -71,7 +71,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         );
 
         if (modoEdicion) {
-            tvTituloFormulario.setText("Editar usuario");
+            tvTituloFormulario.setText(R.string.form_usuario_titulo_editar);
             usuarioId = getIntent().getIntExtra("usuario_id", -1);
 
             String nombre = getIntent().getStringExtra("nombre_usuario");
@@ -90,7 +90,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             if (correo != null) etCorreoUsuario.setText(correo);
 
             etContrasenaUsuario.setHint(
-                    "Contraseña (dejar vacío para no cambiar)"
+                    R.string.msj_contrasena_dejar_vacio
             );
 
             // Seleccionar rol actual
@@ -126,22 +126,22 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
 
         // Validaciones
         if (TextUtils.isEmpty(nombre)) {
-            etNombre.setError("Ingresá un nombre");
+            etNombre.setError(getString(R.string.error_ingresar_nombre));
             etNombre.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(apellido)) {
-            etApellido.setError("Ingresá un apellido");
+            etApellido.setError(getString(R.string.error_ingresar_apellido));
             etApellido.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(username)) {
-            etNombreUsuario.setError("Ingresá un usuario");
+            etNombreUsuario.setError(getString(R.string.error_ingresar_usuario));
             etNombreUsuario.requestFocus();
             return;
         }
         if (username.length() < 3) {
-            etNombreUsuario.setError("Mínimo 3 caracteres");
+            etNombreUsuario.setError(getString(R.string.error_minimo_3));
             etNombreUsuario.requestFocus();
             return;
         }
@@ -149,7 +149,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         // Validar correo
         if (TextUtils.isEmpty(email)) {
             etCorreoUsuario.setError(
-                    "Ingresá un correo"
+                    getString(R.string.error_ingresar_correo)
             );
             etCorreoUsuario.requestFocus();
             return;
@@ -160,7 +160,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
                 .matches()) {
 
             etCorreoUsuario.setError(
-                    "Correo inválido"
+                    getString(R.string.error_correo_invalido)
             );
             etCorreoUsuario.requestFocus();
             return;
@@ -171,7 +171,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
                 TextUtils.isEmpty(password)) {
 
             etContrasenaUsuario.setError(
-                    "Ingresá una contraseña"
+                    getString(R.string.error_ingresar_contrasena)
             );
             etContrasenaUsuario.requestFocus();
             return;
@@ -182,7 +182,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
                 password.length() < 8) {
 
             etContrasenaUsuario.setError(
-                    "Mínimo 8 caracteres"
+                    getString(R.string.error_minimo_8)
             );
             etContrasenaUsuario.requestFocus();
             return;
@@ -199,17 +199,17 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
                         public void onResponse(Call<Usuario> call, Response<Usuario> response) {
                             btnGuardarUsuario.setEnabled(true);
                             if (response.isSuccessful()) {
-                                Toast.makeText(FormularioUsuarioActivity.this, "Usuario actualizado correctamente", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_usuario_actualizado, Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
-                                Toast.makeText(FormularioUsuarioActivity.this, "Error al actualizar usuario", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_actualizar_usuario, Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Usuario> call, Throwable t) {
                             btnGuardarUsuario.setEnabled(true);
-                            Toast.makeText(FormularioUsuarioActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_conexion, Toast.LENGTH_SHORT).show();
                         }
                     });
         } else {
@@ -219,17 +219,17 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
                         public void onResponse(Call<Usuario> call, Response<Usuario> response) {
                             btnGuardarUsuario.setEnabled(true);
                             if (response.isSuccessful()) {
-                                Toast.makeText(FormularioUsuarioActivity.this, "Usuario guardado correctamente", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_usuario_guardado, Toast.LENGTH_SHORT).show();
                                 finish();
                             } else {
-                                Toast.makeText(FormularioUsuarioActivity.this, "Error al crear usuario", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_crear_usuario, Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Usuario> call, Throwable t) {
                             btnGuardarUsuario.setEnabled(true);
-                            Toast.makeText(FormularioUsuarioActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_conexion, Toast.LENGTH_SHORT).show();
                         }
                     });
         }
