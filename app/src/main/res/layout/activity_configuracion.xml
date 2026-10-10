@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/notificaciones"
-                    android:textColor="@color/white"
+                    android:textColor="@color/texto_card"
                     android:textSize="16sp" />
 
                 <Switch
@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/modo_oscuro"
-                    android:textColor="@color/white"
+                    android:textColor="@color/texto_card"
                     android:textSize="16sp" />
 
                 <Switch
@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/idioma"
-                    android:textColor="@color/white"
+                    android:textColor="@color/texto_card"
                     android:textSize="16sp" />
 
                 <TextView
@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/version"
-                    android:textColor="@color/white"
+                    android:textColor="@color/texto_card"
                     android:textSize="16sp" />
 
                 <TextView
