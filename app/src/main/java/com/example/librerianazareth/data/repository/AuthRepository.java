@@ -25,7 +25,7 @@ public class AuthRepository {
         return apiService.login(new LoginRequest(email, password));
     }
 
-    public Call<UserProfileResponse> getProfile() {
-        return apiService.me();
+    public Call<UserProfileResponse> getProfile(String accessToken) {
+        return apiService.me("Bearer " + accessToken);
     }
 }

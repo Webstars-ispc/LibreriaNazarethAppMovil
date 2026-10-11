@@ -26,6 +26,12 @@ public class MainActivity extends BaseActivity {
         TokenManager tokenManager = new TokenManager(this);
         String usuario = esInvitado ? "" : tokenManager.getUsername();
         boolean esAdmin = !esInvitado && tokenManager.isAdmin();
+        android.util.Log.d(
+                "ROL_APP",
+                "Rol guardado: [" + tokenManager.getRole()
+                        + "] | esAdmin: " + esAdmin
+                        + " | esInvitado: " + esInvitado
+        );
 
         if (usuario != null && !usuario.isEmpty()) {
             tvBienvenida.setText(getString(R.string.main_bienvenido_usuario, usuario));

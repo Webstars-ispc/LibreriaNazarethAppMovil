@@ -177,61 +177,143 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             return;
         }
 
-        // Mínimo 8 caracteres
-        if (!TextUtils.isEmpty(password) &&
-                password.length() < 8) {
-
-            etContrasenaUsuario.setError(
-                    getString(R.string.error_minimo_8)
-            );
-            etContrasenaUsuario.requestFocus();
-            return;
-        }
-
         btnGuardarUsuario.setEnabled(false);
 
-        RegisterRequest req = new RegisterRequest(username, nombre, apellido, email, password, role);
+        RegisterRequest req = new RegisterRequest(
+                username, nombre, apellido, email, password, role
+        );
 
         if (modoEdicion && usuarioId != -1) {
-            RetrofitClient.getApi(this).actualizarUsuario(usuarioId, req)
+
+            RetrofitClient.getApi(this)
+                    .actualizarUsuario(usuarioId, req)
                     .enqueue(new Callback<Usuario>() {
+
                         @Override
-                        public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                        public void onResponse(
+                                Call<Usuario> call,
+                                Response<Usuario> response
+                        ) {
                             btnGuardarUsuario.setEnabled(true);
+
                             if (response.isSuccessful()) {
-                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_usuario_actualizado, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(
+                                        FormularioUsuarioActivity.this,
+                                        R.string.msj_usuario_actualizado,
+                                        Toast.LENGTH_SHORT
+                                ).show();
                                 finish();
                             } else {
-                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_actualizar_usuario, Toast.LENGTH_SHORT).show();
+                                String detalle = "";
+                                try {
+                                    if (response.errorBody() != null) {
+                                        detalle = response.errorBody().string();
+                                    }
+                                } catch (Exception e) {
+                                    detalle = e.getMessage();
+                                }
+
+                                android.util.Log.e(
+                                        "ACTUALIZAR_USUARIO",
+                                        "HTTP " + response.code() + " | " + detalle
+                                );
+
+                                Toast.makeText(
+                                        FormularioUsuarioActivity.this,
+                                        "Error HTTP " + response.code(),
+                                        Toast.LENGTH_LONG
+                                ).show();
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<Usuario> call, Throwable t) {
+                        public void onFailure(
+                                Call<Usuario> call,
+                                Throwable t
+                        ) {
                             btnGuardarUsuario.setEnabled(true);
-                            Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_conexion, Toast.LENGTH_SHORT).show();
+                            android.util.Log.e(
+                                    "ACTUALIZAR_USUARIO",
+                                    "Error de conexión",
+                                    t
+                            );
+                            Toast.makeText(
+                                    FormularioUsuarioActivity.this,
+                                    R.string.msj_error_conexion,
+                                    Toast.LENGTH_SHORT
+                            ).show();
                         }
                     });
+
         } else {
-            RetrofitClient.getApi(this).crearUsuario(req)
+
+            RetrofitClient.getApi(this)
+                    .crearUsuario(req)
                     .enqueue(new Callback<Usuario>() {
+
                         @Override
-                        public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                        public void onResponse(
+                                Call<Usuario> call,
+                                Response<Usuario> response
+                        ) {
                             btnGuardarUsuario.setEnabled(true);
+
                             if (response.isSuccessful()) {
-                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_usuario_guardado, Toast.LENGTH_SHORT).show();
+                                android.util.Log.d(
+                                        "CREAR_USUARIO",
+                                        "HTTP " + response.code()
+                                                + " | respuesta: "
+                                                + new com.google.gson.Gson()
+                                                .toJson(response.body())
+                                );
+
+                                Toast.makeText(
+                                        FormularioUsuarioActivity.this,
+                                        "Usuario guardado exitosamente",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
                                 finish();
-                            } else {
-                                Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_crear_usuario, Toast.LENGTH_SHORT).show();
+                            }else {
+                                String detalle = "";
+                                try {
+                                    if (response.errorBody() != null) {
+                                        detalle = response.errorBody().string();
+                                    }
+                                } catch (Exception e) {
+                                    detalle = e.getMessage();
+                                }
+
+                                android.util.Log.e(
+                                        "CREAR_USUARIO",
+                                        "HTTP " + response.code() + " | " + detalle
+                                );
+
+                                Toast.makeText(
+                                        FormularioUsuarioActivity.this,
+                                        "Error HTTP " + response.code(),
+                                        Toast.LENGTH_LONG
+                                ).show();
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<Usuario> call, Throwable t) {
+                        public void onFailure(
+                                Call<Usuario> call,
+                                Throwable t
+                        ) {
                             btnGuardarUsuario.setEnabled(true);
-                            Toast.makeText(FormularioUsuarioActivity.this, R.string.msj_error_conexion, Toast.LENGTH_SHORT).show();
+                            android.util.Log.e(
+                                    "CREAR_USUARIO",
+                                    "Error de conexión",
+                                    t
+                            );
+                            Toast.makeText(
+                                    FormularioUsuarioActivity.this,
+                                    "Error de conexión: " + t.getMessage(),
+                                    Toast.LENGTH_LONG
+                            ).show();
                         }
                     });
         }
-    }
-}
+    }}

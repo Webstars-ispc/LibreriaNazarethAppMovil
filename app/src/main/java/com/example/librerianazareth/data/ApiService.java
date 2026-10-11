@@ -54,7 +54,9 @@ public interface ApiService {
     Call<LoginResponse> login(@Body LoginRequest request);
 
     @GET("api/auth/me/")
-    Call<UserProfileResponse> me();
+    Call<UserProfileResponse> me(
+            @retrofit2.http.Header("Authorization") String authorization
+    );
 
     @POST("api/auth/register/")
     Call<RegisterPublicResponse> registerPublic(@Body RegisterPublicRequest request);
