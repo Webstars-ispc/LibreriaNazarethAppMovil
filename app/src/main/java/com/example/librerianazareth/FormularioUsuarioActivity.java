@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.RegisterRequest;
 import com.example.librerianazareth.data.model.Usuario;
+import com.example.librerianazareth.security.PasswordValidator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -177,6 +178,15 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             return;
         }
 
+        // Política de contraseña segura (≥ 8, letras + números + especial)
+        if (!TextUtils.isEmpty(password)) {
+            String errorPassword = PasswordValidator.validate(password);
+            if (errorPassword != null) {
+                etContrasenaUsuario.setError(errorPassword);
+                etContrasenaUsuario.requestFocus();
+                return;
+            }
+        }
         btnGuardarUsuario.setEnabled(false);
 
         RegisterRequest req = new RegisterRequest(

@@ -22,6 +22,15 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="24dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:labelFor="@id/etRegistroNombre"
+            android:text="@string/hint_nombre"
+            android:textColor="@color/texto_hint"
+            android:textSize="14sp" />
+
         <EditText
             android:id="@+id/etRegistroNombre"
             android:layout_width="match_parent"
@@ -35,6 +44,15 @@
             android:paddingEnd="16dp"
             android:minHeight="48dp"
             android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:labelFor="@id/etRegistroApellido"
+            android:text="@string/hint_apellido"
+            android:textColor="@color/texto_hint"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/etRegistroApellido"
@@ -50,6 +68,15 @@
             android:minHeight="48dp"
             android:layout_marginBottom="16dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:labelFor="@id/etRegistroUsuario"
+            android:text="@string/hint_usuario"
+            android:textColor="@color/texto_hint"
+            android:textSize="14sp" />
+
         <EditText
             android:id="@+id/etRegistroUsuario"
             android:layout_width="match_parent"
@@ -63,6 +90,15 @@
             android:paddingEnd="16dp"
             android:minHeight="48dp"
             android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:labelFor="@id/etRegistroEmail"
+            android:text="@string/hint_email"
+            android:textColor="@color/texto_hint"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/etRegistroEmail"
@@ -78,6 +114,15 @@
             android:minHeight="48dp"
             android:layout_marginBottom="16dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:labelFor="@id/etRegistroPassword"
+            android:text="@string/hint_contrasena"
+            android:textColor="@color/texto_hint"
+            android:textSize="14sp" />
+
         <EditText
             android:id="@+id/etRegistroPassword"
             android:layout_width="match_parent"
@@ -91,6 +136,15 @@
             android:paddingEnd="16dp"
             android:minHeight="48dp"
             android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:labelFor="@id/etRegistroPasswordConfirmar"
+            android:text="@string/hint_confirmar_contrasena"
+            android:textColor="@color/texto_hint"
+            android:textSize="14sp" />
 
         <EditText
             android:id="@+id/etRegistroPasswordConfirmar"

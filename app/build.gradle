@@ -62,6 +62,9 @@ android {
     // Desactiva las animaciones en los tests instrumentados (evita flakiness)
     testOptions {
         animationsDisabled = true
+        // Devuelve valores por defecto en los métodos de android.* (p. ej. Log.d)
+        // en los tests unitarios de la JVM, en vez de lanzar "not mocked".
+        unitTests.returnDefaultValues = true
     }
 }
 
