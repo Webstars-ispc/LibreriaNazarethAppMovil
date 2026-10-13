@@ -57,7 +57,7 @@ public class LoginViewModelTest {
     public void credencialesValidas_cargaPerfil_estadoSuccess() {
         // Arrange
         when(repository.login(anyString(), anyString())).thenReturn(loginCall);
-        when(repository.getProfile()).thenReturn(profileCall);
+        when(repository.getProfile(anyString())).thenReturn(profileCall);
 
         LoginResponse loginResponse = mock(LoginResponse.class);
         when(loginResponse.getAccess()).thenReturn("access-token");
@@ -102,7 +102,7 @@ public class LoginViewModelTest {
 
         // Assert
         assertEquals(LoginViewModel.Status.ERROR, viewModel.getState().getValue().status);
-        verify(repository, never()).getProfile();
+        verify(repository, never()).getProfile(anyString());
     }
 
     @Test
