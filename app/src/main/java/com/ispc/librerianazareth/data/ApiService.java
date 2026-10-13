@@ -1,0 +1,146 @@
+package com.ispc.librerianazareth.data;
+
+import com.ispc.librerianazareth.data.model.LoginRequest;
+import com.ispc.librerianazareth.data.model.LoginResponse;
+import com.ispc.librerianazareth.data.model.Marca;
+import com.ispc.librerianazareth.data.model.Pagina;
+import com.ispc.librerianazareth.data.model.Producto;
+import com.ispc.librerianazareth.data.model.ProductoResponse;
+import com.ispc.librerianazareth.data.model.RegisterPublicRequest;
+import com.ispc.librerianazareth.data.model.RegisterPublicResponse;
+import com.ispc.librerianazareth.data.model.RegisterRequest;
+import com.ispc.librerianazareth.data.model.Rubro;
+import com.ispc.librerianazareth.data.model.UserProfileResponse;
+import com.ispc.librerianazareth.data.model.Usuario;
+import com.ispc.librerianazareth.data.model.UsuarioResponse;
+import com.ispc.librerianazareth.data.model.VentaRequest;
+import com.ispc.librerianazareth.data.model.VentaResponse;
+import com.ispc.librerianazareth.data.model.VentaListPageResponse;
+
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+import retrofit2.http.Url;
+
+/**
+ * Definición de todos los endpoints de la API REST.
+ *
+ * CÓMO AGREGAR UN ENDPOINT NUEVO:
+ *   1. Crear el modelo del request/response en data/model/
+ *   2. Agregar el método acá con la anotación correspondiente: VER EJEMPLO DE LOGIN LINEA 30
+ *      - @GET("ruta/")                → Call<TipoRespuesta> miMetodo();
+ *      - @POST("ruta/")               → Call<TipoRespuesta> miMetodo(@Body TipoRequest req);
+ *      - @PUT("ruta/{id}/")           → Call<TipoRespuesta> miMetodo(@Path("id") int id, @Body TipoRequest req);
+ *      - @DELETE("ruta/{id}/")        → Call<Void> miMetodo(@Path("id") int id);
+ *   3. Llamarlo desde tu Activity.java:
+ *      RetrofitClient.getApi(this).miMetodo(...).enqueue(new Callback<...>() {...});
+ *
+ * IMPORTANTE: no borrar métodos de otros. Si hay conflicto de merge, AVISAR.
+ * IMPORTANTE: todos los endpoints están en el REPO DE BACKEND --> carpeta DATABASE
+ */
+public interface ApiService {
+
+    // ============================================================
+    // AUTENTICACIÓN
+    // ============================================================
+
+    @POST("api/auth/login/")
+    Call<LoginResponse> login(@Body LoginRequest request);
+
+    @GET("api/auth/me/")
+    Call<UserProfileResponse> me(@retrofit2.http.Header("Authorization") String authorization);
+
+    @POST("api/auth/register/")
+    Call<RegisterPublicResponse> registerPublic(@Body RegisterPublicRequest request);
+
+    // ============================================================
+    // PRODUCTOS
+    // ============================================================
+
+    @GET("api/productos/")
+    Call<ProductoResponse> buscarProductoPorCodigo(
+            @Query("codigo_barras") String codigoBarras
+    );
+
+    @GET("api/productos/")
+    Call<ProductoResponse> buscarProductoPorNombre(
+            @Query("search") String search
+    );
+
+    @GET("api/productos/")
+    Call<ProductoResponse> getProductosPaginados(
+            @Query("page") int page,
+            @Query("search") String search
+    );
+
+    @POST("api/productos/")
+    Call<Producto> crearProducto(@Body Producto producto);
+
+    @GET("api/productos/{id}/")
+    Call<Producto> getProducto(@Path("id") int id);
+
+    @PUT("api/productos/{id}/")
+    Call<Producto> actualizarProducto(@Path("id") int id, @Body Producto producto);
+
+    @DELETE("api/productos/{id}/")
+    Call<Void> eliminarProducto(@Path("id") int id);
+
+    // ============================================================
+    // RUBROS
+    // ============================================================
+
+    @GET("api/rubros/")
+    Call<Pagina<Rubro>> getRubros();
+
+    // ============================================================
+    // MARCAS
+    // ============================================================
+
+    @GET("api/marcas/")
+    Call<Pagina<Marca>> getMarcas();
+
+    // ============================================================
+    // USUARIOS
+    // ============================================================
+
+    @GET("api/auth/usuarios/")
+    Call<UsuarioResponse>getUsuarios();
+    @GET
+    Call<UsuarioResponse> getUsuariosPagina(@Url String url);
+
+    @POST("api/auth/usuarios/create/")
+    Call<Usuario> crearUsuario(@Body RegisterRequest usuario);
+
+    @PUT("api/auth/usuarios/{id}/")
+    Call<Usuario> actualizarUsuario(
+            @Path("id") int id,
+            @Body RegisterRequest usuario
+    );
+
+    @DELETE("api/auth/usuarios/{id}/")
+    Call<Void> eliminarUsuario(@Path("id") int id);
+
+    // ============================================================
+    // VENTAS
+    // ============================================================
+
+    @POST("api/ventas/")
+    Call<VentaResponse> registrarVenta(
+            @Body VentaRequest venta
+    );
+
+    @GET("api/ventas/")
+    Call<VentaListPageResponse> getVentas(
+            @Query("filtro") String filtro,
+            @Query("page") int page
+    );
+
+    @GET("api/ventas/{id}/")
+    Call<VentaResponse> getVenta(@Path("id") int id);
+
+}
