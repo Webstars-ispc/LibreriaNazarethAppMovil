@@ -62,14 +62,18 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+
         <TextView
             android:id="@+id/tvIrAlRegistro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/login_registro"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="48dp"
+            android:gravity="center"
+            android:text="No tengo cuenta, registrarme"
             android:textColor="@color/dorado_claro"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
             android:id="@+id/tvModoInvitado"

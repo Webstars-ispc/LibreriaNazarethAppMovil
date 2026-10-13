@@ -48,7 +48,8 @@ public class AuthInterceptor implements Interceptor {
 
         Request.Builder builder = original.newBuilder();
 
-        if (token != null && !token.isEmpty()) {
+        if (original.header(NetworkConstants.HEADER_AUTHORIZATION) == null
+                && token != null && !token.isEmpty()) {
             builder.header(
                     NetworkConstants.HEADER_AUTHORIZATION,
                     NetworkConstants.TOKEN_PREFIX + token
