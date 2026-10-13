@@ -40,7 +40,7 @@
 -keep public class * implements java.lang.reflect.Type
 
 # Modelos propios con @SerializedName
--keep class com.example.librerianazareth.data.model.** { *; }
+-keep class com.ispc.librerianazareth.data.model.** { *; }
 
 # ------------------------------------------------------------
 # OkHttp
@@ -69,7 +69,7 @@
 # ------------------------------------------------------------
 # Clases propias de la app
 # ------------------------------------------------------------
--keep class com.example.librerianazareth.** { *; }
+-keep class com.ispc.librerianazareth.** { *; }
 
 # ------------------------------------------------------------
 # Enums

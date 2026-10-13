@@ -239,7 +239,7 @@ En `data/model/`, creá una clase Java para el request y/o response.
 
 Ejemplo para productos:
 
-    package com.example.librerianazareth.data.model;
+    package ispc.librerianazareth.data.model;
 
     public class Producto {
         private int id;

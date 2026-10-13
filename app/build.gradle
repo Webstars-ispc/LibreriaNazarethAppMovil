@@ -12,7 +12,7 @@ if (tieneKeystore) {
 }
 
 android {
-    namespace 'com.example.librerianazareth'
+    namespace 'com.ispc.librerianazareth'
     compileSdk 34
 
     defaultConfig {
