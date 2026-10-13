@@ -1,23 +1,42 @@
 package com.example.librerianazareth.data.local;
-import com.example.librerianazareth.data.NetworkConstants;
+
 import android.content.Context;
-import android.content.SharedPreferences;
 
+import com.example.librerianazareth.data.NetworkConstants;
 
-//guarda y lee tokens JWT desde SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
+//guarda y lee tokens JWT desde SharedPreferences CIFRADAS
 public class TokenManager {
 
-    private final SharedPreferences prefs;
+    private final android.content.SharedPreferences prefs;
 
     public TokenManager(Context context) {
-        this.prefs = context.getApplicationContext().getSharedPreferences(NetworkConstants.PREFS_AUTH,Context.MODE_PRIVATE);
+        try {
+            MasterKey masterKey = new MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
+            this.prefs = EncryptedSharedPreferences.create(
+                    context,
+                    NetworkConstants.PREFS_AUTH,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException("No se pudieron inicializar las preferencias cifradas", e);
+        }
     }
 
     //Guardar tokens
     public void saveTokens(String access, String refresh) {
         prefs.edit()
-                .putString(NetworkConstants.KEY_ACCESS,access)
-                .putString(NetworkConstants.KEY_REFRESH,refresh)
+                .putString(NetworkConstants.KEY_ACCESS, access)
+                .putString(NetworkConstants.KEY_REFRESH, refresh)
                 .apply();
     }
 

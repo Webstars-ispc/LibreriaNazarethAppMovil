@@ -68,7 +68,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
         rvVentas.setLayoutManager(new LinearLayoutManager(this));
         rvVentas.setAdapter(ventaAdapter);
 
-        String[] opciones = { "Ventas del día", "Ventas del mes" };
+        String[] opciones = { getString(R.string.filtro_ventas_dia), getString(R.string.filtro_ventas_mes) };
         ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,
@@ -126,7 +126,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                         progressBar.setVisibility(View.GONE);
 
                         if (!response.isSuccessful() || response.body() == null) {
-                            mostrarEstado("Error al cargar ventas");
+                            mostrarEstado(getString(R.string.msj_error_cargar_ventas));
                             return;
                         }
 
@@ -134,8 +134,8 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                         List<VentaListResponse> ventas = page.getResults();
 
                         if (ventas == null || ventas.isEmpty()) {
-                            mostrarEstado("No hay ventas para mostrar");
-                            tvPagina.setText("Pág. " + paginaActual);
+                            mostrarEstado(getString(R.string.msj_sin_ventas));
+                            tvPagina.setText(getString(R.string.pagina_actual, paginaActual));
                             btnAnterior.setEnabled(false);
                             btnSiguiente.setEnabled(false);
                             return;
@@ -146,7 +146,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
 
                         // Calcular total de páginas
                         totalPaginas = (int) Math.ceil(page.getCount() / (double) NetworkConstants.PAGE_SIZE);
-                        tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
+                        tvPagina.setText(getString(R.string.pagina_de, paginaActual, totalPaginas));
 
                         btnAnterior.setEnabled(paginaActual > 1);
                         btnSiguiente.setEnabled(paginaActual < totalPaginas);
@@ -156,7 +156,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                     public void onFailure(@NonNull Call<VentaListPageResponse> call,
                                           @NonNull Throwable t) {
                         progressBar.setVisibility(View.GONE);
-                        mostrarEstado("Error de red: " + t.getMessage());
+                        mostrarEstado(getString(R.string.msj_error_red, t.getMessage()));
                     }
                 });
     }
@@ -178,7 +178,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                                            @NonNull Response<VentaResponse> response) {
                         if (!response.isSuccessful() || response.body() == null) {
                             Toast.makeText(VentasActivity.this,
-                                    "No se pudo cargar el detalle",
+                                    R.string.msj_no_detalle,
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -189,7 +189,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                     public void onFailure(@NonNull Call<VentaResponse> call,
                                           @NonNull Throwable t) {
                         Toast.makeText(VentasActivity.this,
-                                "Error de red: " + t.getMessage(),
+                                getString(R.string.msj_error_red, t.getMessage()),
                                 Toast.LENGTH_LONG).show();
                     }
                 });
@@ -204,10 +204,10 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
         TextView tvTotal    = view.findViewById(R.id.tvDetalleTotal);
         LinearLayout llProd = view.findViewById(R.id.llDetalleProductos);
 
-        tvNumero.setText("Venta #" + venta.getId());
-        tvFecha.setText("Fecha: " + formatearFecha(venta.getFecha()));
-        tvUsuario.setText("Usuario: " + venta.getUsuarioNombre());
-        tvTotal.setText("TOTAL: $" + venta.getTotal());
+        tvNumero.setText(getString(R.string.venta_numero, venta.getId()));
+        tvFecha.setText(getString(R.string.detalle_venta_fecha, formatearFecha(venta.getFecha())));
+        tvUsuario.setText(getString(R.string.detalle_venta_usuario, venta.getUsuarioNombre()));
+        tvTotal.setText(getString(R.string.detalle_venta_total, venta.getTotal()));
 
         if (venta.getDetalles() != null) {
             for (DetalleVentaResponse d : venta.getDetalles()) {
@@ -218,9 +218,9 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                 TextView tvNombre   = itemView.findViewById(R.id.tvDetalleNombre);
                 TextView tvSubtotal = itemView.findViewById(R.id.tvDetalleSubtotal);
 
-                tvCant.setText(d.getCantidad() + "x");
-                tvNombre.setText(d.getProductoNombre() != null ? d.getProductoNombre() : "(sin nombre)");
-                tvSubtotal.setText("$" + d.getSubtotal());
+                tvCant.setText(getString(R.string.detalle_cantidad, d.getCantidad()));
+                tvNombre.setText(d.getProductoNombre() != null ? d.getProductoNombre() : getString(R.string.detalle_sin_nombre));
+                tvSubtotal.setText(getString(R.string.detalle_subtotal, d.getSubtotal()));
 
                 llProd.addView(itemView);
             }
@@ -228,7 +228,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
 
         new AlertDialog.Builder(this)
                 .setView(view)
-                .setPositiveButton("Cerrar", null)
+                .setPositiveButton(R.string.dialog_cerrar, null)
                 .show();
     }
 

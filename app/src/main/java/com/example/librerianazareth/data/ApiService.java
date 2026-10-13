@@ -27,6 +27,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 /**
  * Definición de todos los endpoints de la API REST.
@@ -54,7 +55,7 @@ public interface ApiService {
     Call<LoginResponse> login(@Body LoginRequest request);
 
     @GET("api/auth/me/")
-    Call<UserProfileResponse> me();
+    Call<UserProfileResponse> me(@retrofit2.http.Header("Authorization") String authorization);
 
     @POST("api/auth/register/")
     Call<RegisterPublicResponse> registerPublic(@Body RegisterPublicRequest request);
@@ -110,7 +111,9 @@ public interface ApiService {
     // ============================================================
 
     @GET("api/auth/usuarios/")
-    Call<List<Usuario>> getUsuarios();
+    Call<UsuarioResponse>getUsuarios();
+    @GET
+    Call<UsuarioResponse> getUsuariosPagina(@Url String url);
 
     @POST("api/auth/usuarios/create/")
     Call<Usuario> crearUsuario(@Body RegisterRequest usuario);

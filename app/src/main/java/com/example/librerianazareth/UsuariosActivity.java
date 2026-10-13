@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.librerianazareth.adapter.UsuarioAdapter;
 import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.model.Usuario;
+import com.example.librerianazareth.data.model.UsuarioResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,105 +155,119 @@ public class UsuariosActivity extends BaseActivity
     // OBTENER USUARIOS DESDE LA API
     // ==============================================
 
-    private void cargarUsuarios() {
 
+    private void cargarUsuarios() {
         progressBar.setVisibility(View.VISIBLE);
         tvEstado.setVisibility(View.GONE);
 
-        Call<List<Usuario>> call =
-                RetrofitClient
-                        .getApi(this)
-                        .getUsuarios();
+        todosLosUsuarios.clear();
 
-        call.enqueue(
-                new Callback<List<Usuario>>() {
+        cargarPaginaUsuarios(
+                RetrofitClient.getApi(this)
+                        .getUsuarios()
+        );
+    }
 
-                    @Override
-                    public void onResponse(
-                            Call<List<Usuario>> call,
-                            Response<List<Usuario>> response) {
+    private void cargarPaginaUsuarios(
+            Call<UsuarioResponse> llamada) {
 
-                        progressBar.setVisibility(View.GONE);
+        llamada.enqueue(new Callback<UsuarioResponse>() {
 
-                        if (response.isSuccessful()
-                                && response.body() != null) {
+            @Override
+            public void onResponse(
+                    Call<UsuarioResponse> call,
+                    Response<UsuarioResponse> response) {
 
-                            // Limpiar lista anterior
-                            todosLosUsuarios.clear();
+                if (!response.isSuccessful()
+                        || response.body() == null) {
 
-                            // Guardar usuarios recibidos
-                            todosLosUsuarios.addAll(
-                                    response.body()
-                            );
+                    progressBar.setVisibility(View.GONE);
 
-                            // Mostrar todos
-                            adapter.setUsuarios(
-                                    new ArrayList<>(
-                                            todosLosUsuarios
-                                    )
-                            );
+                    if (response.code() == 401) {
+                        Toast.makeText(
+                                UsuariosActivity.this,
+                                R.string.msj_sesion_expirada,
+                                Toast.LENGTH_SHORT
+                        ).show();
 
-                            // Si no hay usuarios
-                            if (todosLosUsuarios.isEmpty()) {
-
-                                tvEstado.setText(
-                                        "No se encontraron usuarios"
-                                );
-
-                                tvEstado.setVisibility(
-                                        View.VISIBLE
-                                );
-                            }
-
-                        } else if (response.code() == 401) {
-
-                            Toast.makeText(
-                                    UsuariosActivity.this,
-                                    "Sesión expirada",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-
-                        } else if (response.code() == 403) {
-
-                            tvEstado.setText(
-                                    "No tenés permisos para gestionar usuarios"
-                            );
-
-                            tvEstado.setVisibility(
-                                    View.VISIBLE
-                            );
-
-                        } else {
-
-                            tvEstado.setText(
-                                    "Error al cargar usuarios: "
-                                            + response.code()
-                            );
-
-                            tvEstado.setVisibility(
-                                    View.VISIBLE
-                            );
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(
-                            Call<List<Usuario>> call,
-                            Throwable t) {
-
-                        progressBar.setVisibility(View.GONE);
-
+                    } else if (response.code() == 403) {
                         tvEstado.setText(
-                                "Error de conexión: "
-                                        + t.getMessage()
+                                R.string.msj_sin_permiso_gestionar_usuarios
                         );
+                        tvEstado.setVisibility(View.VISIBLE);
 
-                        tvEstado.setVisibility(
-                                View.VISIBLE
+                    } else {
+                        tvEstado.setText(
+                                getString(
+                                        R.string.msj_error_cargar_usuarios_codigo,
+                                        response.code()
+                                )
                         );
+                        tvEstado.setVisibility(View.VISIBLE);
+                    }
+                    return;
+                }
+
+                UsuarioResponse pagina = response.body();
+
+                if (pagina.getResults() != null) {
+                    todosLosUsuarios.addAll(pagina.getResults());
+                }
+
+                String siguiente = pagina.getNext();
+
+                if (siguiente != null && !siguiente.isEmpty()) {
+
+                    cargarPaginaUsuarios(
+                            RetrofitClient.getApi(UsuariosActivity.this)
+                                    .getUsuariosPagina(siguiente)
+                    );
+
+                } else {
+                    progressBar.setVisibility(View.GONE);
+
+                    adapter.setUsuarios(
+                            new ArrayList<>(todosLosUsuarios)
+                    );
+
+                    android.util.Log.d(
+                            "USUARIOS_API",
+                            "Total de usuarios: " + todosLosUsuarios.size()
+                    );
+
+                    if (todosLosUsuarios.isEmpty()) {
+                        tvEstado.setText(
+                                getString(R.string.msj_sin_usuarios)
+                        );
+                        tvEstado.setVisibility(View.VISIBLE);
+                    } else {
+                        tvEstado.setVisibility(View.GONE);
                     }
                 }
-        );
+            }
+
+            @Override
+            public void onFailure(
+                    Call<UsuarioResponse> call,
+                    Throwable t) {
+
+                progressBar.setVisibility(View.GONE);
+
+                tvEstado.setText(
+                        getString(
+                                R.string.msj_error_conexion_detalle,
+                                t.getMessage()
+                        )
+                );
+                tvEstado.setVisibility(View.VISIBLE);
+
+                android.util.Log.e(
+                        "USUARIOS_API",
+                        "Error al cargar usuarios",
+                        t
+                );
+            }
+        });
     }
 
     // ==============================================
@@ -273,7 +288,7 @@ public class UsuariosActivity extends BaseActivity
             if (todosLosUsuarios.isEmpty()) {
 
                 tvEstado.setText(
-                        "No se encontraron usuarios"
+                        getString(R.string.msj_sin_usuarios)
                 );
 
                 tvEstado.setVisibility(
@@ -316,7 +331,7 @@ public class UsuariosActivity extends BaseActivity
         if (usuariosFiltrados.isEmpty()) {
 
             tvEstado.setText(
-                    "No se encontraron usuarios"
+                    getString(R.string.msj_sin_usuarios)
             );
 
             tvEstado.setVisibility(
@@ -343,30 +358,13 @@ public class UsuariosActivity extends BaseActivity
                 FormularioUsuarioActivity.class
         );
 
-        intent.putExtra(
-                "modo_edicion",
-                true
-        );
-
-        intent.putExtra(
-                "usuario_id",
-                usuario.getId()
-        );
-
-        intent.putExtra(
-                "nombre_usuario",
-                usuario.getUsername()
-        );
-
-        intent.putExtra(
-                "correo_usuario",
-                usuario.getEmail()
-        );
-
-        intent.putExtra(
-                "rol_usuario",
-                usuario.getRole()
-        );
+        intent.putExtra("modo_edicion", true);
+        intent.putExtra("usuario_id", usuario.getId());
+        intent.putExtra("username_usuario", usuario.getUsername());
+        intent.putExtra("nombre_usuario", usuario.getNombre());
+        intent.putExtra("apellido_usuario", usuario.getApellido());
+        intent.putExtra("correo_usuario", usuario.getEmail());
+        intent.putExtra("rol_usuario", usuario.getRole());
 
         startActivity(intent);
     }
@@ -380,16 +378,14 @@ public class UsuariosActivity extends BaseActivity
 
         new AlertDialog.Builder(this)
 
-                .setTitle("Eliminar usuario")
+                .setTitle(R.string.dialog_eliminar_usuario_titulo)
 
                 .setMessage(
-                        "¿Estás seguro de eliminar \""
-                                + usuario.getUsername()
-                                + "\"?"
+                        getString(R.string.dialog_eliminar_usuario_msg, usuario.getUsername())
                 )
 
                 .setPositiveButton(
-                        "Eliminar",
+                        R.string.eliminar,
                         (dialog, which) -> {
 
                             RetrofitClient
@@ -409,7 +405,7 @@ public class UsuariosActivity extends BaseActivity
 
                                                         Toast.makeText(
                                                                 UsuariosActivity.this,
-                                                                "Usuario eliminado correctamente",
+                                                                R.string.msj_usuario_eliminado,
                                                                 Toast.LENGTH_SHORT
                                                         ).show();
 
@@ -419,8 +415,7 @@ public class UsuariosActivity extends BaseActivity
 
                                                         Toast.makeText(
                                                                 UsuariosActivity.this,
-                                                                "Error al eliminar usuario: "
-                                                                        + response.code(),
+                                                                getString(R.string.msj_error_eliminar_usuario_codigo, response.code()),
                                                                 Toast.LENGTH_SHORT
                                                         ).show();
                                                     }
@@ -433,7 +428,7 @@ public class UsuariosActivity extends BaseActivity
 
                                                     Toast.makeText(
                                                             UsuariosActivity.this,
-                                                            "Error de conexión",
+                                                            R.string.msj_error_conexion,
                                                             Toast.LENGTH_SHORT
                                                     ).show();
                                                 }
@@ -443,10 +438,73 @@ public class UsuariosActivity extends BaseActivity
                 )
 
                 .setNegativeButton(
-                        "Cancelar",
+                        R.string.cancelar,
                         null
                 )
 
                 .show();
     }
+    private void cargarTodasLasPaginas(String url) {
+        RetrofitClient.getApi(this)
+                .getUsuariosPagina(url)
+                .enqueue(new Callback<UsuarioResponse>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<UsuarioResponse> call,
+                            Response<UsuarioResponse> response) {
+
+                        if (response.isSuccessful()
+                                && response.body() != null) {
+
+                            UsuarioResponse pagina = response.body();
+
+                            if (pagina.getResults() != null) {
+                                todosLosUsuarios.addAll(
+                                        pagina.getResults()
+                                );
+                            }
+
+                            if (pagina.getNext() != null
+                                    && !pagina.getNext().isEmpty()) {
+
+                                cargarTodasLasPaginas(
+                                        pagina.getNext()
+                                );
+
+                            } else {
+                                adapter.setUsuarios(
+                                        new ArrayList<>(todosLosUsuarios)
+                                );
+
+                                android.util.Log.d(
+                                        "USUARIOS_API",
+                                        "Total de usuarios: "
+                                                + todosLosUsuarios.size()
+                                );
+                            }
+
+                        } else {
+                            android.util.Log.e(
+                                    "USUARIOS_API",
+                                    "Error al cargar página: "
+                                            + response.code()
+                            );
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<UsuarioResponse> call,
+                            Throwable t) {
+
+                        android.util.Log.e(
+                                "USUARIOS_API",
+                                "Error de conexión al cargar usuarios",
+                                t
+                        );
+                    }
+                });
+    }
+
 }

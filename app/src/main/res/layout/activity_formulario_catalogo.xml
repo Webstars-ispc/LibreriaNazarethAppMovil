@@ -109,7 +109,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/escanear_codigo_barras"
                     android:padding="8dp"
-                    android:src="@android:drawable/ic_menu_camera"
+                    android:src="@drawable/ic_escanear"
                     app:tint="@color/dorado_claro" />
             </LinearLayout>
 

@@ -49,9 +49,9 @@ public class VentaAdapter extends RecyclerView.Adapter<VentaAdapter.VentaViewHol
     public void onBindViewHolder(@NonNull VentaViewHolder holder, int position) {
         VentaListResponse v = ventas.get(position);
 
-        holder.tvNumeroVenta.setText("Venta #" + v.getId());
+        holder.tvNumeroVenta.setText(holder.itemView.getContext().getString(R.string.venta_numero, v.getId()));
         holder.tvFechaVenta.setText(formatearFecha(v.getFecha()));
-        holder.tvTotalVentaItem.setText("$" + v.getTotal());
+        holder.tvTotalVentaItem.setText(holder.itemView.getContext().getString(R.string.venta_total_item, v.getTotal()));
 
         holder.btnVerMas.setOnClickListener(view -> listener.onVerMas(v));
     }

@@ -26,11 +26,17 @@ public class MainActivity extends BaseActivity {
         TokenManager tokenManager = new TokenManager(this);
         String usuario = esInvitado ? "" : tokenManager.getUsername();
         boolean esAdmin = !esInvitado && tokenManager.isAdmin();
+        android.util.Log.d(
+                "ROL_APP",
+                "Rol guardado: [" + tokenManager.getRole()
+                        + "] | esAdmin: " + esAdmin
+                        + " | esInvitado: " + esInvitado
+        );
 
         if (usuario != null && !usuario.isEmpty()) {
-            tvBienvenida.setText("Bienvenido/a, " + usuario);
+            tvBienvenida.setText(getString(R.string.main_bienvenido_usuario, usuario));
         } else {
-            tvBienvenida.setText("Bienvenido/a");
+            tvBienvenida.setText(R.string.main_bienvenido);
         }
 
         // Referencias a los botones del menú
@@ -40,7 +46,6 @@ public class MainActivity extends BaseActivity {
         LinearLayout btnContacto      = findViewById(R.id.btnContacto);
         LinearLayout btnUsuarios      = findViewById(R.id.btnUsuarios);
         LinearLayout btnVenta         = findViewById(R.id.btnVenta);
-        TextView     btnCerrarSesion  = findViewById(R.id.btnCerrarSesion);
 
         // Visibilidad según rol / invitado
         // - Invitados: no ven "Usuarios" ni "Agregar"
@@ -88,15 +93,6 @@ public class MainActivity extends BaseActivity {
         btnUsuarios.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UsuariosActivity.class);
             startActivity(intent);
-        });
-
-        btnCerrarSesion.setOnClickListener(v -> {
-            new TokenManager(MainActivity.this).clear();
-
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
         });
 
         setupBottomNavigation(R.id.nav_inicio);

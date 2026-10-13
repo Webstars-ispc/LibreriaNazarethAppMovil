@@ -16,6 +16,7 @@ local.properties
 # Firmas
 *.jks
 *.keystore
+keystore.properties
 
 # Logs y temporales
 *.log

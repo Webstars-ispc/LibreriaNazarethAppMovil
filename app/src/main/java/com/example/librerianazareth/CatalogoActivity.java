@@ -160,11 +160,11 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
 
                 if (!response.isSuccessful() || response.body() == null) {
                     if (response.code() == 401) {
-                        Toast.makeText(CatalogoActivity.this, "Sesión expirada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CatalogoActivity.this, R.string.msj_sesion_expirada, Toast.LENGTH_SHORT).show();
                     } else if (response.code() == 403) {
-                        mostrarEstado("No tenés permisos para ver el catálogo");
+                        mostrarEstado(getString(R.string.msj_sin_permiso_catalogo));
                     } else {
-                        mostrarEstado("Error al cargar productos");
+                        mostrarEstado(getString(R.string.msj_error_cargar_productos));
                     }
                     return;
                 }
@@ -174,9 +174,9 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
 
                 if (productos == null || productos.isEmpty()) {
                     mostrarEstado(textoBusqueda.isEmpty()
-                            ? "No hay productos cargados"
-                            : "No se encontraron productos");
-                    tvPagina.setText("Pág. " + paginaActual);
+                            ? getString(R.string.msj_sin_productos)
+                            : getString(R.string.msj_sin_resultados_productos));
+                    tvPagina.setText(getString(R.string.pagina_actual, paginaActual));
                     return;
                 }
 
@@ -186,22 +186,24 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                 // Paginación: si es búsqueda por código, no paginamos
                 if (esCodigoDeBarras(textoBusqueda)) {
                     totalPaginas = 1;
-                    tvPagina.setText("Pág. 1/1");
+                    tvPagina.setText(getString(R.string.pagina_de, 1, 1));
                     btnAnterior.setEnabled(false);
                     btnSiguiente.setEnabled(false);
                 } else {
                     totalPaginas = (int) Math.ceil(page.getCount() / (double) NetworkConstants.PAGE_SIZE);
-                    tvPagina.setText("Pág. " + paginaActual + "/" + totalPaginas);
+                    tvPagina.setText(getString(R.string.pagina_de, paginaActual, totalPaginas));
                     btnAnterior.setEnabled(paginaActual > 1);
                     btnSiguiente.setEnabled(paginaActual < totalPaginas);
                 }
+
             }
+
 
             @Override
             public void onFailure(@NonNull Call<ProductoResponse> call,
                                   @NonNull Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                mostrarEstado("Error de red: " + t.getMessage());
+                mostrarEstado(getString(R.string.msj_error_red, t.getMessage()));
             }
         });
     }
@@ -220,7 +222,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
     private void iniciarEscaner() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
-        integrator.setPrompt("Apuntá al código de barras");
+        integrator.setPrompt(getString(R.string.escanear_prompt));
         integrator.setBeepEnabled(true);
         integrator.setOrientationLocked(true);
         integrator.setCaptureActivity(CaptureActivityPortrait.class);
@@ -232,7 +234,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
-                Toast.makeText(this, "Escaneo cancelado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.msj_escaneo_cancelado, Toast.LENGTH_SHORT).show();
             } else {
                 String codigo = result.getContents();
                 etBuscarProducto.setText(codigo);
@@ -263,9 +265,9 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
     @Override
     public void onEliminar(Producto producto) {
         new AlertDialog.Builder(this)
-                .setTitle("Eliminar producto")
-                .setMessage("¿Estás seguro de eliminar \"" + producto.getNombre() + "\"?")
-                .setPositiveButton("Eliminar", (dialog, which) ->
+                .setTitle(R.string.dialog_eliminar_producto_titulo)
+                .setMessage(getString(R.string.dialog_eliminar_producto_msg, producto.getNombre()))
+                .setPositiveButton(R.string.eliminar, (dialog, which) ->
                         RetrofitClient.getApi(this).eliminarProducto(producto.getId())
                                 .enqueue(new Callback<Void>() {
                                     @Override
@@ -273,11 +275,11 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                                                            @NonNull Response<Void> response) {
                                         if (response.isSuccessful()) {
                                             Toast.makeText(CatalogoActivity.this,
-                                                    "Producto eliminado", Toast.LENGTH_SHORT).show();
+                                                    R.string.msj_producto_eliminado, Toast.LENGTH_SHORT).show();
                                             cargarPagina(paginaActual);
                                         } else {
                                             Toast.makeText(CatalogoActivity.this,
-                                                    "Error al eliminar", Toast.LENGTH_SHORT).show();
+                                                    R.string.msj_error_eliminar, Toast.LENGTH_SHORT).show();
                                         }
                                     }
 
@@ -285,10 +287,10 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                                     public void onFailure(@NonNull Call<Void> call,
                                                           @NonNull Throwable t) {
                                         Toast.makeText(CatalogoActivity.this,
-                                                "Error de conexión", Toast.LENGTH_SHORT).show();
+                                                R.string.msj_error_conexion, Toast.LENGTH_SHORT).show();
                                     }
                                 }))
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(R.string.cancelar, null)
                 .show();
     }
 }

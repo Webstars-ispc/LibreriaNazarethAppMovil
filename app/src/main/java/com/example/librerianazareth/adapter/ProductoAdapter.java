@@ -14,7 +14,6 @@ import com.example.librerianazareth.data.model.Producto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.ProductoViewHolder> {
 
@@ -63,10 +62,10 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
         String rubro = p.getRubroNombre() != null ? p.getRubroNombre() : "";
         String marca = p.getMarcaNombre() != null ? p.getMarcaNombre() : "";
         holder.tvRubro.setText(rubro);
-        holder.tvMarca.setText(marca.isEmpty() ? "" : "- " + marca);
+        holder.tvMarca.setText(marca.isEmpty() ? "" : holder.itemView.getContext().getString(R.string.producto_marca_prefijo, marca));
 
-        holder.tvPrecio.setText(String.format(Locale.getDefault(), "$%.2f", p.getPrecioVenta()));
-        holder.tvStock.setText(String.format(Locale.getDefault(), "Stock: %d", p.getStock()));
+        holder.tvPrecio.setText(holder.itemView.getContext().getString(R.string.producto_precio, p.getPrecioVenta()));
+        holder.tvStock.setText(holder.itemView.getContext().getString(R.string.producto_stock, p.getStock()));
 
         // Botón editar
         holder.btnEditar.setOnClickListener(v -> listener.onEditar(p));

@@ -29,7 +29,7 @@ public class ConfiguracionActivity extends BaseActivity {
 
         TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
         if (esInvitado) {
-            btnCerrarSesion.setText("Salir del modo invitado");
+            btnCerrarSesion.setText(R.string.config_salir_invitado);
         }
         btnCerrarSesion.setOnClickListener(v -> confirmarCerrarSesion());
 
@@ -51,7 +51,7 @@ public class ConfiguracionActivity extends BaseActivity {
         switchNotificaciones.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean(KEY_NOTIFICACIONES, isChecked).apply();
             Toast.makeText(this,
-                    isChecked ? "Notificaciones activadas" : "Notificaciones desactivadas",
+                    isChecked ? getString(R.string.msj_notif_activadas) : getString(R.string.msj_notif_desactivadas),
                     Toast.LENGTH_SHORT).show();
         });
 
@@ -64,11 +64,11 @@ public class ConfiguracionActivity extends BaseActivity {
 
     private void confirmarCerrarSesion() {
         new AlertDialog.Builder(this)
-                .setTitle(esInvitado ? "Salir del modo invitado" : "Cerrar sesión")
+                .setTitle(esInvitado ? R.string.config_salir_invitado : R.string.dialog_cerrar_sesion)
                 .setMessage(esInvitado
-                        ? "¿Querés salir del modo invitado?"
-                        : "¿Estás seguro de que querés cerrar sesión?")
-                .setPositiveButton(esInvitado ? "Salir" : "Cerrar sesión", (dialog, which) -> {
+                        ? getString(R.string.dialog_salir_invitado_msg)
+                        : getString(R.string.dialog_cerrar_sesion_msg))
+                .setPositiveButton(esInvitado ? R.string.accion_salir : R.string.dialog_cerrar_sesion, (dialog, which) -> {
                     // Se limpian los tokens y los ajustes locales
                     new com.example.librerianazareth.data.local.TokenManager(this).clear();
                     getSharedPreferences(PREFS_AJUSTES, MODE_PRIVATE).edit().clear().apply();
@@ -78,7 +78,7 @@ public class ConfiguracionActivity extends BaseActivity {
                     startActivity(intent);
                     finish();
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(R.string.cancelar, null)
                 .show();
     }
 }
