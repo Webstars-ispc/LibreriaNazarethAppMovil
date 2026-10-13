@@ -16,6 +16,7 @@ import com.example.librerianazareth.data.RetrofitClient;
 import com.example.librerianazareth.data.local.TokenManager;
 import com.example.librerianazareth.data.model.RegisterPublicRequest;
 import com.example.librerianazareth.data.model.RegisterPublicResponse;
+import com.example.librerianazareth.security.PasswordValidator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -98,8 +99,9 @@ public class RegistroActivity extends AppCompatActivity {
             return;
         }
 
-        if (password.length() < 8) {
-            etPassword.setError(getString(R.string.error_minimo_8));
+        String errorPassword = PasswordValidator.validate(password);
+        if (errorPassword != null) {
+            etPassword.setError(errorPassword);
             etPassword.requestFocus();
             return;
         }
