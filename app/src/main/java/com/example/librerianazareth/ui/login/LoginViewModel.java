@@ -1,4 +1,3 @@
-
 package com.example.librerianazareth.ui.login;
 
 import androidx.annotation.NonNull;
@@ -129,8 +128,8 @@ public class LoginViewModel extends ViewModel {
     }
 
     private void cargarPerfil(final String access, final String refresh) {
-
-        // Consulta el perfil usando el token recién recibido.
+        // El AuthInterceptor agrega automáticamente el header Authorization
+        // leyendo el token desde TokenManager (EncryptedSharedPreferences).
         repository.getProfile(access).enqueue(new Callback<UserProfileResponse>() {
             @Override
             public void onResponse(
@@ -143,11 +142,6 @@ public class LoginViewModel extends ViewModel {
                     String username = perfil.getUsername();
                     String role = perfil.getRole();
 
-                    android.util.Log.d(
-                            "ROL_APP",
-                            "Perfil recibido. Rol: " + role
-                    );
-
                     if (role == null || role.trim().isEmpty()) {
                         state.setValue(LoginUiState.error(
                                 "El perfil no contiene un rol de usuario."
@@ -159,11 +153,6 @@ public class LoginViewModel extends ViewModel {
                             access, refresh, username, role
                     ));
                 } else {
-                    android.util.Log.e(
-                            "ROL_APP",
-                            "No se pudo cargar el perfil. HTTP: " + response.code()
-                    );
-
                     state.setValue(LoginUiState.error(
                             "No se pudo cargar el perfil. Código HTTP: "
                                     + response.code()
@@ -176,12 +165,6 @@ public class LoginViewModel extends ViewModel {
                     @NonNull Call<UserProfileResponse> call,
                     @NonNull Throwable t
             ) {
-                android.util.Log.e(
-                        "ROL_APP",
-                        "Error de conexión al consultar el perfil",
-                        t
-                );
-
                 state.setValue(LoginUiState.error(
                         "Error de conexión al consultar el perfil."
                 ));

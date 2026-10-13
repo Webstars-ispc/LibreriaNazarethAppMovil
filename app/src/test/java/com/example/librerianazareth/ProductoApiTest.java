@@ -75,7 +75,7 @@ public class ProductoApiTest {
                 .setBody(json));
 
         Response<ProductoResponse> respuesta =
-                apiService.getProductos(1).execute();
+                apiService.getProductosPaginados(1, null).execute();
 
         assertEquals(200, respuesta.code());
         assertNotNull(respuesta.body());
@@ -96,7 +96,7 @@ public class ProductoApiTest {
                 .setBody("{\"error\":\"Error interno del servidor\"}"));
 
         Response<ProductoResponse> respuesta =
-                apiService.getProductos(1).execute();
+                apiService.getProductosPaginados(1, null).execute();
 
         assertEquals(500, respuesta.code());
         assertFalse(respuesta.isSuccessful());

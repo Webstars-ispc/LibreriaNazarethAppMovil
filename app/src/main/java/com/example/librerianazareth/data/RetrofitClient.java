@@ -67,7 +67,7 @@ public final class RetrofitClient {
         // Logging: solo se activa en builds de debug
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(BuildConfig.DEBUG
-                ? HttpLoggingInterceptor.Level.BODY
+                ? HttpLoggingInterceptor.Level.BASIC
                 : HttpLoggingInterceptor.Level.NONE);
 
         // Forzar TLS 1.2+ y pinning del certificado del backend en producción
