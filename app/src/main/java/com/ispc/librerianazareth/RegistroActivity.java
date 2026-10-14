@@ -3,9 +3,12 @@ package com.ispc.librerianazareth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,28 +28,59 @@ import retrofit2.Response;
 public class RegistroActivity extends AppCompatActivity {
 
     private EditText etNombre, etApellido, etUsuario, etEmail, etPassword, etPasswordConfirmar;
+    private ImageView ivMostrarPassword, ivMostrarPasswordConfirmar;
     private Button btnRegistro;
     private TextView tvIrAlLogin;
     private TokenManager tokenManager;
+
+    private boolean passwordVisible = false;
+    private boolean passwordConfirmarVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
 
-        etNombre           = findViewById(R.id.etRegistroNombre);
-        etApellido         = findViewById(R.id.etRegistroApellido);
-        etUsuario          = findViewById(R.id.etRegistroUsuario);
-        etEmail             = findViewById(R.id.etRegistroEmail);
-        etPassword          = findViewById(R.id.etRegistroPassword);
-        etPasswordConfirmar = findViewById(R.id.etRegistroPasswordConfirmar);
-        btnRegistro         = findViewById(R.id.btnRegistro);
-        tvIrAlLogin         = findViewById(R.id.tvIrAlLogin);
-        tokenManager        = new TokenManager(this);
+        etNombre                  = findViewById(R.id.etRegistroNombre);
+        etApellido                = findViewById(R.id.etRegistroApellido);
+        etUsuario                 = findViewById(R.id.etRegistroUsuario);
+        etEmail                   = findViewById(R.id.etRegistroEmail);
+        etPassword                = findViewById(R.id.etRegistroPassword);
+        etPasswordConfirmar       = findViewById(R.id.etRegistroPasswordConfirmar);
+        ivMostrarPassword         = findViewById(R.id.ivMostrarPassword);
+        ivMostrarPasswordConfirmar = findViewById(R.id.ivMostrarPasswordConfirmar);
+        btnRegistro               = findViewById(R.id.btnRegistro);
+        tvIrAlLogin               = findViewById(R.id.tvIrAlLogin);
+        tokenManager              = new TokenManager(this);
 
         btnRegistro.setOnClickListener(v -> intentarRegistro());
 
         tvIrAlLogin.setOnClickListener(v -> finish());
+
+        // Toggle de contraseña principal
+        ivMostrarPassword.setOnClickListener(v -> {
+            passwordVisible = !passwordVisible;
+            togglePassword(etPassword, ivMostrarPassword, passwordVisible);
+        });
+
+        // Toggle de confirmar contraseña
+        ivMostrarPasswordConfirmar.setOnClickListener(v -> {
+            passwordConfirmarVisible = !passwordConfirmarVisible;
+            togglePassword(etPasswordConfirmar, ivMostrarPasswordConfirmar, passwordConfirmarVisible);
+        });
+    }
+
+    /** Alterna la visibilidad de un campo de contraseña. */
+    private void togglePassword(EditText campo, ImageView icono, boolean visible) {
+        if (visible) {
+            campo.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            icono.setImageResource(R.drawable.ic_ojo_abierto);
+        } else {
+            campo.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            icono.setImageResource(R.drawable.ic_ojo_cerrado);
+        }
+        // Mover el cursor al final para que no se resetee
+        campo.setSelection(campo.getText().length());
     }
 
     private void intentarRegistro() {

@@ -278,4 +278,5 @@
     <string name="dialog_cerrar_sesion">Cerrar sesión</string>
     <string name="dialog_cerrar_sesion_msg">¿Estás seguro de que querés cerrar sesión?</string>
     <string name="accion_salir">Salir</string>
+    <string name="mostrar_contrasena" />
 </resources>
