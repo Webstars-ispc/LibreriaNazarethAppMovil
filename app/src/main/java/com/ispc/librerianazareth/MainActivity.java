@@ -2,14 +2,18 @@ package com.ispc.librerianazareth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.ispc.librerianazareth.data.local.TokenManager;
 
 public class MainActivity extends BaseActivity {
 
     private TextView tvBienvenida;
+    private TextView btnCerrarSesionMain;
     private boolean esInvitado = false;
 
     @Override
@@ -18,6 +22,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         tvBienvenida = findViewById(R.id.tvBienvenida);
+        btnCerrarSesionMain = findViewById(R.id.btnCerrarSesionMain);
 
         // Modo invitado
         esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
@@ -51,10 +56,18 @@ public class MainActivity extends BaseActivity {
         // - Invitados: no ven "Usuarios" ni "Agregar"
         // - Empleados: no ven "Usuarios"
         if (esInvitado) {
-            btnUsuarios.setVisibility(LinearLayout.GONE);
-            btnAgregar.setVisibility(LinearLayout.GONE);
+            btnUsuarios.setVisibility(View.GONE);
+            btnAgregar.setVisibility(View.GONE);
         } else if (!esAdmin) {
-            btnUsuarios.setVisibility(LinearLayout.GONE);
+            btnUsuarios.setVisibility(View.GONE);
+        }
+
+        // Botón "Cerrar sesión": oculto para invitados
+        if (esInvitado) {
+            btnCerrarSesionMain.setVisibility(View.GONE);
+        } else {
+            btnCerrarSesionMain.setVisibility(View.VISIBLE);
+            btnCerrarSesionMain.setOnClickListener(v -> confirmarCerrarSesion());
         }
 
         btnCatalogo.setOnClickListener(v -> {
@@ -70,10 +83,8 @@ public class MainActivity extends BaseActivity {
         btnVenta.setOnClickListener(v -> {
             Intent intent;
             if (esAdmin) {
-                // Admin → lista completa de ventas
                 intent = new Intent(MainActivity.this, VentasActivity.class);
             } else {
-                // Empleado → directo a nueva venta
                 intent = new Intent(MainActivity.this, VentaActivity.class);
             }
             startActivity(intent);
@@ -96,5 +107,24 @@ public class MainActivity extends BaseActivity {
         });
 
         setupBottomNavigation(R.id.nav_inicio);
+    }
+
+    // ---------------------------------------------------------------
+    // CERRAR SESIÓN
+    // ---------------------------------------------------------------
+    private void confirmarCerrarSesion() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_cerrar_sesion)
+                .setMessage(R.string.dialog_cerrar_sesion_msg)
+                .setPositiveButton(R.string.dialog_cerrar_sesion, (dialog, which) -> {
+                    new TokenManager(this).clear();
+
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton(R.string.cancelar, null)
+                .show();
     }
 }
