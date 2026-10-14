@@ -21,9 +21,6 @@ public class ContactoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacto);
 
-        TextView btnVolver = findViewById(R.id.btnVolver);
-        btnVolver.setOnClickListener(v -> finish());
-
         etNombre = findViewById(R.id.etContactoNombre);
         etEmail = findViewById(R.id.etContactoEmail);
         etAsunto = findViewById(R.id.etContactoAsunto);
