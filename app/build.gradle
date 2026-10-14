@@ -1,5 +1,11 @@
 plugins {
     id 'com.android.application'
+    id 'jacoco'
+}
+
+// Cobertura de código (JaCoCo) — Sprint 2 (Testing)
+jacoco {
+    toolVersion = "0.8.11"
 }
 
 // Firma de release: se lee desde keystore.properties (archivo local, NO versionado).
@@ -40,6 +46,8 @@ android {
     }
 
     buildTypes {
+        debug {
+        }
         release {
             minifyEnabled true
             shrinkResources true
@@ -94,4 +102,36 @@ def getApiBaseUrl() {
         props.load(new FileInputStream(file))
     }
     return props.getProperty("API_BASE_URL", "https://librerianazareth.alwaysdata.net/")
+}
+
+// ============================================================
+// Reporte de cobertura de código (JaCoCo) — Sprint 2
+// Uso: ./gradlew :app:jacocoTestReport
+// Salida: app/build/reports/jacoco/jacocoTestReport/html/index.html
+// ============================================================
+tasks.register("jacocoTestReport", JacocoReport) {
+    dependsOn "testDebugUnitTest"
+
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+
+    def fileFilter = [
+            '**/R.class', '**/R$*.class', '**/BuildConfig.*',
+            '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*'
+    ]
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([
+            fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
+    ]))
+    executionData.setFrom(files([
+            fileTree(dir: buildDir, includes: [
+                    "jacoco/testDebugUnitTest.exec",
+                    "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
+            ])
+    ]))
 }
