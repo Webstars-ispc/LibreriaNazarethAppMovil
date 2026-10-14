@@ -140,11 +140,11 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         Call<ProductoResponse> call;
 
         if (textoBusqueda.isEmpty()) {
-            // Sin búsqueda: listartodo paginado
+            // Sin búsqueda: listar todo paginado
             call = RetrofitClient.getApi(this).getProductosPaginados(page, null);
 
         } else if (esCodigoDeBarras(textoBusqueda)) {
-            // código de barras: buscar por código (sin paginar, no existe codigo de barra dubplicado)
+            // código de barras: buscar por código (sin paginar)
             call = RetrofitClient.getApi(this).buscarProductoPorCodigo(textoBusqueda);
 
         } else {
@@ -195,9 +195,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                     btnAnterior.setEnabled(paginaActual > 1);
                     btnSiguiente.setEnabled(paginaActual < totalPaginas);
                 }
-
             }
-
 
             @Override
             public void onFailure(@NonNull Call<ProductoResponse> call,
@@ -256,6 +254,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         intent.putExtra("codigo_barras", producto.getCodigoBarras());
         intent.putExtra("rubro", producto.getRubro());
         intent.putExtra("marca", producto.getMarca() != null ? producto.getMarca() : -1);
+        intent.putExtra("marca_nombre", producto.getMarcaNombre());
         intent.putExtra("precio_costo", producto.getPrecioCosto());
         intent.putExtra("precio_venta", producto.getPrecioVenta());
         intent.putExtra("stock", producto.getStock());

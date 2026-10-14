@@ -78,6 +78,7 @@
     <string name="campo_stock_hint">Cantidad</string>
     <string name="precio_hint">$0.00</string>
     <string name="escanear_codigo_barras">Escanear código de barras</string>
+    <string name="campo_marca_hint">Ej: Faber-Castell</string>
 
     <!-- Usuarios -->
     <string name="buscar_usuario">Buscar usuario</string>

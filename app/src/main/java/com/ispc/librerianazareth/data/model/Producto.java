@@ -25,8 +25,13 @@ public class Producto {
     @SerializedName("marca")
     private Integer marca;
 
+    // Campo de LECTURA: lo llena el backend cuando hacemos GET
     @SerializedName("marca_nombre")
     private String marcaNombre;
+
+    // Campo de ESCRITURA: lo mandamos al backend cuando hacemos POST/PUT
+    @SerializedName("marca_nombre_input")
+    private String marcaNombreInput;
 
     @SerializedName("precio_costo")
     private double precioCosto;
@@ -76,6 +81,11 @@ public class Producto {
 
     public String getMarcaNombre() { return marcaNombre; }
     public void setMarcaNombre(String marcaNombre) { this.marcaNombre = marcaNombre; }
+
+    public String getMarcaNombreInput() { return marcaNombreInput; }
+    public void setMarcaNombreInput(String marcaNombreInput) {
+        this.marcaNombreInput = marcaNombreInput;
+    }
 
     public double getPrecioCosto() { return precioCosto; }
     public void setPrecioCosto(double precioCosto) { this.precioCosto = precioCosto; }

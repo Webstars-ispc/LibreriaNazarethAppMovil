@@ -128,19 +128,26 @@
                 android:layout_height="48dp"
                 android:layout_marginBottom="12dp" />
 
+            <!-- MARCA: EditText en lugar de Spinner -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:labelFor="@id/spinnerMarca"
+                android:labelFor="@id/etMarca"
                 android:text="@string/campo_marca"
                 android:textSize="14sp"
                 android:textColor="@color/texto_hint"
                 android:layout_marginBottom="4dp" />
 
-            <Spinner
-                android:id="@+id/spinnerMarca"
+            <EditText
+                android:id="@+id/etMarca"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/campo_marca_hint"
+                android:inputType="text"
+                android:textColor="@color/texto_principal"
+                android:textColorHint="@color/texto_hint"
+                android:background="@drawable/input_fondo"
+                android:padding="12dp"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
