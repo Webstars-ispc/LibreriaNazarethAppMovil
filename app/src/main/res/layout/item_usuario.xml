@@ -50,6 +50,7 @@
                 android:id="@+id/btnEditarUsuario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:text="@string/editar_accion"
                 android:textColor="@color/dorado_claro"
                 android:backgroundTint="@color/borde"
