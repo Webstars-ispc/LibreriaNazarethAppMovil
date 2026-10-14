@@ -3,11 +3,12 @@ package com.ispc.librerianazareth;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
 
 public class ConfiguracionActivity extends BaseActivity {
 
@@ -24,9 +25,6 @@ public class ConfiguracionActivity extends BaseActivity {
 
         esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
 
-        TextView btnVolver = findViewById(R.id.btnVolver);
-        btnVolver.setOnClickListener(v -> finish());
-
         TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
         if (esInvitado) {
             btnCerrarSesion.setText(R.string.config_salir_invitado);
@@ -41,8 +39,8 @@ public class ConfiguracionActivity extends BaseActivity {
     private void configurarSwitches() {
         final SharedPreferences prefs = getSharedPreferences(PREFS_AJUSTES, MODE_PRIVATE);
 
-        Switch switchNotificaciones = findViewById(R.id.switchNotificaciones);
-        Switch switchModoOscuro = findViewById(R.id.switchModoOscuro);
+        SwitchCompat switchNotificaciones = findViewById(R.id.switchNotificaciones);
+        SwitchCompat switchModoOscuro = findViewById(R.id.switchModoOscuro);
 
         // Cargar estado guardado
         switchNotificaciones.setChecked(prefs.getBoolean(KEY_NOTIFICACIONES, true));
