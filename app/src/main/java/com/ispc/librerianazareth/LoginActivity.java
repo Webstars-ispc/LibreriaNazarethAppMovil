@@ -21,7 +21,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsuario, etPassword;
     private Button btnLogin;
-    private TextView tvModoInvitado;
     private TextView tvIrAlRegistro;
     private TokenManager tokenManager;
     private LoginViewModel viewModel;
@@ -34,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
         etUsuario      = findViewById(R.id.etUsuario);
         etPassword     = findViewById(R.id.etPassword);
         btnLogin       = findViewById(R.id.btnLogin);
-        tvModoInvitado = findViewById(R.id.tvModoInvitado);
         tvIrAlRegistro = findViewById(R.id.tvIrAlRegistro);
         tokenManager   = new TokenManager(this);
 
@@ -56,15 +54,6 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Modo invitado
-        tvModoInvitado.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("EXTRA_USUARIO", "Invitado");
-            intent.putExtra("ES_INVITADO", true);
-            startActivity(intent);
-            finish();
-        });
-
         observarEstado();
     }
 
@@ -83,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("EXTRA_USUARIO", state.username);
-                    intent.putExtra("ES_INVITADO", false);
                     startActivity(intent);
                     finish();
                     break;

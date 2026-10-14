@@ -14,7 +14,6 @@ public class MainActivity extends BaseActivity {
 
     private TextView tvBienvenida;
     private TextView btnCerrarSesionMain;
-    private boolean esInvitado = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,18 +23,15 @@ public class MainActivity extends BaseActivity {
         tvBienvenida = findViewById(R.id.tvBienvenida);
         btnCerrarSesionMain = findViewById(R.id.btnCerrarSesionMain);
 
-        // Modo invitado
-        esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
-
         // Token + datos del usuario
         TokenManager tokenManager = new TokenManager(this);
-        String usuario = esInvitado ? "" : tokenManager.getUsername();
-        boolean esAdmin = !esInvitado && tokenManager.isAdmin();
+        String usuario = tokenManager.getUsername();
+        boolean esAdmin = tokenManager.isAdmin();
+
         android.util.Log.d(
                 "ROL_APP",
                 "Rol guardado: [" + tokenManager.getRole()
                         + "] | esAdmin: " + esAdmin
-                        + " | esInvitado: " + esInvitado
         );
 
         if (usuario != null && !usuario.isEmpty()) {
@@ -52,23 +48,14 @@ public class MainActivity extends BaseActivity {
         LinearLayout btnUsuarios      = findViewById(R.id.btnUsuarios);
         LinearLayout btnVenta         = findViewById(R.id.btnVenta);
 
-        // Visibilidad según rol / invitado
-        // - Invitados: no ven "Usuarios" ni "Agregar"
+        // Visibilidad según rol
         // - Empleados: no ven "Usuarios"
-        if (esInvitado) {
-            btnUsuarios.setVisibility(View.GONE);
-            btnAgregar.setVisibility(View.GONE);
-        } else if (!esAdmin) {
+        if (!esAdmin) {
             btnUsuarios.setVisibility(View.GONE);
         }
 
-        // Botón "Cerrar sesión": oculto para invitados
-        if (esInvitado) {
-            btnCerrarSesionMain.setVisibility(View.GONE);
-        } else {
-            btnCerrarSesionMain.setVisibility(View.VISIBLE);
-            btnCerrarSesionMain.setOnClickListener(v -> confirmarCerrarSesion());
-        }
+        // Botón "Cerrar sesión": siempre visible (siempre hay usuario logueado)
+        btnCerrarSesionMain.setOnClickListener(v -> confirmarCerrarSesion());
 
         btnCatalogo.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CatalogoActivity.class);
@@ -92,7 +79,6 @@ public class MainActivity extends BaseActivity {
 
         btnConfiguracion.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ConfiguracionActivity.class);
-            intent.putExtra("ES_INVITADO", esInvitado);
             startActivity(intent);
         });
 

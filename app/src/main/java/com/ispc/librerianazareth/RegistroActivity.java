@@ -142,7 +142,6 @@ public class RegistroActivity extends AppCompatActivity {
 
                             Intent intent = new Intent(RegistroActivity.this, MainActivity.class);
                             intent.putExtra("EXTRA_USUARIO", body.getUsername());
-                            intent.putExtra("ES_INVITADO", false);
                             startActivity(intent);
                             finish();
 
