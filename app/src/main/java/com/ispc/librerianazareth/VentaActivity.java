@@ -2,6 +2,10 @@ package com.ispc.librerianazareth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -14,7 +18,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.ispc.librerianazareth.adapter.ProductoVentaAdapter;
 import com.ispc.librerianazareth.data.RetrofitClient;
 import com.ispc.librerianazareth.data.model.ItemVenta;
 import com.ispc.librerianazareth.data.model.ItemVentaRequest;
@@ -36,14 +44,24 @@ public class VentaActivity extends BaseActivity {
 
     private EditText etCodigoVenta;
     private ImageView ivEscanearVenta;
-    private Button btnAgregarProductoVenta;
+    private CardView cvResultadosVenta;
+    private RecyclerView rvResultadosVenta;
     private LinearLayout llListaCarrito;
     private TextView tvTotalVenta;
     private TextView tvCarritoVacio;
     private Button btnCancelarVenta;
     private Button btnConfirmarVenta;
 
+    private ProductoVentaAdapter productoAdapter;
     private final List<ItemVenta> carrito = new ArrayList<>();
+
+    // Debounce para búsqueda en vivo (nombre)
+    private final Handler searchHandler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
+    private static final long SEARCH_DELAY_MS = 500;
+
+    // Debounce para código escrito a mano
+    private static final long BARCODE_DELAY_MS = 700;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,34 +70,119 @@ public class VentaActivity extends BaseActivity {
 
         setupBottomNavigation(0);
 
-        etCodigoVenta           = findViewById(R.id.etCodigoVenta);
-        ivEscanearVenta         = findViewById(R.id.ivEscanearVenta);
-        btnAgregarProductoVenta = findViewById(R.id.btnAgregarProductoVenta);
-        llListaCarrito          = findViewById(R.id.llListaCarrito);
-        tvTotalVenta            = findViewById(R.id.tvTotalVenta);
-        tvCarritoVacio          = findViewById(R.id.tvCarritoVacio);
-        btnCancelarVenta        = findViewById(R.id.btnCancelarVenta);
-        btnConfirmarVenta       = findViewById(R.id.btnConfirmarVenta);
+        // Referencias
+        etCodigoVenta     = findViewById(R.id.etCodigoVenta);
+        ivEscanearVenta   = findViewById(R.id.ivEscanearVenta);
+        cvResultadosVenta = findViewById(R.id.cvResultadosVenta);
+        rvResultadosVenta = findViewById(R.id.rvResultadosVenta);
+        llListaCarrito    = findViewById(R.id.llListaCarrito);
+        tvTotalVenta      = findViewById(R.id.tvTotalVenta);
+        tvCarritoVacio    = findViewById(R.id.tvCarritoVacio);
+        btnCancelarVenta  = findViewById(R.id.btnCancelarVenta);
+        btnConfirmarVenta = findViewById(R.id.btnConfirmarVenta);
 
+        // Adapter para resultados en vivo
+        productoAdapter = new ProductoVentaAdapter(this::agregarProductoDesdeLista);
+        rvResultadosVenta.setLayoutManager(new LinearLayoutManager(this));
+        rvResultadosVenta.setAdapter(productoAdapter);
+
+        // Escáner
         ivEscanearVenta.setOnClickListener(v -> iniciarEscaner());
-        btnAgregarProductoVenta.setOnClickListener(v -> agregarProducto());
 
+        // Enter en el teclado → forzar búsqueda manual
         etCodigoVenta.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE
                     || actionId == EditorInfo.IME_ACTION_GO
                     || actionId == EditorInfo.IME_ACTION_SEND) {
+                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+                ocultarResultados();
                 agregarProducto();
                 return true;
             }
             return false;
         });
 
-        btnCancelarVenta.setOnClickListener(v -> finish());
+        // Búsqueda en vivo con debounce
+        etCodigoVenta.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        // ⬇️ CONFIRMAR VENTA
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+
+                final String query = s.toString().trim();
+
+                if (query.isEmpty()) {
+                    ocultarResultados();
+                    return;
+                }
+
+                if (esCodigoDeBarras(query)) {
+                    // Código numérico completo → esperar y auto-agregar
+                    ocultarResultados();
+                    searchRunnable = () -> agregarProducto();
+                    searchHandler.postDelayed(searchRunnable, BARCODE_DELAY_MS);
+                    return;
+                }
+
+                // Texto → buscar en vivo por nombre
+                searchRunnable = () -> buscarProductosEnVivo(query);
+                searchHandler.postDelayed(searchRunnable, SEARCH_DELAY_MS);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        btnCancelarVenta.setOnClickListener(v -> finish());
         btnConfirmarVenta.setOnClickListener(v -> confirmarVenta());
 
         renderizarCarrito();
+    }
+
+    // ---------------------------------------------------------------
+    // BÚSQUEDA EN VIVO
+    // ---------------------------------------------------------------
+    private void buscarProductosEnVivo(String query) {
+        RetrofitClient.getApi(this)
+                .buscarProductoPorNombre(query)
+                .enqueue(new Callback<ProductoResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ProductoResponse> call,
+                                           @NonNull Response<ProductoResponse> response) {
+                        if (!response.isSuccessful() || response.body() == null
+                                || response.body().getResults() == null
+                                || response.body().getResults().isEmpty()) {
+                            ocultarResultados();
+                            return;
+                        }
+
+                        productoAdapter.setProductos(response.body().getResults());
+                        cvResultadosVenta.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ProductoResponse> call,
+                                          @NonNull Throwable t) {
+                        ocultarResultados();
+                    }
+                });
+    }
+
+    private void agregarProductoDesdeLista(Producto producto) {
+        agregarItemAlCarrito(producto);
+        etCodigoVenta.setText("");
+        ocultarResultados();
+    }
+
+    private void ocultarResultados() {
+        cvResultadosVenta.setVisibility(View.GONE);
+        productoAdapter.setProductos(new ArrayList<>());
+    }
+
+    private boolean esCodigoDeBarras(String texto) {
+        return texto.matches("\\d+") && texto.length() >= 8;
     }
 
     // ---------------------------------------------------------------
@@ -101,8 +204,17 @@ public class VentaActivity extends BaseActivity {
         if (result != null) {
             if (result.getContents() != null) {
                 String codigo = result.getContents();
+
+                // Cancelamos cualquier debounce pendiente
+                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+
+                // Seteamos el texto sin disparar búsqueda en vivo
+                // (el TextWatcher detecta código pero ya lo cancelamos arriba)
                 etCodigoVenta.setText(codigo);
                 etCodigoVenta.setSelection(codigo.length());
+
+                // Auto-agregamos directo porque el código viene completo y único
+                agregarProducto();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -110,7 +222,7 @@ public class VentaActivity extends BaseActivity {
     }
 
     // ---------------------------------------------------------------
-    // AGREGAR PRODUCTO (código → nombre)
+    // AGREGAR PRODUCTO (por código de barras o Enter)
     // ---------------------------------------------------------------
     private void agregarProducto() {
         final String texto = etCodigoVenta.getText().toString().trim();
@@ -131,6 +243,7 @@ public class VentaActivity extends BaseActivity {
                                 && !response.body().getResults().isEmpty()) {
                             agregarItemAlCarrito(response.body().getResults().get(0));
                             etCodigoVenta.setText("");
+                            ocultarResultados();
                         } else {
                             buscarPorNombre(texto);
                         }
@@ -167,6 +280,7 @@ public class VentaActivity extends BaseActivity {
                         if (resultados.size() == 1) {
                             agregarItemAlCarrito(resultados.get(0));
                             etCodigoVenta.setText("");
+                            ocultarResultados();
                         } else {
                             mostrarDialogoSeleccion(resultados);
                         }
@@ -195,6 +309,7 @@ public class VentaActivity extends BaseActivity {
                 .setItems(items, (dialog, which) -> {
                     agregarItemAlCarrito(productos.get(which));
                     etCodigoVenta.setText("");
+                    ocultarResultados();
                 })
                 .setNegativeButton(R.string.cancelar, null)
                 .show();
@@ -203,7 +318,6 @@ public class VentaActivity extends BaseActivity {
     private void agregarItemAlCarrito(Producto producto) {
         int id = producto.getId();
 
-        // Si el producto no tiene stock, avisar y salir
         if (producto.getStock() <= 0) {
             Toast.makeText(this,
                     "Sin stock disponible: " + producto.getNombre(),
@@ -236,7 +350,7 @@ public class VentaActivity extends BaseActivity {
     }
 
     // ---------------------------------------------------------------
-    // CONFIRMAR VENTA (POST /api/ventas/)
+    // CONFIRMAR VENTA
     // ---------------------------------------------------------------
     private void confirmarVenta() {
         if (carrito.isEmpty()) {
@@ -244,7 +358,6 @@ public class VentaActivity extends BaseActivity {
             return;
         }
 
-        // Verificar stock antes de enviar
         for (ItemVenta item : carrito) {
             if (item.getCantidad() > item.getStock()) {
                 Toast.makeText(this,
@@ -255,7 +368,6 @@ public class VentaActivity extends BaseActivity {
             }
         }
 
-        // Armar la lista de items para el request
         List<ItemVentaRequest> items = new ArrayList<>();
         for (ItemVenta item : carrito) {
             items.add(new ItemVentaRequest(item.getProductoId(), item.getCantidad()));
@@ -263,7 +375,6 @@ public class VentaActivity extends BaseActivity {
 
         VentaRequest request = new VentaRequest(items);
 
-        // Deshabilitar el botón mientras se procesa
         btnConfirmarVenta.setEnabled(false);
         btnConfirmarVenta.setText(R.string.btn_procesando);
 
@@ -282,14 +393,10 @@ public class VentaActivity extends BaseActivity {
                                     getString(R.string.msj_venta_registrada, venta.getId()),
                                     Toast.LENGTH_LONG).show();
 
-                            // Limpiar carrito
                             carrito.clear();
                             renderizarCarrito();
 
-                            // TODO (próximo commit): abrir TicketActivity con "venta"
-
                         } else {
-                            // Error del backend (400, 401, 500, etc.)
                             String mensaje = getString(R.string.msj_error_registrar_venta);
                             try {
                                 if (response.errorBody() != null) {
