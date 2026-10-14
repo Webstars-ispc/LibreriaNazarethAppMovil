@@ -87,7 +87,6 @@
                         android:text="@string/ver_productos"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
-
                 </LinearLayout>
 
                 <!-- Productos -->
@@ -126,7 +125,6 @@
                         android:text="@string/agregar_producto"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
-
                 </LinearLayout>
 
                 <!-- Configuración -->
@@ -165,7 +163,6 @@
                         android:text="@string/ajustes"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
-
                 </LinearLayout>
 
                 <!-- Contacto -->
@@ -204,8 +201,8 @@
                         android:text="@string/soporte"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
-
                 </LinearLayout>
+
                 <!-- Usuarios -->
                 <LinearLayout
                     android:id="@+id/btnUsuarios"
@@ -242,7 +239,6 @@
                         android:text="@string/gestionar_usuarios"
                         android:textColor="@color/texto_menu_subtitulo"
                         android:textSize="12sp" />
-
                 </LinearLayout>
 
                 <!-- Venta -->
@@ -284,6 +280,20 @@
                 </LinearLayout>
 
             </GridLayout>
+
+            <!-- Botón Cerrar sesión (solo usuarios logueados) -->
+            <TextView
+                android:id="@+id/btnCerrarSesionMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/boton_redondeado"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="@string/cerrar_sesion"
+                android:textColor="@color/boton_texto"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

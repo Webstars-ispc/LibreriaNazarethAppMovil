@@ -3,11 +3,14 @@ package com.ispc.librerianazareth;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
+
+import com.ispc.librerianazareth.data.local.TokenManager;
 
 public class ConfiguracionActivity extends BaseActivity {
 
@@ -15,22 +18,12 @@ public class ConfiguracionActivity extends BaseActivity {
     private static final String KEY_NOTIFICACIONES = "notificaciones_activadas";
     private static final String KEY_MODO_OSCURO = "modo_oscuro_activado";
 
-    private boolean esInvitado = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuracion);
 
-        esInvitado = getIntent().getBooleanExtra("ES_INVITADO", false);
-
-        TextView btnVolver = findViewById(R.id.btnVolver);
-        btnVolver.setOnClickListener(v -> finish());
-
         TextView btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
-        if (esInvitado) {
-            btnCerrarSesion.setText(R.string.config_salir_invitado);
-        }
         btnCerrarSesion.setOnClickListener(v -> confirmarCerrarSesion());
 
         configurarSwitches();
@@ -41,8 +34,8 @@ public class ConfiguracionActivity extends BaseActivity {
     private void configurarSwitches() {
         final SharedPreferences prefs = getSharedPreferences(PREFS_AJUSTES, MODE_PRIVATE);
 
-        Switch switchNotificaciones = findViewById(R.id.switchNotificaciones);
-        Switch switchModoOscuro = findViewById(R.id.switchModoOscuro);
+        SwitchCompat switchNotificaciones = findViewById(R.id.switchNotificaciones);
+        SwitchCompat switchModoOscuro = findViewById(R.id.switchModoOscuro);
 
         // Cargar estado guardado
         switchNotificaciones.setChecked(prefs.getBoolean(KEY_NOTIFICACIONES, true));
@@ -64,13 +57,11 @@ public class ConfiguracionActivity extends BaseActivity {
 
     private void confirmarCerrarSesion() {
         new AlertDialog.Builder(this)
-                .setTitle(esInvitado ? R.string.config_salir_invitado : R.string.dialog_cerrar_sesion)
-                .setMessage(esInvitado
-                        ? getString(R.string.dialog_salir_invitado_msg)
-                        : getString(R.string.dialog_cerrar_sesion_msg))
-                .setPositiveButton(esInvitado ? R.string.accion_salir : R.string.dialog_cerrar_sesion, (dialog, which) -> {
+                .setTitle(R.string.dialog_cerrar_sesion)
+                .setMessage(R.string.dialog_cerrar_sesion_msg)
+                .setPositiveButton(R.string.dialog_cerrar_sesion, (dialog, which) -> {
                     // Se limpian los tokens y los ajustes locales
-                    new com.ispc.librerianazareth.data.local.TokenManager(this).clear();
+                    new TokenManager(this).clear();
                     getSharedPreferences(PREFS_AJUSTES, MODE_PRIVATE).edit().clear().apply();
 
                     Intent intent = new Intent(ConfiguracionActivity.this, LoginActivity.class);

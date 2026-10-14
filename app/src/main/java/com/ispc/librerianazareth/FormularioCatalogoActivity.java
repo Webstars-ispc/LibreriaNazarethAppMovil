@@ -11,7 +11,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.ispc.librerianazareth.data.RetrofitClient;
-import com.ispc.librerianazareth.data.model.Marca;
 import com.ispc.librerianazareth.data.model.Pagina;
 import com.ispc.librerianazareth.data.model.Producto;
 import com.ispc.librerianazareth.data.model.Rubro;
@@ -27,8 +26,8 @@ import retrofit2.Response;
 
 public class FormularioCatalogoActivity extends BaseActivity {
 
-    private EditText etNombre, etDescripcion, etCodigoBarras, etPrecioCosto, etPrecioVenta, etStock;
-    private Spinner spinnerRubro, spinnerMarca;
+    private EditText etNombre, etDescripcion, etCodigoBarras, etMarca, etPrecioCosto, etPrecioVenta, etStock;
+    private Spinner spinnerRubro;
     private Button btnGuardar, btnCancelar;
     private ImageView ivEscanearCodigoProducto;
 
@@ -36,7 +35,6 @@ public class FormularioCatalogoActivity extends BaseActivity {
     private int productoId = -1;
 
     private List<Rubro> rubrosList = new ArrayList<>();
-    private List<Marca> marcasList = new ArrayList<>();
     private String errorRubros = null;
 
     @Override
@@ -49,11 +47,11 @@ public class FormularioCatalogoActivity extends BaseActivity {
         etNombre = findViewById(R.id.etNombre);
         etDescripcion = findViewById(R.id.etDescripcion);
         etCodigoBarras = findViewById(R.id.etCodigoBarras);
+        etMarca = findViewById(R.id.etMarca);
         etPrecioCosto = findViewById(R.id.etPrecioCosto);
         etPrecioVenta = findViewById(R.id.etPrecioVenta);
         etStock = findViewById(R.id.etStock);
         spinnerRubro = findViewById(R.id.spinnerRubro);
-        spinnerMarca = findViewById(R.id.spinnerMarca);
         btnGuardar = findViewById(R.id.btnGuardar);
         btnCancelar = findViewById(R.id.btnCancelar);
         ivEscanearCodigoProducto = findViewById(R.id.ivEscanearCodigoProducto);
@@ -61,9 +59,6 @@ public class FormularioCatalogoActivity extends BaseActivity {
         ivEscanearCodigoProducto.setOnClickListener(v -> iniciarEscaner());
 
         btnCancelar.setOnClickListener(v -> finish());
-
-        // Cargar rubros y marcas desde el backend
-        cargarRubrosYMarcas();
 
         // Verificar modo edición
         modoEdicion = getIntent().getBooleanExtra("modo_edicion", false);
@@ -75,13 +70,21 @@ public class FormularioCatalogoActivity extends BaseActivity {
             etPrecioCosto.setText(String.valueOf(getIntent().getDoubleExtra("precio_costo", 0)));
             etPrecioVenta.setText(String.valueOf(getIntent().getDoubleExtra("precio_venta", 0)));
             etStock.setText(String.valueOf(getIntent().getIntExtra("stock", 0)));
+
+            // Precargar el nombre de la marca
+            String marcaNombre = getIntent().getStringExtra("marca_nombre");
+            if (marcaNombre != null) {
+                etMarca.setText(marcaNombre);
+            }
         }
 
         btnGuardar.setOnClickListener(v -> guardarProducto());
+
+        // Cargar rubros (solo rubros)
+        cargarRubros();
     }
 
-    private void cargarRubrosYMarcas() {
-        // Cargar rubros
+    private void cargarRubros() {
         RetrofitClient.getApi(this).getRubros().enqueue(new Callback<Pagina<Rubro>>() {
             @Override
             public void onResponse(Call<Pagina<Rubro>> call, Response<Pagina<Rubro>> response) {
@@ -101,12 +104,11 @@ public class FormularioCatalogoActivity extends BaseActivity {
                     );
                     spinnerRubro.setAdapter(adapter);
 
-                    // Si es edición, seleccionar el rubro correcto
                     if (modoEdicion) {
                         int rubroId = getIntent().getIntExtra("rubro", -1);
                         for (int i = 0; i < rubrosList.size(); i++) {
                             if (rubrosList.get(i).getId() == rubroId) {
-                                spinnerRubro.setSelection(i + 1); // +1 por "Seleccionar rubro"
+                                spinnerRubro.setSelection(i + 1);
                                 break;
                             }
                         }
@@ -123,59 +125,8 @@ public class FormularioCatalogoActivity extends BaseActivity {
                 mostrarErrorRubros();
             }
         });
-
-        // Cargar marcas
-        RetrofitClient.getApi(this).getMarcas().enqueue(new Callback<Pagina<Marca>>() {
-            @Override
-            public void onResponse(Call<Pagina<Marca>> call, Response<Pagina<Marca>> response) {
-                if (response.isSuccessful() && response.body() != null
-                        && response.body().getResults() != null) {
-                    marcasList = response.body().getResults();
-                    List<String> marcaNombres = new ArrayList<>();
-                    marcaNombres.add(getString(R.string.spinner_seleccionar_marca));
-                    for (Marca m : marcasList) {
-                        marcaNombres.add(m.getNombre());
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            FormularioCatalogoActivity.this,
-                            android.R.layout.simple_spinner_dropdown_item,
-                            marcaNombres
-                    );
-                    spinnerMarca.setAdapter(adapter);
-
-                    // Si es edición, seleccionar la marca correcta
-                    if (modoEdicion) {
-                        int marcaId = getIntent().getIntExtra("marca", -1);
-                        for (int i = 0; i < marcasList.size(); i++) {
-                            if (marcasList.get(i).getId() == marcaId) {
-                                spinnerMarca.setSelection(i + 1); // +1 por "Seleccionar marca"
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            FormularioCatalogoActivity.this,
-                            android.R.layout.simple_spinner_dropdown_item,
-                            new String[]{getString(R.string.msj_no_se_pudo_cargar)}
-                    );
-                    spinnerMarca.setAdapter(adapter);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Pagina<Marca>> call, Throwable t) {
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        FormularioCatalogoActivity.this,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        new String[]{getString(R.string.msj_no_se_pudo_cargar)}
-                );
-                spinnerMarca.setAdapter(adapter);
-            }
-        });
     }
 
-    /** Deja el spinner de rubros en estado de error (no se puede guardar sin rubros reales). */
     private void mostrarErrorRubros() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -190,6 +141,7 @@ public class FormularioCatalogoActivity extends BaseActivity {
         String nombre = etNombre.getText().toString().trim();
         String descripcion = etDescripcion.getText().toString().trim();
         String codigoBarras = etCodigoBarras.getText().toString().trim();
+        String marcaNombre = etMarca.getText().toString().trim();
         String precioCostoStr = etPrecioCosto.getText().toString().trim();
         String precioVentaStr = etPrecioVenta.getText().toString().trim();
         String stockStr = etStock.getText().toString().trim();
@@ -261,10 +213,6 @@ public class FormularioCatalogoActivity extends BaseActivity {
             return;
         }
 
-        // Obtener IDs de rubro y marca
-        int rubroId = -1;
-        int marcaId = -1;
-
         if (rubrosList.isEmpty()) {
             Toast.makeText(this, errorRubros != null
                             ? errorRubros
@@ -273,15 +221,25 @@ public class FormularioCatalogoActivity extends BaseActivity {
             return;
         }
 
-        if (spinnerRubro.getSelectedItemPosition() > 0 && spinnerRubro.getSelectedItemPosition() <= rubrosList.size()) {
+        int rubroId = -1;
+        if (spinnerRubro.getSelectedItemPosition() > 0
+                && spinnerRubro.getSelectedItemPosition() <= rubrosList.size()) {
             rubroId = rubrosList.get(spinnerRubro.getSelectedItemPosition() - 1).getId();
         }
 
-        if (spinnerMarca.getSelectedItemPosition() > 0 && spinnerMarca.getSelectedItemPosition() <= marcasList.size()) {
-            marcaId = marcasList.get(spinnerMarca.getSelectedItemPosition() - 1).getId();
-        }
-
-        Producto producto = new Producto(nombre, descripcion, codigoBarras, rubroId, marcaId, precioCosto, precioVenta, stock);
+        // Armamos el producto
+        Producto producto = new Producto(
+                nombre,
+                descripcion,
+                codigoBarras,
+                rubroId,
+                -1,                 // sin marca por ID (el backend resuelve por marca_nombre_input)
+                precioCosto,
+                precioVenta,
+                stock
+        );
+        // Campo de ESCRITURA: el backend crea/encuentra la marca por este nombre
+        producto.setMarcaNombreInput(marcaNombre);
 
         btnGuardar.setEnabled(false);
 
@@ -328,7 +286,6 @@ public class FormularioCatalogoActivity extends BaseActivity {
         }
     }
 
-    /** Convierte la respuesta HTTP de error en un mensaje entendible para el usuario. */
     private String mensajeError(Response<?> response) {
         int code = response.code();
         if (code == 401) return getString(R.string.msj_sesion_expirada_larga);
@@ -342,7 +299,6 @@ public class FormularioCatalogoActivity extends BaseActivity {
                 }
             } catch (Exception ignored) {
             }
-            // Django responde {"campo": ["mensaje"]} o {"detail": "..."}
             detalle = detalle.replaceAll("[\\[\\]\"]", "")
                     .replace("{", "")
                     .replace("}", "")

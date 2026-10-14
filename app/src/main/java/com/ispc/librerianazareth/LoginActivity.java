@@ -2,8 +2,11 @@ package com.ispc.librerianazareth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,23 +23,25 @@ import com.ispc.librerianazareth.ui.login.LoginViewModelFactory;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsuario, etPassword;
+    private ImageView ivMostrarPassword;
     private Button btnLogin;
-    private TextView tvModoInvitado;
     private TextView tvIrAlRegistro;
     private TokenManager tokenManager;
     private LoginViewModel viewModel;
+
+    private boolean passwordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etUsuario      = findViewById(R.id.etUsuario);
-        etPassword     = findViewById(R.id.etPassword);
-        btnLogin       = findViewById(R.id.btnLogin);
-        tvModoInvitado = findViewById(R.id.tvModoInvitado);
-        tvIrAlRegistro = findViewById(R.id.tvIrAlRegistro);
-        tokenManager   = new TokenManager(this);
+        etUsuario         = findViewById(R.id.etUsuario);
+        etPassword        = findViewById(R.id.etPassword);
+        ivMostrarPassword = findViewById(R.id.ivMostrarPassword);
+        btnLogin          = findViewById(R.id.btnLogin);
+        tvIrAlRegistro    = findViewById(R.id.tvIrAlRegistro);
+        tokenManager      = new TokenManager(this);
 
         // Inyección de dependencias: repositorio (api) -> ViewModel
         AuthRepository repository = new AuthRepository(RetrofitClient.getApi(this));
@@ -56,16 +61,26 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Modo invitado
-        tvModoInvitado.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("EXTRA_USUARIO", "Invitado");
-            intent.putExtra("ES_INVITADO", true);
-            startActivity(intent);
-            finish();
-        });
+        // Mostrar/ocultar contraseña
+        ivMostrarPassword.setOnClickListener(v -> togglePasswordVisibility());
 
         observarEstado();
+    }
+
+    private void togglePasswordVisibility() {
+        if (passwordVisible) {
+            // Ocultar
+            etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            ivMostrarPassword.setImageResource(R.drawable.ic_ojo_cerrado);
+            passwordVisible = false;
+        } else {
+            // Mostrar
+            etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            ivMostrarPassword.setImageResource(R.drawable.ic_ojo_abierto);
+            passwordVisible = true;
+        }
+        // Mover el cursor al final del texto para que no se resetee
+        etPassword.setSelection(etPassword.getText().length());
     }
 
     private void observarEstado() {
@@ -83,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("EXTRA_USUARIO", state.username);
-                    intent.putExtra("ES_INVITADO", false);
                     startActivity(intent);
                     finish();
                     break;

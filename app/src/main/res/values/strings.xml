@@ -36,7 +36,6 @@
     <!-- Login -->
     <string name="login_titulo">INICIAR SESIÓN</string>
     <string name="login_ingresar">INGRESAR</string>
-    <string name="login_invitado">Entrar como invitado</string>
     <string name="login_registro">No tengo cuenta, registrarme</string>
     <string name="hint_usuario">Usuario</string>
     <string name="hint_nombre">Nombre</string>
@@ -78,6 +77,7 @@
     <string name="campo_stock_hint">Cantidad</string>
     <string name="precio_hint">$0.00</string>
     <string name="escanear_codigo_barras">Escanear código de barras</string>
+    <string name="campo_marca_hint">Ej: Faber-Castell</string>
 
     <!-- Usuarios -->
     <string name="buscar_usuario">Buscar usuario</string>
@@ -273,11 +273,10 @@
     <string name="dialog_cerrar">Cerrar</string>
 
     <!-- Configuración (dinámico) -->
-    <string name="config_salir_invitado">Salir del modo invitado</string>
     <string name="msj_notif_activadas">Notificaciones activadas</string>
     <string name="msj_notif_desactivadas">Notificaciones desactivadas</string>
     <string name="dialog_cerrar_sesion">Cerrar sesión</string>
-    <string name="dialog_salir_invitado_msg">¿Querés salir del modo invitado?</string>
     <string name="dialog_cerrar_sesion_msg">¿Estás seguro de que querés cerrar sesión?</string>
     <string name="accion_salir">Salir</string>
+    <string name="mostrar_contrasena" />
 </resources>

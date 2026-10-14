@@ -60,11 +60,13 @@
                     android:textColor="@color/texto_card"
                     android:textSize="16sp" />
 
-                <Switch
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchNotificaciones"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
                     android:thumbTint="@color/dorado"
                     android:trackTint="@color/fondo_card" />
             </LinearLayout>
@@ -86,11 +88,13 @@
                     android:textColor="@color/texto_card"
                     android:textSize="16sp" />
 
-                <Switch
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchModoOscuro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
                     android:thumbTint="@color/dorado"
                     android:trackTint="@color/fondo_card" />
             </LinearLayout>
@@ -155,19 +159,6 @@
                 android:gravity="center"
                 android:padding="14dp"
                 android:text="@string/cerrar_sesion"
-                android:textColor="@color/boton_texto"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btnVolver"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/boton_redondeado"
-                android:gravity="center"
-                android:padding="14dp"
-                android:text="@string/volver"
                 android:textColor="@color/boton_texto"
                 android:textSize="14sp"
                 android:textStyle="bold" />
