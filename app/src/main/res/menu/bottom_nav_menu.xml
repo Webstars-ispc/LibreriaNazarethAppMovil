@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_inicio"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="Inicio" />
+        android:icon="@drawable/ic_inicio"
+        android:title="@string/inicio" />
     <item
         android:id="@+id/nav_catalogo"
-        android:icon="@android:drawable/ic_menu_agenda"
-        android:title="Catálogo" />
+        android:icon="@drawable/ic_catalogo"
+        android:title="@string/catalogo" />
     <item
         android:id="@+id/nav_contacto"
-        android:icon="@android:drawable/ic_menu_call"
-        android:title="Contacto" />
+        android:icon="@drawable/ic_contacto"
+        android:title="@string/contacto" />
     <item
         android:id="@+id/nav_configuracion"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Ajustes" />
+        android:icon="@drawable/ic_configuracion"
+        android:title="@string/ajustes" />
 </menu>

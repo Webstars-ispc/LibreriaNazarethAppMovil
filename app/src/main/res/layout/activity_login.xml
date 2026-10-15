@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="INICIAR SESIÓN"
+            android:text="@string/login_titulo"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/texto_titulo"
@@ -26,8 +26,8 @@
             android:id="@+id/etUsuario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre de usuario"
-            android:inputType="textPersonName"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
             android:textColor="@color/texto_principal"
             android:textColorHint="@color/texto_hint"
             android:background="@drawable/input_fondo"
@@ -36,31 +36,66 @@
             android:minHeight="48dp"
             android:layout_marginBottom="16dp" />
 
-        <EditText
-            android:id="@+id/etPassword"
+        <!-- Contraseña + botón de ojo -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Contraseña"
-            android:inputType="textPassword"
-            android:textColor="@color/texto_principal"
-            android:textColorHint="@color/texto_hint"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:background="@drawable/input_fondo"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
             android:minHeight="48dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_contrasena"
+                android:inputType="textPassword"
+                android:textColor="@color/texto_principal"
+                android:textColorHint="@color/texto_hint"
+                android:background="@null"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:minHeight="48dp" />
+
+            <ImageView
+                android:id="@+id/ivMostrarPassword"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/mostrar_contrasena"
+                android:src="@drawable/ic_ojo_cerrado"
+                app:tint="@color/texto_hint"
+                xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="INGRESAR"
+            android:text="@string/login_ingresar"
             android:textColor="@color/boton_texto"
             android:background="@drawable/boton_redondeado"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvIrAlRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="48dp"
+            android:gravity="center"
+            android:text="@string/login_registro"
+            android:textColor="@color/dorado_claro"
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true" />
 
     </LinearLayout>
 </ScrollView>
