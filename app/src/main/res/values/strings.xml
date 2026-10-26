@@ -276,6 +276,12 @@
     <string name="detalle_sin_nombre">(sin nombre)</string>
     <string name="detalle_subtotal">$%1$s</string>
     <string name="dialog_cerrar">Cerrar</string>
+    <!-- Cancelar venta -->
+    <string name="cancelar_venta_accion">CANCELAR VENTA</string>
+    <string name="dialog_cancelar_venta_titulo">Cancelar venta</string>
+    <string name="dialog_cancelar_venta_msg">¿Estás seguro de cancelar la venta #%1$d? Se devolverá el stock de los productos al inventario.</string>
+    <string name="msj_venta_cancelada">Venta cancelada y stock restaurado</string>
+    <string name="msj_error_cancelar_venta">Error al cancelar la venta</string>
 
     <!-- Configuración (dinámico) -->
     <string name="msj_notif_activadas">Notificaciones activadas</string>
