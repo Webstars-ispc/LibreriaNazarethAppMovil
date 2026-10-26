@@ -23,13 +23,16 @@ public class VentaAdapter extends RecyclerView.Adapter<VentaAdapter.VentaViewHol
 
     public interface OnVentaClickListener {
         void onVerMas(VentaListResponse venta);
+        void onCancelar(VentaListResponse venta); // Cambiado de onEliminar a onCancelar
     }
 
     private List<VentaListResponse> ventas = new ArrayList<>();
     private final OnVentaClickListener listener;
+    private final boolean esAdmin;
 
-    public VentaAdapter(OnVentaClickListener listener) {
+    public VentaAdapter(OnVentaClickListener listener, boolean esAdmin) {
         this.listener = listener;
+        this.esAdmin = esAdmin;
     }
 
     public void setVentas(List<VentaListResponse> ventas) {
@@ -54,6 +57,14 @@ public class VentaAdapter extends RecyclerView.Adapter<VentaAdapter.VentaViewHol
         holder.tvTotalVentaItem.setText(holder.itemView.getContext().getString(R.string.venta_total_item, v.getTotal()));
 
         holder.btnVerMas.setOnClickListener(view -> listener.onVerMas(v));
+
+        // Mostrar botón cancelar solo si es admin
+        if (esAdmin) {
+            holder.btnCancelarVenta.setVisibility(View.VISIBLE);
+            holder.btnCancelarVenta.setOnClickListener(view -> listener.onCancelar(v));
+        } else {
+            holder.btnCancelarVenta.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -61,7 +72,6 @@ public class VentaAdapter extends RecyclerView.Adapter<VentaAdapter.VentaViewHol
         return ventas.size();
     }
 
-    /** Convierte "2026-09-30T16:52:48.123456-03:00" en "30/09 16:52" */
     private String formatearFecha(String isoFecha) {
         if (isoFecha == null) return "";
         try {
@@ -77,7 +87,7 @@ public class VentaAdapter extends RecyclerView.Adapter<VentaAdapter.VentaViewHol
 
     static class VentaViewHolder extends RecyclerView.ViewHolder {
         TextView tvNumeroVenta, tvFechaVenta, tvTotalVentaItem;
-        Button btnVerMas;
+        Button btnVerMas, btnCancelarVenta;
 
         VentaViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -85,6 +95,7 @@ public class VentaAdapter extends RecyclerView.Adapter<VentaAdapter.VentaViewHol
             tvFechaVenta = itemView.findViewById(R.id.tvFechaVenta);
             tvTotalVentaItem = itemView.findViewById(R.id.tvTotalVentaItem);
             btnVerMas = itemView.findViewById(R.id.btnVerMas);
+            btnCancelarVenta = itemView.findViewById(R.id.btnCancelarVenta);
         }
     }
 }

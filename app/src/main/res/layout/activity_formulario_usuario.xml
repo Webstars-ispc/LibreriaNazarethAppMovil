@@ -89,6 +89,17 @@
                 android:textColor="@color/texto_principal"
                 android:inputType="textPassword"
                 android:minHeight="48dp" />
+            <!-- Requisitos de contraseña -->
+            <TextView
+                android:id="@+id/tvRequisitosPasswordForm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/req_password_titulo"
+                android:textSize="12sp"
+                android:textColor="@color/rojo_error"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" /> <!-- Oculto por defecto, se muestra al escribir -->
 
             <!-- Rol -->
             <TextView

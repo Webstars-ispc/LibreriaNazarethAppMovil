@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ispc.librerianazareth.adapter.VentaAdapter;
 import com.ispc.librerianazareth.data.RetrofitClient;
 import com.ispc.librerianazareth.data.NetworkConstants;
+import com.ispc.librerianazareth.data.local.TokenManager;
 import com.ispc.librerianazareth.data.model.VentaListPageResponse;
 import com.ispc.librerianazareth.data.model.VentaListResponse;
 import com.ispc.librerianazareth.data.model.DetalleVentaResponse;
@@ -64,7 +65,10 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
         btnAnterior   = findViewById(R.id.btnAnteriorVentas);
         btnSiguiente  = findViewById(R.id.btnSiguienteVentas);
 
-        ventaAdapter = new VentaAdapter(this);
+        // Inicializamos el adapter pasando el flag de admin
+        TokenManager tm = new TokenManager(this);
+        ventaAdapter = new VentaAdapter(this, tm.isAdmin());
+
         rvVentas.setLayoutManager(new LinearLayoutManager(this));
         rvVentas.setAdapter(ventaAdapter);
 
@@ -79,7 +83,6 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
         spinnerFiltro.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Reiniciar a página 1 cuando cambia el filtro
                 paginaActual = 1;
                 String filtro = (position == 0) ? FILTRO_HOY : FILTRO_MES;
                 cargarPagina(filtro, paginaActual);
@@ -130,8 +133,8 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                             return;
                         }
 
-                        VentaListPageResponse page = response.body();
-                        List<VentaListResponse> ventas = page.getResults();
+                        VentaListPageResponse pageResponse = response.body();
+                        List<VentaListResponse> ventas = pageResponse.getResults();
 
                         if (ventas == null || ventas.isEmpty()) {
                             mostrarEstado(getString(R.string.msj_sin_ventas));
@@ -144,8 +147,7 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
                         rvVentas.setVisibility(View.VISIBLE);
                         ventaAdapter.setVentas(ventas);
 
-                        // Calcular total de páginas
-                        totalPaginas = (int) Math.ceil(page.getCount() / (double) NetworkConstants.PAGE_SIZE);
+                        totalPaginas = (int) Math.ceil(pageResponse.getCount() / (double) NetworkConstants.PAGE_SIZE);
                         tvPagina.setText(getString(R.string.pagina_de, paginaActual, totalPaginas));
 
                         btnAnterior.setEnabled(paginaActual > 1);
@@ -245,5 +247,42 @@ public class VentasActivity extends BaseActivity implements VentaAdapter.OnVenta
         } catch (Exception e) {
             return isoFecha;
         }
+    }
+
+    // ==============================================
+    // CANCELAR VENTA (Solo Admin)
+    // ==============================================
+    @Override
+    public void onCancelar(VentaListResponse venta) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_cancelar_venta_titulo)
+                .setMessage(getString(R.string.dialog_cancelar_venta_msg, venta.getId()))
+                .setPositiveButton(R.string.cancelar_venta_accion, (dialog, which) ->
+                        RetrofitClient.getApi(this).eliminarVenta(venta.getId())
+                                .enqueue(new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(@NonNull Call<Void> call,
+                                                           @NonNull Response<Void> response) {
+                                        if (response.isSuccessful()) {
+                                            Toast.makeText(VentasActivity.this,
+                                                    R.string.msj_venta_cancelada, Toast.LENGTH_SHORT).show();
+
+                                            // Recargamos el historial en la misma página y filtro
+                                            cargarPagina(getFiltroActual(), paginaActual);
+                                        } else {
+                                            Toast.makeText(VentasActivity.this,
+                                                    R.string.msj_error_cancelar_venta, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull Call<Void> call,
+                                                          @NonNull Throwable t) {
+                                        Toast.makeText(VentasActivity.this,
+                                                R.string.msj_error_conexion, Toast.LENGTH_SHORT).show();
+                                    }
+                                }))
+                .setNegativeButton(R.string.volver, null)
+                .show();
     }
 }

@@ -266,7 +266,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
         new AlertDialog.Builder(this)
                 .setTitle(R.string.dialog_eliminar_producto_titulo)
                 .setMessage(getString(R.string.dialog_eliminar_producto_msg, producto.getNombre()))
-                .setPositiveButton(R.string.eliminar, (dialog, which) ->
+                .setPositiveButton(R.string.eliminar_accion, (dialog, which) ->
                         RetrofitClient.getApi(this).eliminarProducto(producto.getId())
                                 .enqueue(new Callback<Void>() {
                                     @Override
@@ -275,6 +275,7 @@ public class CatalogoActivity extends BaseActivity implements ProductoAdapter.On
                                         if (response.isSuccessful()) {
                                             Toast.makeText(CatalogoActivity.this,
                                                     R.string.msj_producto_eliminado, Toast.LENGTH_SHORT).show();
+                                            // Recargamos la página actual
                                             cargarPagina(paginaActual);
                                         } else {
                                             Toast.makeText(CatalogoActivity.this,
