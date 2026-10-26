@@ -49,6 +49,11 @@
     <string name="hint_confirmar_contrasena">Confirmar contraseña</string>
     <string name="registro_boton">REGISTRARME</string>
     <string name="registro_ir_login">Ya tengo cuenta, iniciar sesión</string>
+    <string name="msj_completar_campos">Completá todos los campos</string>
+    <!-- Requisitos de contraseña -->
+    <string name="req_password_titulo">Requisitos: mínimo 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.</string>
+    <string name="req_password_ok">✓ Contraseña segura</string>
+    <string name="req_password_faltan">Falta: %1$s</string>
 
     <!-- Catálogo -->
     <string name="catalogo_titulo">Catálogo de Productos</string>

@@ -2,7 +2,9 @@ package com.ispc.librerianazareth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.ispc.librerianazareth.data.RetrofitClient;
 import com.ispc.librerianazareth.data.local.TokenManager;
@@ -31,27 +34,36 @@ public class RegistroActivity extends AppCompatActivity {
     private ImageView ivMostrarPassword, ivMostrarPasswordConfirmar;
     private Button btnRegistro;
     private TextView tvIrAlLogin;
+    private TextView tvRequisitosPassword;
     private TokenManager tokenManager;
 
     private boolean passwordVisible = false;
     private boolean passwordConfirmarVisible = false;
+
+    private int colorCumple;
+    private int colorFalta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
 
-        etNombre                  = findViewById(R.id.etRegistroNombre);
-        etApellido                = findViewById(R.id.etRegistroApellido);
-        etUsuario                 = findViewById(R.id.etRegistroUsuario);
-        etEmail                   = findViewById(R.id.etRegistroEmail);
-        etPassword                = findViewById(R.id.etRegistroPassword);
-        etPasswordConfirmar       = findViewById(R.id.etRegistroPasswordConfirmar);
-        ivMostrarPassword         = findViewById(R.id.ivMostrarPassword);
+        etNombre                   = findViewById(R.id.etRegistroNombre);
+        etApellido                 = findViewById(R.id.etRegistroApellido);
+        etUsuario                  = findViewById(R.id.etRegistroUsuario);
+        etEmail                    = findViewById(R.id.etRegistroEmail);
+        etPassword                 = findViewById(R.id.etRegistroPassword);
+        etPasswordConfirmar        = findViewById(R.id.etRegistroPasswordConfirmar);
+        ivMostrarPassword          = findViewById(R.id.ivMostrarPassword);
         ivMostrarPasswordConfirmar = findViewById(R.id.ivMostrarPasswordConfirmar);
-        btnRegistro               = findViewById(R.id.btnRegistro);
-        tvIrAlLogin               = findViewById(R.id.tvIrAlLogin);
-        tokenManager              = new TokenManager(this);
+        btnRegistro                = findViewById(R.id.btnRegistro);
+        tvIrAlLogin                = findViewById(R.id.tvIrAlLogin);
+        tvRequisitosPassword       = findViewById(R.id.tvRequisitosPassword);
+        tokenManager               = new TokenManager(this);
+
+        // Colores para los requisitos
+        colorFalta  = ContextCompat.getColor(this, R.color.rojo_error);
+        colorCumple = android.graphics.Color.parseColor("#4CAF50");
 
         btnRegistro.setOnClickListener(v -> intentarRegistro());
 
@@ -68,6 +80,17 @@ public class RegistroActivity extends AppCompatActivity {
             passwordConfirmarVisible = !passwordConfirmarVisible;
             togglePassword(etPasswordConfirmar, ivMostrarPasswordConfirmar, passwordConfirmarVisible);
         });
+
+        // Validación en tiempo real de los requisitos de contraseña
+        etPassword.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                actualizarRequisitos(s.toString());
+            }
+        });
+        actualizarRequisitos(etPassword.getText().toString());
     }
 
     /** Alterna la visibilidad de un campo de contraseña. */
@@ -79,8 +102,34 @@ public class RegistroActivity extends AppCompatActivity {
             campo.setTransformationMethod(PasswordTransformationMethod.getInstance());
             icono.setImageResource(R.drawable.ic_ojo_cerrado);
         }
-        // Mover el cursor al final para que no se resetee
         campo.setSelection(campo.getText().length());
+    }
+
+    /** Actualiza el TextView único con los requisitos faltantes o el mensaje de éxito. */
+    private void actualizarRequisitos(String password) {
+        if (password.isEmpty()) {
+            tvRequisitosPassword.setText(R.string.req_password_titulo);
+            tvRequisitosPassword.setTextColor(colorFalta);
+            return;
+        }
+
+        StringBuilder faltantes = new StringBuilder();
+
+        if (password.length() < 8) faltantes.append("8 caracteres, ");
+        if (!password.matches(".*[A-Z].*")) faltantes.append("una mayúscula, ");
+        if (!password.matches(".*[a-z].*")) faltantes.append("una minúscula, ");
+        if (!password.matches(".*[0-9].*")) faltantes.append("un número, ");
+        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*"))
+            faltantes.append("un símbolo, ");
+
+        if (faltantes.length() == 0) {
+            tvRequisitosPassword.setText(R.string.req_password_ok);
+            tvRequisitosPassword.setTextColor(colorCumple);
+        } else {
+            String lista = faltantes.substring(0, faltantes.length() - 2);
+            tvRequisitosPassword.setText(getString(R.string.req_password_faltan, lista));
+            tvRequisitosPassword.setTextColor(colorFalta);
+        }
     }
 
     private void intentarRegistro() {
@@ -91,61 +140,92 @@ public class RegistroActivity extends AppCompatActivity {
         String password  = etPassword.getText().toString().trim();
         String confirmar = etPasswordConfirmar.getText().toString().trim();
 
+        boolean hayError = false;
+        EditText primerCampoConError = null;
+
+        // --- NOMBRE ---
         if (TextUtils.isEmpty(nombre)) {
             etNombre.setError(getString(R.string.error_ingresar_tu_nombre));
-            etNombre.requestFocus();
-            return;
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etNombre;
+        } else {
+            etNombre.setError(null);
         }
 
+        // --- APELLIDO ---
         if (TextUtils.isEmpty(apellido)) {
             etApellido.setError(getString(R.string.error_ingresar_tu_apellido));
-            etApellido.requestFocus();
-            return;
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etApellido;
+        } else {
+            etApellido.setError(null);
         }
 
+        // --- USUARIO ---
         if (TextUtils.isEmpty(username)) {
             etUsuario.setError(getString(R.string.error_ingresar_usuario));
-            etUsuario.requestFocus();
-            return;
-        }
-
-        if (username.length() < 3) {
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etUsuario;
+        } else if (username.length() < 3) {
             etUsuario.setError(getString(R.string.error_minimo_3));
-            etUsuario.requestFocus();
-            return;
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etUsuario;
+        } else {
+            etUsuario.setError(null);
         }
 
+        // --- EMAIL ---
         if (TextUtils.isEmpty(email)) {
             etEmail.setError(getString(R.string.error_ingresar_tu_correo));
-            etEmail.requestFocus();
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etEmail;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError(getString(R.string.error_correo_invalido));
-            etEmail.requestFocus();
-            return;
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etEmail;
+        } else {
+            etEmail.setError(null);
         }
 
+        // --- CONTRASEÑA ---
         if (TextUtils.isEmpty(password)) {
             etPassword.setError(getString(R.string.error_ingresar_contrasena));
-            etPassword.requestFocus();
-            return;
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etPassword;
+        } else {
+            String errorPassword = PasswordValidator.validate(password);
+            if (errorPassword != null) {
+                etPassword.setError(errorPassword);
+                hayError = true;
+                if (primerCampoConError == null) primerCampoConError = etPassword;
+            } else {
+                etPassword.setError(null);
+            }
         }
 
-        String errorPassword = PasswordValidator.validate(password);
-        if (errorPassword != null) {
-            etPassword.setError(errorPassword);
-            etPassword.requestFocus();
-            return;
-        }
-
-        if (!password.equals(confirmar)) {
+        // --- CONFIRMAR CONTRASEÑA ---
+        if (TextUtils.isEmpty(confirmar)) {
+            etPasswordConfirmar.setError(getString(R.string.error_ingresar_contrasena));
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etPasswordConfirmar;
+        } else if (!password.equals(confirmar)) {
             etPasswordConfirmar.setError(getString(R.string.error_contrasenas_no_coinciden));
-            etPasswordConfirmar.requestFocus();
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etPasswordConfirmar;
+        } else {
+            etPasswordConfirmar.setError(null);
+        }
+
+        // Si hay algún error, enfocamos el primer campo con error y mostramos un Toast
+        if (hayError) {
+            if (primerCampoConError != null) {
+                primerCampoConError.requestFocus();
+            }
+            Toast.makeText(this, R.string.msj_completar_campos, Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // --- TODO OK: continuamos con el registro ---
         btnRegistro.setEnabled(false);
         btnRegistro.setText(R.string.registro_boton_cargando);
 
