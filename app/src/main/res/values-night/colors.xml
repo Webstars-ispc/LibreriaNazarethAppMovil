@@ -25,4 +25,5 @@
     <color name="card_menu_fondo">#1e3163</color>
     <color name="cerrar_sesion_bg">#1e3163</color>
     <color name="texto_card">#FFFFFF</color>
+    <color name="rojo_error">#D32F2F</color>
 </resources>

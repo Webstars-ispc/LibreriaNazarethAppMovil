@@ -10,6 +10,9 @@ public class Usuario {
     @SerializedName("username")
     private String username;
 
+    @SerializedName("is_active")
+    private boolean isActive;
+
     @SerializedName("nombre")
     private String nombre;
 

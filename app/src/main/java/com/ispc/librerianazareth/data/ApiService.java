@@ -148,4 +148,6 @@ public interface ApiService {
     @GET("api/ventas/{id}/")
     Call<VentaResponse> getVenta(@Path("id") int id);
 
+    @DELETE("api/ventas/{id}/")
+    Call<Void> eliminarVenta(@Path("id") int id);
 }

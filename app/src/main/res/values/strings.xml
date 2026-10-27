@@ -49,6 +49,11 @@
     <string name="hint_confirmar_contrasena">Confirmar contraseña</string>
     <string name="registro_boton">REGISTRARME</string>
     <string name="registro_ir_login">Ya tengo cuenta, iniciar sesión</string>
+    <string name="msj_completar_campos">Completá todos los campos</string>
+    <!-- Requisitos de contraseña -->
+    <string name="req_password_titulo">Requisitos: mínimo 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.</string>
+    <string name="req_password_ok">✓ Contraseña segura</string>
+    <string name="req_password_faltan">Falta: %1$s</string>
 
     <!-- Catálogo -->
     <string name="catalogo_titulo">Catálogo de Productos</string>
@@ -85,7 +90,7 @@
     <string name="campo_rol">Rol</string>
     <string name="guardar_usuario">GUARDAR USUARIO</string>
     <string name="editar_accion">EDITAR</string>
-    <string name="eliminar_accion">ELIMINAR</string>
+    <string name="eliminar_accion">DAR DE BAJA</string>
 
     <!-- Ventas -->
     <string name="ventas_titulo">Ventas</string>
@@ -178,10 +183,10 @@
     <string name="msj_sin_resultados_productos">No se encontraron productos</string>
     <string name="escanear_prompt">Apuntá al código de barras</string>
     <string name="escanear_prompt_producto">Apuntá al código de barras del producto</string>
-    <string name="dialog_eliminar_producto_titulo">Eliminar producto</string>
-    <string name="dialog_eliminar_producto_msg">¿Estás seguro de eliminar \"%1$s\"?</string>
+    <string name="dialog_eliminar_producto_titulo">Dar de baja producto</string>
+    <string name="dialog_eliminar_producto_msg">¿Estás seguro de dar de baja \"%1$s\"?</string>
     <string name="msj_producto_eliminado">Producto eliminado</string>
-    <string name="msj_error_eliminar">Error al eliminar</string>
+    <string name="msj_error_eliminar">Error al dar de baja</string>
     <string name="producto_marca_prefijo">- %1$s</string>
     <string name="producto_precio">$%1$.2f</string>
     <string name="producto_stock">Stock: %1$d</string>
@@ -227,10 +232,10 @@
     <string name="msj_sin_usuarios">No se encontraron usuarios</string>
     <string name="msj_sin_permiso_gestionar_usuarios">No tenés permisos para gestionar usuarios</string>
     <string name="msj_error_cargar_usuarios_codigo">Error al cargar usuarios: %1$d</string>
-    <string name="dialog_eliminar_usuario_titulo">Eliminar usuario</string>
-    <string name="dialog_eliminar_usuario_msg">¿Estás seguro de eliminar \"%1$s\"?</string>
-    <string name="msj_usuario_eliminado">Usuario eliminado correctamente</string>
-    <string name="msj_error_eliminar_usuario_codigo">Error al eliminar usuario: %1$d</string>
+    <string name="dialog_eliminar_usuario_titulo">Dar de baja usuario</string>
+    <string name="dialog_eliminar_usuario_msg">¿Estás seguro de dar de baja \"%1$s\"?</string>
+    <string name="msj_usuario_eliminado">Usuario dado de baja correctamente</string>
+    <string name="msj_error_eliminar_usuario_codigo">Error al dar de baja usuario: %1$d</string>
 
     <!-- Registro público (dinámico) -->
     <string name="error_ingresar_tu_nombre">Ingresá tu nombre</string>
@@ -271,6 +276,12 @@
     <string name="detalle_sin_nombre">(sin nombre)</string>
     <string name="detalle_subtotal">$%1$s</string>
     <string name="dialog_cerrar">Cerrar</string>
+    <!-- Cancelar venta -->
+    <string name="cancelar_venta_accion">CANCELAR VENTA</string>
+    <string name="dialog_cancelar_venta_titulo">Cancelar venta</string>
+    <string name="dialog_cancelar_venta_msg">¿Estás seguro de cancelar la venta #%1$d? Se devolverá el stock de los productos al inventario.</string>
+    <string name="msj_venta_cancelada">Venta cancelada y stock restaurado</string>
+    <string name="msj_error_cancelar_venta">Error al cancelar la venta</string>
 
     <!-- Configuración (dinámico) -->
     <string name="msj_notif_activadas">Notificaciones activadas</string>
