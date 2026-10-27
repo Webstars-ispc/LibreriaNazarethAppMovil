@@ -1,0 +1,775 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "AUT-API",
+    "description": "Colección de pruebas de la API REST del backend Django (Librería Nazareth).\nCubre autenticación JWT, catálogo, usuarios y ventas, incluyendo casos negativos (401/403).\nEjecutar con: newman run coleccion-aut-api.json --env ambiente.json",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "1. Autenticación",
+      "item": [
+        {
+          "name": "Login OK (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve access token', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('access');",
+                  "    pm.expect(json.access).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.test('Devuelve refresh token', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('refresh');",
+                  "    pm.expect(json.refresh).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.environment.set('access_token', pm.response.json().access);",
+                  "pm.environment.set('refresh_token', pm.response.json().refresh);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "login", "" ]
+            },
+            "description": "POST /api/auth/login/ con credenciales válidas de administrador → 200 + tokens JWT."
+          }
+        },
+        {
+          "name": "Login incorrecto (contraseña inválida)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 (credenciales inválidas)', () => pm.response.to.have.status(400));",
+                  "pm.test('No devuelve tokens', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.not.have.property('access');",
+                  "    pm.expect(json).to.not.have.property('refresh');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"password-invalida-xyz\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "login", "" ]
+            },
+            "description": "Contraseña equivocada → 401 Unauthorized."
+          }
+        },
+        {
+          "name": "Refresh token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve nuevo access token', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('access');",
+                  "    pm.expect(json.access).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.environment.set('access_token', pm.response.json().access);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/refresh/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "refresh", "" ]
+            },
+            "description": "POST /api/auth/refresh/ con el refresh token → 200 + nuevo access token."
+          }
+        },
+        {
+          "name": "Perfil /me/ con token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve id, username, email y role', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json).to.have.property('username');",
+                  "    pm.expect(json).to.have.property('email');",
+                  "    pm.expect(json).to.have.property('role');",
+                  "});",
+                  "pm.environment.set('user_role', pm.response.json().role);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "me", "" ]
+            },
+            "description": "GET /api/auth/me/ con Bearer token → 200 + perfil (id, username, email, role)."
+          }
+        },
+        {
+          "name": "Perfil /me/ sin token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Mensaje de detalle', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('detail');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "me", "" ]
+            },
+            "description": "GET /api/auth/me/ sin header Authorization → 401 (demuestra que el backend valida el JWT)."
+          }
+        },
+        {
+          "name": "Registro público OK",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('timestamp', Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Devuelve tokens y datos del usuario', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('access');",
+                  "    pm.expect(json).to.have.property('email');",
+                  "    pm.expect(json.email).to.include('newman_reg_');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newman_reg_{{timestamp}}\",\n  \"nombre\": \"Newman\",\n  \"apellido\": \"Test\",\n  \"email\": \"newman_reg_{{timestamp}}@test.com\",\n  \"password\": \"Newman123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "register", "" ]
+            },
+            "description": "POST /api/auth/register/ con datos válidos → 201 Created."
+          }
+        },
+        {
+          "name": "Registro mail duplicado (Issue #120)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('timestamp', Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 (Issue #120)', () => pm.response.to.have.status(400));",
+                  "pm.test('Mensaje de unicidad', () => {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body.toLowerCase()).to.include('email');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"dup_mail_{{timestamp}}\",\n  \"nombre\": \"Duplicado\",\n  \"apellido\": \"Test\",\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"Newman123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "register", "" ]
+            },
+            "description": "Intenta registrar un mail que ya existe → debería devolver 400 con mensaje de unicidad (Issue #120 pendiente en backend)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Productos",
+      "item": [
+        {
+          "name": "GET productos sin token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Mensaje de detalle', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('detail');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/productos/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "productos", "" ]
+            },
+            "description": "GET /api/productos/ sin Authorization → 401 (caso negativo clave de AUT-API)."
+          }
+        },
+        {
+          "name": "GET productos con token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve lista de productos', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('results');",
+                  "    pm.expect(json.results).to.be.an('array');",
+                  "    if (json.results.length > 0) {",
+                  "        pm.expect(json.results[0]).to.have.property('id');",
+                  "        pm.expect(json.results[0]).to.have.property('nombre');",
+                  "        pm.expect(json.results[0]).to.have.property('precio_venta');",
+                  "        pm.environment.set('producto_id', json.results[0].id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/productos/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "productos", "" ]
+            },
+            "description": "GET /api/productos/ con Bearer token → 200 + página de resultados."
+          }
+        },
+        {
+          "name": "GET producto por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve el producto solicitado', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json.id).to.eql(parseInt(pm.environment.get('producto_id')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/productos/{{producto_id}}/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "productos", "{{producto_id}}" ]
+            },
+            "description": "GET /api/productos/{id}/ con Bearer token → 200 + detalle del producto."
+          }
+        },
+        {
+          "name": "POST crear producto (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Devuelve producto creado', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json).to.have.property('nombre');",
+                  "    pm.environment.set('producto_creado_id', json.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Newman\",\n  \"descripcion\": \"Creado por colección AUT-API\",\n  \"codigo_barras\": \"999{{timestamp}}\",\n  \"rubro\": 1,\n  \"marca\": null,\n  \"precio_costo\": 100.0,\n  \"precio_venta\": 200.0,\n  \"stock\": 5\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/productos/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "productos", "" ]
+            },
+            "description": "POST /api/productos/ con token de admin → 201 Created."
+          }
+        },
+        {
+          "name": "PUT actualizar producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Producto actualizado', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('nombre');",
+                  "    pm.expect(json.nombre.toLowerCase()).to.include('newman');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Newman Actualizado\",\n  \"descripcion\": \"Actualizado por colección AUT-API\",\n  \"codigo_barras\": \"999{{timestamp}}\",\n  \"rubro\": 1,\n  \"marca\": null,\n  \"precio_costo\": 120.0,\n  \"precio_venta\": 250.0,\n  \"stock\": 8\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/productos/{{producto_creado_id}}/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "productos", "{{producto_creado_id}}" ]
+            },
+            "description": "PUT /api/productos/{id}/ con token de admin → 200 OK."
+          }
+        },
+        {
+          "name": "DELETE eliminar producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 o 204 (eliminado)', () => {",
+                  "    pm.expect([200, 204]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/productos/{{producto_creado_id}}/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "productos", "{{producto_creado_id}}" ]
+            },
+            "description": "DELETE /api/productos/{id}/ con token de admin → 204 No Content."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Rubros y Marcas",
+      "item": [
+        {
+          "name": "GET rubros",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve lista de rubros', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('results');",
+                  "    pm.expect(json.results).to.be.an('array');",
+                  "    if (json.results.length > 0) {",
+                  "        pm.environment.set('rubro_id', json.results[0].id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rubros/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "rubros", "" ]
+            },
+            "description": "GET /api/rubros/ con Bearer token → 200 + página de rubros."
+          }
+        },
+        {
+          "name": "GET marcas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve lista de marcas', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('results');",
+                  "    pm.expect(json.results).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/marcas/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "marcas", "" ]
+            },
+            "description": "GET /api/marcas/ con Bearer token → 200 + página de marcas."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Usuarios (admin)",
+      "item": [
+        {
+          "name": "GET usuarios con token admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve lista de usuarios', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('results');",
+                  "    pm.expect(json.results).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/usuarios/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "usuarios", "" ]
+            },
+            "description": "GET /api/auth/usuarios/ con token de admin → 200."
+          }
+        },
+        {
+          "name": "POST crear usuario (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Devuelve datos del usuario creado', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('username');",
+                  "    pm.expect(json).to.have.property('email');",
+                  "    pm.expect(json.email).to.include('newman_user_');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newman_user_{{timestamp}}\",\n  \"nombre\": \"Usuario\",\n  \"apellido\": \"Newman\",\n  \"email\": \"newman_user_{{timestamp}}@test.com\",\n  \"password\": \"Newman123!\",\n  \"role\": \"Empleado\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/usuarios/create/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "auth", "usuarios", "create", "" ]
+            },
+            "description": "POST /api/auth/usuarios/create/ con token de admin → 201 Created."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Ventas",
+      "item": [
+        {
+          "name": "POST registrar venta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Devuelve venta registrada', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.environment.set('venta_id', json.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productos\": [\n    {\n      \"producto_id\": {{producto_id}},\n      \"cantidad\": 1\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ventas/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "ventas", "" ]
+            },
+            "description": "POST /api/ventas/ con token y 1 unidad de un producto con stock → 201 Created."
+          }
+        },
+        {
+          "name": "POST venta sin stock (caso negativo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Mensaje de stock', () => {",
+                  "    const body = pm.response.text().toLowerCase();",
+                  "    pm.expect(body).to.include('stock');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productos\": [\n    {\n      \"producto_id\": {{producto_id}},\n      \"cantidad\": 999999\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ventas/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "ventas", "" ]
+            },
+            "description": "POST /api/ventas/ con cantidad mayor al stock → 400 (doble validación de stock en backend)."
+          }
+        },
+        {
+          "name": "GET ventas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve página de ventas', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('results');",
+                  "    pm.expect(json.results).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ventas/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "ventas", "" ]
+            },
+            "description": "GET /api/ventas/ con Bearer token → 200 + página de ventas."
+          }
+        },
+        {
+          "name": "GET venta por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve la venta solicitada', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json.id).to.eql(parseInt(pm.environment.get('venta_id')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ventas/{{venta_id}}/",
+              "host": [ "{{base_url}}" ],
+              "path": [ "api", "ventas", "{{venta_id}}" ]
+            },
+            "description": "GET /api/ventas/{id}/ con Bearer token → 200 + detalle de la venta."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": []
+}
