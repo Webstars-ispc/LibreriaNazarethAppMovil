@@ -17,6 +17,8 @@ import com.ispc.librerianazareth.data.model.VentaRequest;
 import com.ispc.librerianazareth.data.model.VentaResponse;
 import com.ispc.librerianazareth.data.model.VentaListPageResponse;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -61,6 +63,9 @@ public interface ApiService {
     // ============================================================
     // PRODUCTOS
     // ============================================================
+
+    @GET("api/productos/")
+    Call<List<Producto>> getProductos();
 
     @GET("api/productos/")
     Call<ProductoResponse> buscarProductoPorCodigo(
