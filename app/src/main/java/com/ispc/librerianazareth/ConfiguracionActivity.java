@@ -3,6 +3,8 @@ package com.ispc.librerianazareth;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +39,7 @@ public class ConfiguracionActivity extends BaseActivity {
         SwitchCompat switchNotificaciones = findViewById(R.id.switchNotificaciones);
         SwitchCompat switchModoOscuro = findViewById(R.id.switchModoOscuro);
 
-        // Cargar estado guardado
+        // Cargar estado guardado inicial
         switchNotificaciones.setChecked(prefs.getBoolean(KEY_NOTIFICACIONES, true));
         switchModoOscuro.setChecked(prefs.getBoolean(KEY_MODO_OSCURO, true));
 
@@ -49,9 +51,16 @@ public class ConfiguracionActivity extends BaseActivity {
         });
 
         switchModoOscuro.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // 1. Guardamos la preferencia usando apply()
             prefs.edit().putBoolean(KEY_MODO_OSCURO, isChecked).apply();
+
+            // 2. Le decimos a AppCompat que cambie el modo
             AppCompatDelegate.setDefaultNightMode(
                     isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+
+            // 3. Usamos un Handler para esperar 100ms y luego recrear la pantalla.
+            // Esto evita el parpadeo y asegura que el nuevo tema se aplique bien.
+            new Handler(Looper.getMainLooper()).postDelayed(this::recreate, 100);
         });
     }
 

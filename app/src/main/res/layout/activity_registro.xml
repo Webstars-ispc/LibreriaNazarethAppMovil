@@ -164,6 +164,18 @@
 
         </LinearLayout>
 
+        <!-- REQUISITOS DE CONTRASEÑA -->
+        <TextView
+            android:id="@+id/tvRequisitosPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/req_password_titulo"
+            android:textSize="12sp"
+            android:layout_marginTop="-8dp"
+            android:layout_marginBottom="16dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
         <!-- CONFIRMAR CONTRASEÑA -->
         <TextView
             android:layout_width="wrap_content"

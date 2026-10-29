@@ -52,8 +52,8 @@ public class LoginValidatorTest {
 
     @Test
     public void passwordEnElLimite_esValida() {
-        // Arrange (justo en el límite: 6 caracteres)
-        String password = "123456";
+        // Arrange (justo en el límite: 8 caracteres)
+        String password = "12345678";
 
         // Act
         boolean resultado = LoginValidator.isPasswordLongEnough(password);
@@ -64,8 +64,8 @@ public class LoginValidatorTest {
 
     @Test
     public void passwordDebajoDelLimite_esInvalida() {
-        // Arrange (una menos que el mínimo: 5 caracteres)
-        String password = "12345";
+        // Arrange (una menos que el mínimo: 7 caracteres)
+        String password = "1234567";
 
         // Act
         boolean resultado = LoginValidator.isPasswordLongEnough(password);

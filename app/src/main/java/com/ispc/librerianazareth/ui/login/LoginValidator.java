@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
  */
 public final class LoginValidator {
 
-    /** Longitud mínima aceptada para la contraseña. */
-    public static final int MIN_PASSWORD_LENGTH = 6;
+    /** Longitud mínima aceptada para la contraseña (igual que PasswordValidator). */
+    public static final int MIN_PASSWORD_LENGTH = 8;
 
     /** Formato de email aceptado: algo@algo.dominio (dominio de 2+ letras). */
     private static final Pattern EMAIL_PATTERN =

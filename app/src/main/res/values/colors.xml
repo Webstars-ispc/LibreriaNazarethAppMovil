@@ -1,28 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Colores base de la marca -->
     <color name="colorPrimary">#161F48</color>
     <color name="colorPrimaryDark">#101734</color>
     <color name="colorSecondary">#D2A047</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="fondo_app">#EEF2F9</color>
-    <color name="fondo_splash">#EEF2F9</color>
-    <color name="fondo_login">#EEF2F9</color>
-    <color name="fondo_card">#FFFFFF</color>
-    <color name="fondo_tabla">#F2F5FB</color>
-    <color name="borde">#D3DCED</color>
-    <color name="dorado">#D2A047</color>
-    <color name="dorado_claro">#8F6B1F</color>
-    <color name="texto_principal">#2B3A55</color>
-    <color name="texto_hint">#74809B</color>
-    <color name="texto_titulo">#161F48</color>
-    <color name="boton_login">#D2A047</color>
-    <color name="boton_texto">#161F48</color>
-    <color name="borde_input">#C4CEE4</color>
+    <color name="rojo_error">#D32F2F</color>
+
+    <!-- Fondos -->
+    <color name="fondo_app">#F5F7FA</color> <!-- Gris muy claro para el fondo general -->
+    <color name="fondo_splash">#161F48</color> <!-- El splash queda oscuro -->
+    <color name="fondo_login">#F5F7FA</color> <!-- Fondo claro para el login -->
+    <color name="fondo_card">#FFFFFF</color> <!-- Tarjetas blancas -->
+    <color name="fondo_tabla">#FFFFFF</color>
+
+    <!-- Bordes y separadores -->
+    <color name="borde">#E2E8F0</color> <!-- Gris claro para bordes -->
+    <color name="borde_input">#CBD5E1</color>
     <color name="input_fondo">#FFFFFF</color>
+
+    <!-- Textos -->
+    <color name="texto_principal">#1E293B</color> <!-- Gris muy oscuro (casi negro) para lectura -->
+    <color name="texto_hint">#94A3B8</color> <!-- Gris medio para los placeholders -->
+    <color name="texto_titulo">#161F48</color> <!-- Azul oscuro de la marca para títulos -->
+    <color name="texto_card">#1E293B</color>
+
+    <!-- Textos del menú -->
     <color name="texto_menu_titulo">#161F48</color>
-    <color name="texto_menu_subtitulo">#5A6888</color>
+    <color name="texto_menu_subtitulo">#64748B</color>
+
+    <!-- Acentos (Dorado) -->
+    <color name="dorado">#D2A047</color>
+    <color name="dorado_claro">#B8862C</color> <!-- Un dorado más oscuro para que se lea bien sobre blanco -->
+
+    <!-- Botones -->
+    <color name="boton_login">#D2A047</color>
+    <color name="boton_texto">#FFFFFF</color> <!-- Texto blanco sobre botón dorado -->
+
+    <!-- Otros -->
     <color name="card_menu_fondo">#FFFFFF</color>
     <color name="cerrar_sesion_bg">#FFFFFF</color>
-    <color name="texto_card">#161F48</color>
 </resources>
