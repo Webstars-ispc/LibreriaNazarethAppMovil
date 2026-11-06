@@ -55,7 +55,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         tvRequisitosPasswordForm = findViewById(R.id.tvRequisitosPasswordForm);
 
         // Colores
-        colorFalta  = ContextCompat.getColor(this, R.color.rojo_error);
+        colorFalta  = ContextCompat.getColor(this, R.color.error_dorado);
         colorCumple = android.graphics.Color.parseColor("#4CAF50");
 
         // Roles
@@ -150,12 +150,32 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             hayError = true;
             if (primerCampoConError == null) primerCampoConError = etNombre;
         } else etNombre.setError(null);
+        if (nombre.length() < 3) {
+            etNombre.setError("El nombre debe tener al menos 3 caracteres");
+            hayError = true;
+
+            if (primerCampoConError == null) {
+                primerCampoConError = etNombre;
+            }
+        } else {
+            etNombre.setError(null);
+        }
 
         if (TextUtils.isEmpty(apellido)) {
             etApellido.setError(getString(R.string.error_ingresar_apellido));
             hayError = true;
             if (primerCampoConError == null) primerCampoConError = etApellido;
         } else etApellido.setError(null);
+        if (apellido.length() < 3) {
+            etApellido.setError("El apellido debe tener al menos 3 caracteres");
+            hayError = true;
+
+            if (primerCampoConError == null) {
+                primerCampoConError = etApellido;
+            }
+        } else {
+            etApellido.setError(null);
+        }
 
         if (TextUtils.isEmpty(username)) {
             etNombreUsuario.setError(getString(R.string.error_ingresar_usuario));
