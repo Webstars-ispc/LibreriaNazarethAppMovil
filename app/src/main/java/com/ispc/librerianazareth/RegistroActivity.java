@@ -62,7 +62,7 @@ public class RegistroActivity extends AppCompatActivity {
         tokenManager               = new TokenManager(this);
 
         // Colores para los requisitos
-        colorFalta  = ContextCompat.getColor(this, R.color.rojo_error);
+        colorFalta  = ContextCompat.getColor(this, R.color.error_dorado);
         colorCumple = android.graphics.Color.parseColor("#4CAF50");
 
         btnRegistro.setOnClickListener(v -> intentarRegistro());
