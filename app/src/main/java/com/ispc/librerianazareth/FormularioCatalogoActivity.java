@@ -147,8 +147,27 @@ public class FormularioCatalogoActivity extends BaseActivity {
         String stockStr = etStock.getText().toString().trim();
 
         // Validaciones
+        // Validaciones del nombre del producto
         if (TextUtils.isEmpty(nombre)) {
-            etNombre.setError(getString(R.string.error_nombre_producto));
+            etNombre.setError("Ingresá el nombre del producto");
+            etNombre.requestFocus();
+            return;
+        }
+
+        if (nombre.length() < 3) {
+            etNombre.setError("El nombre debe tener al menos 3 caracteres");
+            etNombre.requestFocus();
+            return;
+        }
+
+        if (nombre.length() > 100) {
+            etNombre.setError("El nombre no puede superar los 100 caracteres");
+            etNombre.requestFocus();
+            return;
+        }
+
+        if (!nombre.matches("^[\\p{L}\\p{M}0-9][\\p{L}\\p{M}0-9 .,'()\\-]*$")) {
+            etNombre.setError("El nombre contiene caracteres no permitidos");
             etNombre.requestFocus();
             return;
         }
