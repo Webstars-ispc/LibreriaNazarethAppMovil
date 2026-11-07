@@ -62,7 +62,7 @@ public class RegistroActivity extends AppCompatActivity {
         tokenManager               = new TokenManager(this);
 
         // Colores para los requisitos
-        colorFalta  = ContextCompat.getColor(this, R.color.error_dorado);
+        colorFalta  = ContextCompat.getColor(this,R.color.error_dorado);
         colorCumple = android.graphics.Color.parseColor("#4CAF50");
 
         btnRegistro.setOnClickListener(v -> intentarRegistro());
@@ -145,7 +145,11 @@ public class RegistroActivity extends AppCompatActivity {
 
         // --- NOMBRE ---
         if (TextUtils.isEmpty(nombre)) {
-            etNombre.setError(getString(R.string.error_ingresar_tu_nombre));
+            etNombre.setError("Ingresá tu nombre");
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etNombre;
+        } else if (nombre.length() < 3) {
+            etNombre.setError("Mínimo 3 caracteres");
             hayError = true;
             if (primerCampoConError == null) primerCampoConError = etNombre;
         } else {
@@ -154,7 +158,11 @@ public class RegistroActivity extends AppCompatActivity {
 
         // --- APELLIDO ---
         if (TextUtils.isEmpty(apellido)) {
-            etApellido.setError(getString(R.string.error_ingresar_tu_apellido));
+            etApellido.setError("Ingresá tu apellido");
+            hayError = true;
+            if (primerCampoConError == null) primerCampoConError = etApellido;
+        } else if (apellido.length() < 3) {
+            etApellido.setError("Mínimo 3 caracteres");
             hayError = true;
             if (primerCampoConError == null) primerCampoConError = etApellido;
         } else {
